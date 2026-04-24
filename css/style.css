@@ -9710,3 +9710,58 @@ a.text-dark:hover, a.text-dark:focus {
     transform: translateY(-15px);
   }
 }
+
+/* ==========================================================================
+   MODIFICACIONES DE DISEÑO PARA EUROCOMBO (VIBRA DE COMIDA)
+   ========================================================================== */
+
+/* Variables de color basadas en tu logo */
+:root {
+    --euro-blue: #0A2E5B; /* Azul oscuro del texto */
+    --combo-green: #176B28; /* Verde del texto y parte del carrito */
+    --cart-orange: #E64A19; /* Naranja/Rojo apetitoso del carrito */
+    --light-bg: #F8F9FA;
+}
+
+/* Colores Base */
+.bg-dark { background-color: var(--euro-blue) !important; }
+.text-dark { color: var(--euro-blue) !important; }
+.bg-primary { background-color: var(--cart-orange) !important; }
+.text-primary { color: var(--cart-orange) !important; }
+
+/* Botones amigables (Redondeados y con colores del logo) */
+.btn { border-radius: 25px !important; transition: all 0.3s ease; }
+.btn-square { border-radius: 10px !important; } 
+.btn-primary { background-color: var(--cart-orange); border-color: var(--cart-orange); color: #fff !important; font-weight: 500; }
+.btn-primary:hover { background-color: var(--combo-green); border-color: var(--combo-green); color: #fff !important; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(23, 107, 40, 0.3); }
+.btn-outline-dark { color: var(--euro-blue); border-color: var(--euro-blue); }
+.btn-outline-dark:hover { background-color: var(--euro-blue); color: #fff; }
+
+/* Estilo de Tarjetas de Producto (Efecto Supermercado/App) */
+.product-item { border-radius: 15px; border: none !important; box-shadow: 0 4px 15px rgba(0,0,0,0.06); overflow: hidden; }
+.product-item:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+.product-item img { border-radius: 15px 15px 0 0; }
+.product-item h5 { color: var(--combo-green); font-weight: 700; font-size: 1.3rem; } 
+
+/* Categorías redondeadas */
+.cat-item { border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #eee; }
+.cat-item:hover { background: var(--cart-orange); border-color: var(--cart-orange); }
+.cat-item:hover h6, .cat-item:hover small { color: #fff !important; }
+.cat-item img { border-radius: 10px; }
+
+/* Carrusel y banners redondeados */
+#header-carousel .carousel-inner { border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.product-offer { border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.product-offer img { border-radius: 15px; }
+.carousel-caption { background: linear-gradient(to top, rgba(10, 46, 91, 0.8), rgba(10, 46, 91, 0.3)); border-radius: 15px; }
+
+/* Ajustes de menú y topbar */
+.btn.bg-primary[data-toggle="collapse"] { border-radius: 15px 15px 0 0 !important; }
+.navbar-dark .navbar-nav .nav-link { font-weight: 500; letter-spacing: 0.5px; }
+.navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .nav-link.active { color: var(--cart-orange); }
+a:hover { color: var(--cart-orange); text-decoration: none; }
+
+/* Buscador más moderno */
+.form-control { border-radius: 25px 0 0 25px !important; padding-left: 20px; }
+.input-group-text { border-radius: 0 25px 25px 0 !important; border-left: none; background: #fff; cursor: pointer; }
+

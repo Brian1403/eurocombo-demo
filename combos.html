@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Combos - EuroCombo Admin</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/logo-euro2.png" rel="icon" type="image/png">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- PWA / App Móvil -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0A2E5B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EuroAdmin">
+    <link rel="apple-touch-icon" href="img/logo-euro2.png">
+
+    <style>
+        :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; --light-bg: #F8F9FA; }
+        body { background-color: var(--light-bg); font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        .wrapper { display: flex; width: 100%; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 250px; background-color: var(--euro-blue); color: white; display: flex; flex-direction: column; transition: all 0.3s; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar-menu { padding-top: 20px; flex: 1; }
+        .menu-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; font-weight: 700; }
+        .sidebar a { padding: 12px 20px; font-size: 1rem; color: rgba(255, 255, 255, 0.8); display: block; text-decoration: none; transition: 0.3s; border-left: 4px solid transparent; }
+        .sidebar a:hover { color: white; background-color: rgba(255, 255, 255, 0.05); }
+        .sidebar a.active { color: white; background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--cart-orange); font-weight: 500; }
+        .sidebar a i { width: 25px; }
+        .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
+        
+        /* NAVBAR */
+        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        @media (max-width: 768px) { 
+            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
+        }
+        
+        /* TARJETA DE COMBO */
+        .combo-item-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; display: flex; align-items: stretch; overflow: hidden; padding: 15px; position: relative;}
+        .combo-item-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-left: 4px solid var(--euro-blue); }
+        .combo-item-admin.no-visible { opacity: 0.6; filter: grayscale(50%); border-left: 4px solid #999; }
+        .combo-item-admin.no-visible:hover { opacity: 0.9; filter: grayscale(0%); border-left: 4px solid var(--cart-orange); }
+
+        .combo-img-box { width: 100px; height: 100px; flex-shrink: 0; background: #eee; border-radius: 10px; overflow: hidden; position: relative;}
+        .combo-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .combo-info { flex-grow: 1; padding-left: 15px; display: flex; flex-direction: column; justify-content: center;}
+        .combo-actions { padding-left: 15px; display: flex; flex-direction: column; gap: 6px; border-left: 1px solid #eee; justify-content: center;}
+        
+        .badge-oferta { position: absolute; top: 15px; left: 15px; background: var(--cart-orange); color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 8px; border-radius: 5px; z-index: 2;}
+
+        /* LISTA DE CHECKBOXES */
+        .lista-productos-check { max-height: 180px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; background: #fdfdfd; }
+        .check-item { padding: 5px 0; border-bottom: 1px dashed #eee; display: flex; align-items: center; }
+        .check-item:last-child { border-bottom: none; }
+        .check-item input { margin-right: 10px; width: 16px; height: 16px; cursor: pointer; }
+        .check-item label { margin: 0; cursor: pointer; font-size: 0.9rem; flex-grow: 1; }
+
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        #previewContainer { margin-top: 15px; text-align: center; display: none; }
+        #imagePreview { max-width: 100%; height: 150px; object-fit: cover; border-radius: 10px; border: 2px dashed #ccc; padding: 5px; }
+        .file-input-wrapper { border: 2px dashed #d1d5db; border-radius: 10px; padding: 10px; text-align: center; background: #f9fafb; transition: 0.3s; }
+        .file-input-wrapper:hover { border-color: var(--cart-orange); background: #fff; }
+    </style>
+</head>
+
+<body>
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+        <h5 class="mt-3 font-weight-bold" style="color: var(--euro-blue);">Procesando Combo...</h5>
+    </div>
+
+    <div class="wrapper">
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-title">Principal</div>
+                <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                
+                <div class="menu-title mt-3">Gestión</div>
+                <a href="productos.html"><i class="fas fa-box"></i> Productos</a>
+                <a href="combos.html" class="active"><i class="fas fa-layer-group"></i> Combos</a>
+                <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="text-white-50 mb-1">Sesión iniciada como:</div>
+                <div class="font-weight-bold">Administrador</div>
+            </div>
+        </nav>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="main-content">
+            <header class="top-navbar">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm text-white d-md-none mr-3" id="sidebarToggle"><i class="fas fa-bars fa-lg"></i></button>
+                    <h5 class="m-0 font-weight-bold text-white d-none d-md-block">Gestión de Combos</h5>
+                </div>
+                <div>
+                    <div class="dropdown">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg mr-2"></i> Admin
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow border-0 mt-2" style="border-radius: 10px;">
+                            <a href="#" class="dropdown-item"><i class="fas fa-cog mr-2"></i> Configuración</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item text-danger" id="btnLogout"><i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <div>
+                        <h2 class="font-weight-bold mb-1" style="color: var(--euro-blue) !important;">Combos Familiares</h2>
+                        <p class="text-muted m-0">Agrupa productos y crea paquetes atractivos.</p>
+                    </div>
+                    <button class="btn shadow-sm" style="background-color: var(--cart-orange); color: white; font-weight: bold; border-radius: 25px; padding: 10px 20px;" data-toggle="modal" data-target="#modalCombo" id="btnNuevoCombo">
+                        <i class="fas fa-plus mr-2"></i> Nuevo Combo
+                    </button>
+                </div>
+                
+                <div class="row" id="contenedor-combos"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PRINCIPAL: NUEVO/EDITAR COMBO -->
+    <div class="modal fade" id="modalCombo" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title font-weight-bold" id="modalTitulo" style="color: var(--euro-blue);">Nuevo Combo</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body px-4">
+                    <form id="formCombo">
+                        <input type="hidden" id="comboId">
+                        
+                        <div class="row">
+                            <!-- NOMBRE Y PRECIO -->
+                            <div class="col-md-8 form-group">
+                                <label class="small font-weight-bold text-muted">NOMBRE DEL COMBO</label>
+                                <input type="text" id="comboNombre" class="form-control bg-light" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="Ej: Combo Fin de Semana">
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label class="small font-weight-bold text-muted">PRECIO TOTAL ($)</label>
+                                <input type="number" id="comboPrecio" step="0.01" class="form-control bg-light font-weight-bold text-success" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <!-- LISTA DE PRODUCTOS (CHECKBOXES) -->
+                        <div class="form-group">
+                            <label class="small font-weight-bold text-muted">SELECCIONA LOS PRODUCTOS INCLUIDOS</label>
+                            <div class="lista-productos-check" id="contenedorCheckboxes">
+                                <!-- Se llenará con JavaScript -->
+                                <div class="text-center text-muted small py-2">Cargando productos...</div>
+                            </div>
+                            <small class="text-muted d-block mt-1">Marca las casillas de los productos que forman parte de este combo.</small>
+                        </div>
+                        
+                        <!-- IMAGEN -->
+                        <div class="form-group mt-2">
+                            <label class="small font-weight-bold text-muted">FOTO DEL COMBO</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="comboImagen" class="form-control-file" accept="image/*" style="cursor: pointer;">
+                            </div>
+                            <div id="previewContainer">
+                                <img id="imagePreview" src="" alt="Previsualización">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" style="border-radius: 10px;" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn px-4" id="btnGuardar" style="background-color: var(--combo-green); color: white; border-radius: 10px; font-weight: bold;">Guardar Combo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MINI MODAL: PRECIO DE OFERTA -->
+    <div class="modal fade" id="modalOferta" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="modal-title font-weight-bold text-danger"><i class="fas fa-tags mr-2"></i>Activar Oferta</h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-2">Precio original: <strong id="lblPrecioOriginal"></strong></p>
+                    <input type="hidden" id="ofertaComboId">
+                    <div class="form-group m-0">
+                        <label class="small font-weight-bold">NUEVO PRECIO REBAJADO ($)</label>
+                        <input type="number" id="inputPrecioOferta" step="0.01" class="form-control font-weight-bold text-danger border-danger" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-sm btn-danger font-weight-bold" onclick="guardarOferta()">Aplicar Oferta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DETALLES DEL COMBO -->
+    <div class="modal fade" id="modalDetalles" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title font-weight-bold" style="color: var(--euro-blue);"><i class="fas fa-layer-group mr-2"></i>Contenido del Combo</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="p-3 text-center" style="background: #f8f9fa;">
+                        <img id="detallesImg" src="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <h4 id="detallesNombre" class="font-weight-bold mt-3 mb-1"></h4>
+                        <h5 id="detallesPrecio" class="text-success font-weight-bold m-0"></h5>
+                    </div>
+                    <div class="p-4">
+                        <h6 class="font-weight-bold text-muted mb-3 small border-bottom pb-2">PRODUCTOS INCLUIDOS:</h6>
+                        <ul id="detallesListaProductos" class="list-unstyled m-0" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Items llenados por JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const BUCKET_NAME = 'imagenes_combos'; 
+
+        // -----------------------------------------------------------------
+        // GUARDIÁN DE SEGURIDAD: COMPROBAR SI ESTÁ LOGUEADO
+        // -----------------------------------------------------------------
+        async function verificarSesion() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                // Si no hay sesión válida, lo patea al index.html
+                window.location.replace('login.html'); 
+            }
+        }
+        verificarSesion();
+        // -----------------------------------------------------------------
+
+        // Variable global para almacenar el catálogo de productos y buscar sus nombres después
+        let catalogoProductos = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // SIDEBAR MÓVIL
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            sidebarToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); });
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // LIMPIAR FORMULARIO
+            document.getElementById('btnNuevoCombo').addEventListener('click', () => {
+                document.getElementById('formCombo').reset();
+                document.getElementById('comboId').value = '';
+                document.getElementById('modalTitulo').innerText = 'Nuevo Combo';
+                document.getElementById('previewContainer').style.display = 'none';
+                document.getElementById('imagePreview').src = '';
+                // Desmarcar todos los checkboxes
+                document.querySelectorAll('.check-producto').forEach(chk => chk.checked = false);
+            });
+
+            // VISTA PREVIA IMAGEN
+            document.getElementById('comboImagen').addEventListener('change', function(e) {
+                const archivo = e.target.files[0];
+                if (archivo) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('imagePreview').src = e.target.result;
+                        document.getElementById('previewContainer').style.display = 'block';
+                    }
+                    reader.readAsDataURL(archivo);
+                } else {
+                    document.getElementById('previewContainer').style.display = 'none';
+                }
+            });
+
+            // 1. OBTENER PRODUCTOS PARA LOS CHECKBOXES
+            async function cargarListaProductosParaCheck() {
+                const contenedor = document.getElementById('contenedorCheckboxes');
+                const { data, error } = await supabaseClient.from('productos').select('id, nombre, precio').order('nombre');
+                
+                if (error || !data) {
+                    contenedor.innerHTML = '<div class="text-danger small p-2">Error cargando productos.</div>';
+                    return;
+                }
+                
+                catalogoProductos = data; // Guardamos en global para usarlo en "Ver Detalles"
+                contenedor.innerHTML = '';
+                
+                if(data.length === 0){
+                    contenedor.innerHTML = '<div class="text-muted small p-2">No tienes productos. Ve a crearlos primero.</div>';
+                    return;
+                }
+
+                data.forEach(prod => {
+                    contenedor.innerHTML += `
+                        <div class="check-item">
+                            <input type="checkbox" id="chk_prod_${prod.id}" class="check-producto" value="${prod.id}">
+                            <label for="chk_prod_${prod.id}">${prod.nombre} <span class="text-success small ml-1">($${prod.precio.toFixed(2)})</span></label>
+                        </div>
+                    `;
+                });
+            }
+
+            // GUARDAR COMBO
+            document.getElementById('btnGuardar').addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const id = document.getElementById('comboId').value;
+                const nombre = document.getElementById('comboNombre').value.trim();
+                const precio = document.getElementById('comboPrecio').value;
+                const archivo = document.getElementById('comboImagen').files[0];
+
+                // Extraer IDs de productos marcados
+                const checkboxesMarcados = document.querySelectorAll('.check-producto:checked');
+                const productosSeleccionados = Array.from(checkboxesMarcados).map(chk => parseInt(chk.value));
+
+                if (!nombre || !precio) return alert("Llena Nombre y Precio.");
+                if (productosSeleccionados.length === 0) return alert("Selecciona al menos 1 producto para este combo.");
+                if (!id && !archivo) return alert("Selecciona una foto para el nuevo combo.");
+
+                document.getElementById('loader').style.display = 'flex';
+                let imageUrl = null;
+
+                try {
+                    // SUBIR IMAGEN
+                    if (archivo) {
+                        const fileExt = archivo.name.split('.').pop();
+                        const fileName = `${Date.now()}_combo.${fileExt}`;
+                        const { error: upError } = await supabaseClient.storage.from(BUCKET_NAME).upload(fileName, archivo);
+                        if (upError) throw new Error("Fallo foto: " + upError.message);
+                        const { data: urlData } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
+                        imageUrl = urlData.publicUrl;
+                    }
+
+                    const datosCombo = {
+                        nombre: nombre,
+                        precio: parseFloat(precio),
+                        productos_ids: productosSeleccionados // Se guarda como JSON en Supabase
+                    };
+
+                    if (imageUrl) datosCombo.imagen_url = imageUrl;
+
+                    // GUARDAR DB
+                    if (id) {
+                        const { error } = await supabaseClient.from('combos').update(datosCombo).eq('id', id);
+                        if (error) throw new Error(error.message);
+                    } else {
+                        datosCombo.visible = true;
+                        datosCombo.en_oferta = false;
+                        const { error } = await supabaseClient.from('combos').insert([datosCombo]);
+                        if (error) throw new Error(error.message);
+                    }
+
+                    $('#modalCombo').modal('hide');
+                    cargarCombos();
+
+                } catch (err) {
+                    alert(err.message);
+                } finally {
+                    document.getElementById('loader').style.display = 'none';
+                }
+            });
+
+            // 2. CARGAR COMBOS EN PANTALLA
+            window.cargarCombos = async function() {
+                const contenedor = document.getElementById('contenedor-combos');
+                contenedor.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border text-primary"></div></div>';
+
+                const { data, error } = await supabaseClient.from('combos').select('*').order('created_at', { ascending: false });
+                
+                if (error) {
+                    contenedor.innerHTML = '<div class="text-danger text-center">Error DB. ¿Creaste la columna productos_ids como JSONB?</div>';
+                    return;
+                }
+                
+                contenedor.innerHTML = '';
+                if (data.length === 0) {
+                    contenedor.innerHTML = `<div class="col-12 text-center py-5"><i class="fas fa-layer-group" style="font-size: 50px; color: #ddd; margin-bottom: 15px;"></i><h4 class="text-muted">Aún no hay combos</h4></div>`;
+                    return;
+                }
+
+                data.forEach(combo => {
+                    const imageUrl = combo.imagen_url || 'https://via.placeholder.com/100';
+                    const nombreSafe = combo.nombre.replace(/'/g, "\\'");
+                    
+                    // Convertir el JSON de productos a string para pasarlo en la función
+                    const productosIdsString = JSON.stringify(combo.productos_ids || []);
+                    
+                    let precioHTML = `<h5 class="text-success font-weight-bold m-0 mb-1">$${combo.precio.toFixed(2)}</h5>`;
+                    let btnOfertaHTML = `<button class="btn btn-sm btn-light text-warning shadow-sm" style="border-radius: 8px;" onclick="abrirOferta(${combo.id}, ${combo.precio})" title="Poner en Oferta"><i class="fas fa-tag"></i></button>`;
+                    let badgeOfertaHTML = ``;
+
+                    if (combo.en_oferta) {
+                        precioHTML = `
+                            <h6 class="text-muted m-0" style="font-size: 0.85rem;"><del>$${combo.precio.toFixed(2)}</del></h6>
+                            <h5 class="text-danger font-weight-bold m-0 mb-1">$${combo.precio_oferta.toFixed(2)}</h5>`;
+                        btnOfertaHTML = `<button class="btn btn-sm btn-danger text-white shadow-sm" style="border-radius: 8px;" onclick="quitarOferta(${combo.id})" title="Quitar Oferta"><i class="fas fa-tag"></i></button>`;
+                        badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
+                    }
+
+                    let claseVisible = combo.visible ? "" : "no-visible";
+                    let btnVisibleHTML = combo.visible
+                        ? `<button class="btn btn-sm btn-light text-dark shadow-sm" style="border-radius: 8px; border: 1px solid #ddd;" onclick="toggleVisible(${combo.id}, false)"><i class="fas fa-eye" style="color: #343a40;"></i></button>`
+                        : `<button class="btn btn-sm btn-secondary text-white shadow-sm" style="border-radius: 8px;" onclick="toggleVisible(${combo.id}, true)"><i class="fas fa-eye-slash"></i></button>`;
+
+                    contenedor.innerHTML += `
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="combo-item-admin ${claseVisible}">
+                                ${badgeOfertaHTML}
+                                <div class="combo-img-box">
+                                    <img src="${imageUrl}" alt="img">
+                                </div>
+                                <div class="combo-info">
+                                    <h6 class="font-weight-bold m-0" style="font-size: 1.1rem; line-height: 1.1;">${combo.nombre}</h6>
+                                    <div class="mt-2">${precioHTML}</div>
+                                    <button class="btn btn-sm btn-outline-primary mt-2 shadow-none" style="border-radius: 20px; font-size: 0.75rem; font-weight: bold;" onclick='verDetalles("${nombreSafe}", ${combo.precio}, ${combo.en_oferta}, ${combo.precio_oferta || 0}, "${imageUrl}", ${productosIdsString})'>
+                                        <i class="fas fa-search-plus mr-1"></i> Ver Detalles
+                                    </button>
+                                </div>
+                                
+                                <div class="combo-actions">
+                                    <button class="btn btn-sm btn-light text-primary shadow-sm" style="border-radius: 8px;" onclick='prepararEditar(${combo.id}, "${nombreSafe}", ${combo.precio}, "${imageUrl}", ${productosIdsString})'><i class="fas fa-edit"></i></button>
+                                    ${btnOfertaHTML}
+                                    ${btnVisibleHTML}
+                                    <button class="btn btn-sm btn-light text-danger shadow-sm" style="border-radius: 8px;" onclick="eliminar(${combo.id})"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            // ABRIR MODAL DE DETALLES
+            window.verDetalles = function(nombre, precioBase, enOferta, precioOferta, imgUrl, productosIds) {
+                document.getElementById('detallesImg').src = imgUrl;
+                document.getElementById('detallesNombre').innerText = nombre;
+                
+                if(enOferta) {
+                    document.getElementById('detallesPrecio').innerHTML = `<del class="text-muted small">$${precioBase.toFixed(2)}</del> <span class="text-danger">$${precioOferta.toFixed(2)}</span>`;
+                } else {
+                    document.getElementById('detallesPrecio').innerHTML = `$${precioBase.toFixed(2)}`;
+                }
+
+                const listaUL = document.getElementById('detallesListaProductos');
+                listaUL.innerHTML = '';
+                
+                // Buscar nombres de productos en nuestro catálogo global
+                productosIds.forEach(id => {
+                    const prodInfo = catalogoProductos.find(p => p.id === id);
+                    if(prodInfo) {
+                        listaUL.innerHTML += `<li class="mb-2"><i class="fas fa-check text-success mr-2"></i> ${prodInfo.nombre}</li>`;
+                    } else {
+                        listaUL.innerHTML += `<li class="mb-2"><i class="fas fa-question text-warning mr-2"></i> Producto no encontrado (ID: ${id})</li>`;
+                    }
+                });
+
+                $('#modalDetalles').modal('show');
+            }
+
+            // VISIBILIDAD
+            window.toggleVisible = async function(id, estadoNuevo) {
+                document.getElementById('loader').style.display = 'flex';
+                await supabaseClient.from('combos').update({ visible: estadoNuevo }).eq('id', id);
+                document.getElementById('loader').style.display = 'none';
+                cargarCombos();
+            }
+
+            // OFERTAS
+            window.abrirOferta = function(id, precioOriginal) {
+                document.getElementById('ofertaComboId').value = id;
+                document.getElementById('lblPrecioOriginal').innerText = "$" + precioOriginal.toFixed(2);
+                document.getElementById('inputPrecioOferta').value = '';
+                $('#modalOferta').modal('show');
+            }
+            window.guardarOferta = async function() {
+                const id = document.getElementById('ofertaComboId').value;
+                const nuevoPrecio = parseFloat(document.getElementById('inputPrecioOferta').value);
+                if(!nuevoPrecio || nuevoPrecio <= 0) return alert("Escribe un precio válido.");
+                $('#modalOferta').modal('hide');
+                document.getElementById('loader').style.display = 'flex';
+                await supabaseClient.from('combos').update({ en_oferta: true, precio_oferta: nuevoPrecio }).eq('id', id);
+                document.getElementById('loader').style.display = 'none';
+                cargarCombos();
+            }
+            window.quitarOferta = async function(id) {
+                if(confirm("¿Quitar oferta y regresar a precio normal?")){
+                    document.getElementById('loader').style.display = 'flex';
+                    await supabaseClient.from('combos').update({ en_oferta: false, precio_oferta: null }).eq('id', id);
+                    document.getElementById('loader').style.display = 'none';
+                    cargarCombos();
+                }
+            }
+
+            // ELIMINAR
+            window.eliminar = async function(id) {
+                if (confirm("¿Seguro que deseas eliminar este combo?")) {
+                    document.getElementById('loader').style.display = 'flex';
+                    await supabaseClient.from('combos').delete().eq('id', id);
+                    document.getElementById('loader').style.display = 'none';
+                    cargarCombos();
+                }
+            }
+
+            // PREPARAR EDICIÓN
+            window.prepararEditar = function(id, nombre, precio, urlActual, productosIds) {
+                document.getElementById('formCombo').reset();
+                document.getElementById('comboId').value = id;
+                document.getElementById('comboNombre').value = nombre;
+                document.getElementById('comboPrecio').value = precio;
+                document.getElementById('modalTitulo').innerText = 'Editar Combo';
+                
+                // Marcar los checkboxes de los productos que ya tiene
+                document.querySelectorAll('.check-producto').forEach(chk => {
+                    chk.checked = productosIds.includes(parseInt(chk.value));
+                });
+                
+                if(urlActual && urlActual !== 'null') {
+                    document.getElementById('imagePreview').src = urlActual;
+                    document.getElementById('previewContainer').style.display = 'block';
+                } else {
+                    document.getElementById('previewContainer').style.display = 'none';
+                }
+                $('#modalCombo').modal('show');
+            }
+
+            // Arrancar todo
+            async function iniciar() {
+                await cargarListaProductosParaCheck(); // Carga catálogo global y llena los checkboxes
+                cargarCombos();                        // Carga las tarjetas de los combos
+            }
+            iniciar();
+        });
+
+        // CERRAR SESIÓN
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.replace('login.html');
+        });
+
+        // REGISTRO DE SERVICE WORKER PARA PWA (INSTALACIÓN EN MÓVIL)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((reg) => {
+                    console.log('PWA lista para instalarse.');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

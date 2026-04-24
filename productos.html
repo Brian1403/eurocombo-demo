@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Productos - EuroCombo Admin</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/logo-euro2.png" rel="icon" type="image/png">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- PWA / App Móvil -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0A2E5B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EuroAdmin">
+    <link rel="apple-touch-icon" href="img/logo-euro2.png">
+
+    <style>
+        :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; --light-bg: #F8F9FA; }
+        body { background-color: var(--light-bg); font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        .wrapper { display: flex; width: 100%; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 250px; background-color: var(--euro-blue); color: white; display: flex; flex-direction: column; transition: all 0.3s; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar-menu { padding-top: 20px; flex: 1; }
+        .menu-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; font-weight: 700; }
+        .sidebar a { padding: 12px 20px; font-size: 1rem; color: rgba(255, 255, 255, 0.8); display: block; text-decoration: none; transition: 0.3s; border-left: 4px solid transparent; }
+        .sidebar a:hover { color: white; background-color: rgba(255, 255, 255, 0.05); }
+        .sidebar a.active { color: white; background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--cart-orange); font-weight: 500; }
+        .sidebar a i { width: 25px; }
+        .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
+        
+        /* NAVBAR */
+        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        /* MÓVIL */
+        @media (max-width: 768px) { 
+            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
+        }
+        
+        /* TARJETA DE PRODUCTO */
+        .prod-item-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; display: flex; align-items: stretch; overflow: hidden; padding: 15px; position: relative;}
+        .prod-item-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-left: 4px solid var(--combo-green); }
+        
+        /* ESTADO OPACADO SI NO ES VISIBLE */
+        .prod-item-admin.no-visible { opacity: 0.6; filter: grayscale(50%); border-left: 4px solid #999; }
+        .prod-item-admin.no-visible:hover { opacity: 0.9; filter: grayscale(0%); border-left: 4px solid var(--cart-orange); }
+
+        .prod-img-box { width: 100px; height: 100px; flex-shrink: 0; background: #eee; border-radius: 10px; overflow: hidden; position: relative;}
+        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .prod-info { flex-grow: 1; padding-left: 15px; display: flex; flex-direction: column; justify-content: center;}
+        
+        /* BOTONES DERECHA */
+        .prod-actions { padding-left: 15px; display: flex; flex-direction: column; gap: 6px; border-left: 1px solid #eee; justify-content: center;}
+        
+        /* ETIQUETA OFERTA FLOTANTE */
+        .badge-oferta { position: absolute; top: 15px; left: 15px; background: var(--cart-orange); color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 8px; border-radius: 5px; z-index: 2;}
+
+        /* MISCELÁNEOS */
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        #previewContainer { margin-top: 15px; text-align: center; display: none; }
+        #imagePreview { max-width: 100%; height: 150px; object-fit: cover; border-radius: 10px; border: 2px dashed #ccc; padding: 5px; }
+        .file-input-wrapper { border: 2px dashed #d1d5db; border-radius: 10px; padding: 10px; text-align: center; background: #f9fafb; transition: 0.3s; }
+        .file-input-wrapper:hover { border-color: var(--cart-orange); background: #fff; }
+    </style>
+</head>
+
+<body>
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+        <h5 class="mt-3 font-weight-bold" style="color: var(--euro-blue);">Procesando...</h5>
+    </div>
+
+    <div class="wrapper">
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-title">Principal</div>
+                <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                
+                <div class="menu-title mt-3">Gestión</div>
+                <a href="productos.html" class="active"><i class="fas fa-box"></i> Productos</a>
+                <a href="combos.html"><i class="fas fa-layer-group"></i> Combos</a>
+                <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="text-white-50 mb-1">Sesión iniciada como:</div>
+                <div class="font-weight-bold">Administrador</div>
+            </div>
+        </nav>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="main-content">
+            <header class="top-navbar">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm text-white d-md-none mr-3" id="sidebarToggle"><i class="fas fa-bars fa-lg"></i></button>
+                    <h5 class="m-0 font-weight-bold text-white d-none d-md-block">Gestión de Productos</h5>
+                </div>
+                <div>
+                    <div class="dropdown">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg mr-2"></i> Admin
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow border-0 mt-2" style="border-radius: 10px;">
+                            <a href="#" class="dropdown-item"><i class="fas fa-cog mr-2"></i> Configuración</a>
+                            <div class="dropdown-divider"></div>
+                           <a href="#" class="dropdown-item text-danger" id="btnLogout"><i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <div>
+                        <h2 class="font-weight-bold mb-1" style="color: var(--euro-blue) !important;">Productos</h2>
+                        <p class="text-muted m-0">Administra el inventario y ofertas de tu tienda.</p>
+                    </div>
+                    <button class="btn shadow-sm" style="background-color: var(--cart-orange); color: white; font-weight: bold; border-radius: 25px; padding: 10px 20px;" data-toggle="modal" data-target="#modalProducto" id="btnNuevoProducto">
+                        <i class="fas fa-plus mr-2"></i> Nuevo Producto
+                    </button>
+                </div>
+                
+                <!-- CONTENEDOR DE PRODUCTOS -->
+                <div class="row" id="contenedor-productos"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PRINCIPAL: NUEVO/EDITAR PRODUCTO -->
+    <div class="modal fade" id="modalProducto" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title font-weight-bold" id="modalTitulo" style="color: var(--euro-blue);">Nuevo Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body px-4">
+                    <form id="formProducto">
+                        <input type="hidden" id="prodId">
+                        
+                        <div class="row">
+                            <!-- CATEGORIA -->
+                            <div class="col-md-12 form-group">
+                                <label class="small font-weight-bold text-muted">CATEGORÍA</label>
+                                <select id="prodCategoria" class="form-control bg-light font-weight-bold" style="border-radius: 10px; border: 1px solid #e0e0e0; color: var(--euro-blue);">
+                                    <option value="">Cargando categorías...</option>
+                                </select>
+                            </div>
+
+                            <!-- NOMBRE -->
+                            <div class="col-md-8 form-group">
+                                <label class="small font-weight-bold text-muted">NOMBRE DEL PRODUCTO</label>
+                                <input type="text" id="prodNombre" class="form-control bg-light" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="Ej: Pechuga de Pollo Premium">
+                            </div>
+                            
+                            <!-- PRECIO NORMAL -->
+                            <div class="col-md-4 form-group">
+                                <label class="small font-weight-bold text-muted">PRECIO BASE ($)</label>
+                                <input type="number" id="prodPrecio" step="0.01" class="form-control bg-light font-weight-bold text-success" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- FORMATO/PESO -->
+                            <div class="col-md-6 form-group">
+                                <label class="small font-weight-bold text-muted">FORMATO / PESO</label>
+                                <input type="text" id="prodFormato" class="form-control bg-light" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="Ej: Paquete 1kg, Caja 5lbs, Unidad">
+                            </div>
+
+                            <!-- MARCA -->
+                            <div class="col-md-6 form-group">
+                                <label class="small font-weight-bold text-muted">MARCA <span class="font-weight-normal text-black-50">(Opcional)</span></label>
+                                <input type="text" id="prodMarca" class="form-control bg-light" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="Ej: Rey, Valles, etc.">
+                            </div>
+                        </div>
+                        
+                        <!-- IMAGEN -->
+                        <div class="form-group mt-2">
+                            <label class="small font-weight-bold text-muted">FOTO DEL PRODUCTO</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="prodImagen" class="form-control-file" accept="image/*" style="cursor: pointer;">
+                            </div>
+                            <div id="previewContainer">
+                                <img id="imagePreview" src="" alt="Previsualización">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" style="border-radius: 10px;" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn px-4" id="btnGuardar" style="background-color: var(--combo-green); color: white; border-radius: 10px; font-weight: bold;">Guardar Producto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MINI MODAL: PRECIO DE OFERTA -->
+    <div class="modal fade" id="modalOferta" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="modal-title font-weight-bold text-danger"><i class="fas fa-tags mr-2"></i>Activar Oferta</h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-2">Precio original: <strong id="lblPrecioOriginal"></strong></p>
+                    <input type="hidden" id="ofertaProdId">
+                    <div class="form-group m-0">
+                        <label class="small font-weight-bold">NUEVO PRECIO REBAJADO ($)</label>
+                        <input type="number" id="inputPrecioOferta" step="0.01" class="form-control font-weight-bold text-danger border-danger" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-sm btn-danger font-weight-bold" onclick="guardarOferta()">Aplicar Oferta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // CONFIGURACIÓN SUPABASE
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const BUCKET_NAME = 'imagenes_productos'; 
+
+        // -----------------------------------------------------------------
+        // GUARDIÁN DE SEGURIDAD: COMPROBAR SI ESTÁ LOGUEADO
+        // -----------------------------------------------------------------
+        async function verificarSesion() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                // Si no hay sesión válida, lo patea al index.html
+                window.location.replace('login.html'); 
+            }
+        }
+        verificarSesion();
+        // -----------------------------------------------------------------
+
+        // Diccionario para almacenar los nombres de las categorías
+        let mapaCategorias = {}; 
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // SIDEBAR MÓVIL
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            sidebarToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); });
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // LIMPIAR AL CREAR NUEVO
+            document.getElementById('btnNuevoProducto').addEventListener('click', () => {
+                document.getElementById('formProducto').reset();
+                document.getElementById('prodId').value = '';
+                document.getElementById('modalTitulo').innerText = 'Nuevo Producto';
+                document.getElementById('previewContainer').style.display = 'none';
+                document.getElementById('imagePreview').src = '';
+            });
+
+            // VISTA PREVIA
+            document.getElementById('prodImagen').addEventListener('change', function(e) {
+                const archivo = e.target.files[0];
+                if (archivo) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('imagePreview').src = e.target.result;
+                        document.getElementById('previewContainer').style.display = 'block';
+                    }
+                    reader.readAsDataURL(archivo);
+                } else {
+                    document.getElementById('previewContainer').style.display = 'none';
+                }
+            });
+
+            // GUARDAR PRODUCTO
+            document.getElementById('btnGuardar').addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const id = document.getElementById('prodId').value;
+                const categoria_id = document.getElementById('prodCategoria').value;
+                const nombre = document.getElementById('prodNombre').value.trim();
+                const precio = document.getElementById('prodPrecio').value;
+                const formato = document.getElementById('prodFormato').value.trim();
+                const marca = document.getElementById('prodMarca').value.trim();
+                const archivo = document.getElementById('prodImagen').files[0];
+
+                if (!categoria_id) return alert("Selecciona una categoría.");
+                if (!nombre || !precio || !formato) return alert("Llena Nombre, Precio y Formato.");
+                if (!id && !archivo) return alert("Selecciona una foto para el nuevo producto.");
+
+                document.getElementById('loader').style.display = 'flex';
+                let imageUrl = null;
+
+                try {
+                    // SUBIR IMAGEN
+                    if (archivo) {
+                        const fileExt = archivo.name.split('.').pop();
+                        const fileName = `${Date.now()}_prod.${fileExt}`;
+                        const { error: upError } = await supabaseClient.storage.from(BUCKET_NAME).upload(fileName, archivo);
+                        if (upError) throw new Error("Fallo foto: " + upError.message);
+                        const { data: urlData } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
+                        imageUrl = urlData.publicUrl;
+                    }
+
+                    const datosProducto = {
+                        categoria_id: parseInt(categoria_id),
+                        nombre: nombre,
+                        precio: parseFloat(precio),
+                        formato: formato,
+                        marca: marca || null
+                    };
+
+                    if (imageUrl) datosProducto.imagen_url = imageUrl;
+
+                    // GUARDAR DB
+                    if (id) {
+                        const { error } = await supabaseClient.from('productos').update(datosProducto).eq('id', id);
+                        if (error) throw new Error(error.message);
+                    } else {
+                        // Al crear, visible = true y en_oferta = false se asume por defecto en DB, pero lo forzamos por si acaso
+                        datosProducto.visible = true;
+                        datosProducto.en_oferta = false;
+                        const { error } = await supabaseClient.from('productos').insert([datosProducto]);
+                        if (error) throw new Error(error.message);
+                    }
+
+                    $('#modalProducto').modal('hide');
+                    cargarProductos();
+
+                } catch (err) {
+                    alert(err.message);
+                } finally {
+                    document.getElementById('loader').style.display = 'none';
+                }
+            });
+
+            // 1. CARGAR SELECT DE CATEGORÍAS
+            async function cargarSelectCategorias() {
+                const select = document.getElementById('prodCategoria');
+                const { data, error } = await supabaseClient.from('categorias').select('id, nombre').order('nombre');
+                
+                if (error) {
+                    select.innerHTML = '<option value="">Error cargando categorías</option>';
+                    return;
+                }
+                
+                if(data.length === 0){
+                    select.innerHTML = '<option value="">Crea una categoría primero</option>';
+                    return;
+                }
+
+                select.innerHTML = '<option value="">-- Selecciona una categoría --</option>';
+                data.forEach(cat => {
+                    mapaCategorias[cat.id] = cat.nombre; // Guardamos en el diccionario
+                    select.innerHTML += `<option value="${cat.id}">${cat.nombre}</option>`;
+                });
+            }
+
+            // 2. CARGAR PRODUCTOS
+            window.cargarProductos = async function() {
+                const contenedor = document.getElementById('contenedor-productos');
+                contenedor.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border text-primary"></div></div>';
+
+                const { data, error } = await supabaseClient.from('productos').select('*').order('created_at', { ascending: false });
+                
+                if (error) {
+                    contenedor.innerHTML = '<div class="text-danger text-center">Error DB. Verifica que creaste todas las columnas (visible, en_oferta, etc).</div>';
+                    return;
+                }
+                
+                contenedor.innerHTML = '';
+                if (data.length === 0) {
+                    contenedor.innerHTML = `<div class="col-12 text-center py-5"><i class="fas fa-box-open" style="font-size: 50px; color: #ddd; margin-bottom: 15px;"></i><h4 class="text-muted">Aún no hay productos</h4></div>`;
+                    return;
+                }
+
+                data.forEach(prod => {
+                    const imageUrl = prod.imagen_url || 'https://via.placeholder.com/100';
+                    const catName = mapaCategorias[prod.categoria_id] || 'Sin categoría';
+                    
+                    // ESCAPAR TEXTOS
+                    const nombreSafe = prod.nombre.replace(/'/g, "\\'");
+                    const formatoSafe = prod.formato ? prod.formato.replace(/'/g, "\\'") : '';
+                    const marcaSafe = prod.marca ? prod.marca.replace(/'/g, "\\'") : '';
+                    
+                   // LÓGICA DE PRECIO Y OFERTA
+let precioHTML = `<h5 class="text-success font-weight-bold m-0 mb-1">$${prod.precio.toFixed(2)}</h5>`;
+let btnOfertaHTML = `<button class="btn btn-sm btn-light text-warning shadow-sm" style="border-radius: 8px;" onclick="abrirOferta(${prod.id}, ${prod.precio})" title="Poner en Oferta"><i class="fas fa-tag"></i></button>`;
+let badgeOfertaHTML = ``;
+
+if (prod.en_oferta) {
+    precioHTML = `
+        <h6 class="text-muted m-0" style="font-size: 0.85rem;"><del>$${prod.precio.toFixed(2)}</del></h6>
+        <h5 class="text-danger font-weight-bold m-0 mb-1">$${prod.precio_oferta.toFixed(2)}</h5>`;
+    btnOfertaHTML = `<button class="btn btn-sm btn-danger text-white shadow-sm" style="border-radius: 8px;" onclick="quitarOferta(${prod.id})" title="Quitar Oferta"><i class="fas fa-tag"></i></button>`;
+    badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
+}
+
+// LÓGICA DE VISIBILIDAD
+let claseVisible = prod.visible ? "" : "no-visible";
+let btnVisibleHTML = prod.visible
+    ? `<button class="btn btn-sm btn-light text-dark shadow-sm" style="border-radius: 8px; border: 1px solid #ddd;" onclick="toggleVisible(${prod.id}, false)" title="Ocultar al cliente"><i class="fas fa-eye" style="color: #343a40;"></i></button>`
+    : `<button class="btn btn-sm btn-secondary text-white shadow-sm" style="border-radius: 8px;" onclick="toggleVisible(${prod.id}, true)" title="Mostrar al cliente"><i class="fas fa-eye-slash"></i></button>`;
+
+                    contenedor.innerHTML += `
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="prod-item-admin ${claseVisible}">
+                                ${badgeOfertaHTML}
+                                <div class="prod-img-box">
+                                    <img src="${imageUrl}" alt="img">
+                                </div>
+                                <div class="prod-info">
+                                    <small class="text-primary font-weight-bold" style="font-size: 0.7rem; text-transform: uppercase;">${catName}</small>
+                                    <h6 class="font-weight-bold m-0 mt-1" style="font-size: 1.05rem; line-height: 1.1;">${prod.nombre}</h6>
+                                    
+                                    <div class="mt-2">${precioHTML}</div>
+                                    
+                                    <div class="small text-muted mt-1">
+                                        <i class="fas fa-box text-black-50 mr-1"></i> ${prod.formato}
+                                    </div>
+                                    ${prod.marca ? `<div class="small text-muted mt-1"><i class="fas fa-check-circle text-black-50 mr-1"></i> ${prod.marca}</div>` : ''}
+                                </div>
+                                
+                                <div class="prod-actions">
+                                    <button class="btn btn-sm btn-light text-primary" onclick="prepararEditar(${prod.id}, ${prod.categoria_id}, '${nombreSafe}', ${prod.precio}, '${formatoSafe}', '${marcaSafe}', '${imageUrl}')" title="Editar Info"><i class="fas fa-edit"></i></button>
+                                    ${btnOfertaHTML}
+                                    ${btnVisibleHTML}
+                                    <button class="btn btn-sm btn-light text-danger" onclick="eliminar(${prod.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            // 3. FUNCIONES DE INTERACCIÓN DIRECTA EN LA TARJETA
+            
+            // VISIBILIDAD (Ojo)
+            window.toggleVisible = async function(id, estadoNuevo) {
+                document.getElementById('loader').style.display = 'flex';
+                await supabaseClient.from('productos').update({ visible: estadoNuevo }).eq('id', id);
+                document.getElementById('loader').style.display = 'none';
+                cargarProductos();
+            }
+
+            // ABRIR MODAL PARA PONER OFERTA (Etiqueta amarilla)
+            window.abrirOferta = function(id, precioOriginal) {
+                document.getElementById('ofertaProdId').value = id;
+                document.getElementById('lblPrecioOriginal').innerText = "$" + precioOriginal.toFixed(2);
+                document.getElementById('inputPrecioOferta').value = '';
+                $('#modalOferta').modal('show');
+            }
+
+            // GUARDAR OFERTA DESDE EL MODAL PEQUEÑO
+            window.guardarOferta = async function() {
+                const id = document.getElementById('ofertaProdId').value;
+                const nuevoPrecio = parseFloat(document.getElementById('inputPrecioOferta').value);
+                
+                if(!nuevoPrecio || nuevoPrecio <= 0) return alert("Escribe un precio válido.");
+
+                $('#modalOferta').modal('hide');
+                document.getElementById('loader').style.display = 'flex';
+                await supabaseClient.from('productos').update({ en_oferta: true, precio_oferta: nuevoPrecio }).eq('id', id);
+                document.getElementById('loader').style.display = 'none';
+                cargarProductos();
+            }
+
+            // QUITAR OFERTA (Etiqueta roja)
+            window.quitarOferta = async function(id) {
+                if(confirm("¿Quitar este producto de oferta y regresar a precio normal?")){
+                    document.getElementById('loader').style.display = 'flex';
+                    // Al quitar oferta, ponemos en_oferta falso y borramos el precio de rebaja
+                    await supabaseClient.from('productos').update({ en_oferta: false, precio_oferta: null }).eq('id', id);
+                    document.getElementById('loader').style.display = 'none';
+                    cargarProductos();
+                }
+            }
+
+            // ELIMINAR
+            window.eliminar = async function(id) {
+                if (confirm("¿Seguro que deseas eliminar este producto permanentemente?")) {
+                    document.getElementById('loader').style.display = 'flex';
+                    await supabaseClient.from('productos').delete().eq('id', id);
+                    document.getElementById('loader').style.display = 'none';
+                    cargarProductos();
+                }
+            }
+
+            // PREPARAR EDICIÓN GENERAL
+            window.prepararEditar = function(id, catId, nombre, precio, formato, marca, urlActual) {
+                document.getElementById('formProducto').reset();
+                
+                document.getElementById('prodId').value = id;
+                document.getElementById('prodCategoria').value = catId;
+                document.getElementById('prodNombre').value = nombre;
+                document.getElementById('prodPrecio').value = precio;
+                document.getElementById('prodFormato').value = formato;
+                document.getElementById('prodMarca').value = marca;
+                
+                document.getElementById('modalTitulo').innerText = 'Editar Producto';
+                
+                if(urlActual && urlActual !== 'null') {
+                    document.getElementById('imagePreview').src = urlActual;
+                    document.getElementById('previewContainer').style.display = 'block';
+                } else {
+                    document.getElementById('previewContainer').style.display = 'none';
+                }
+                
+                $('#modalProducto').modal('show');
+            }
+
+            // Arrancar todo secuencialmente
+            async function iniciar() {
+                await cargarSelectCategorias(); // Primero cargamos las categorías para que exista el "Mapa" de nombres
+                cargarProductos();              // Luego dibujamos los productos
+            }
+            iniciar();
+        });
+
+        // CERRAR SESIÓN
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.replace('login.html');
+        });
+
+        // REGISTRO DE SERVICE WORKER PARA PWA (INSTALACIÓN EN MÓVIL)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((reg) => {
+                    console.log('PWA lista para instalarse.');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

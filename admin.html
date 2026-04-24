@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Admin - EuroCombo Dashboard</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/logo-euro2.png" rel="icon" type="image/png">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- PWA / App Móvil -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0A2E5B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EuroAdmin">
+    <link rel="apple-touch-icon" href="img/logo-euro2.png">
+
+    <style>
+        :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; --light-bg: #F8F9FA; }
+        body { background-color: var(--light-bg); font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        .wrapper { display: flex; width: 100%; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 250px; background-color: var(--euro-blue); color: white; display: flex; flex-direction: column; transition: all 0.3s; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar-menu { padding-top: 20px; flex: 1; }
+        .menu-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; font-weight: 700; }
+        .sidebar a { padding: 12px 20px; font-size: 1rem; color: rgba(255, 255, 255, 0.8); display: block; text-decoration: none; transition: 0.3s; border-left: 4px solid transparent; }
+        .sidebar a:hover { color: white; background-color: rgba(255, 255, 255, 0.05); }
+        .sidebar a.active { color: white; background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--cart-orange); font-weight: 500; }
+        .sidebar a i { width: 25px; }
+        .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
+        
+        /* NAVBAR Y CONTENIDO */
+        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        /* RESPONSIVE MÓVIL */
+        @media (max-width: 768px) { 
+            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
+        }
+
+        /* TARJETAS DE ESTADÍSTICAS */
+        .stat-card { background-color: #fff; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column;}
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-bottom: 4px solid var(--combo-green); }
+        .stat-title { color: var(--combo-green); font-weight: 700; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; margin-bottom: 15px; }
+        .stat-number { color: var(--cart-orange); font-size: 2.8rem; font-weight: 700; margin-bottom: 15px; flex-grow: 1; }
+        .stat-link { color: var(--euro-blue); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: 0.3s; margin-top: auto;}
+        .stat-link:hover { color: var(--cart-orange); text-decoration: none; padding-left: 5px;}
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-title">Principal</div>
+                <a href="admin.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+                <div class="menu-title mt-3">Gestión</div>
+                <!-- ENLACES ACTUALIZADOS -->
+                <a href="productos.html"><i class="fas fa-box"></i> Productos</a>
+                <a href="combos.html"><i class="fas fa-layer-group"></i> Combos</a>
+                <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="text-white-50 mb-1">Sesión iniciada como:</div>
+                <div class="font-weight-bold">Administrador</div>
+            </div>
+        </nav>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="main-content">
+            <!-- TOP NAVBAR -->
+            <header class="top-navbar">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm text-white d-md-none mr-3" id="sidebarToggle">
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                    <h5 class="m-0 font-weight-bold text-white d-none d-md-block">Panel de Administración</h5>
+                </div>
+                <div>
+                    <div class="dropdown">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg mr-2"></i> Admin
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow border-0 mt-2" style="border-radius: 10px;">
+                            <a href="#" class="dropdown-item"><i class="fas fa-cog mr-2"></i> Configuración</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item text-danger" id="btnLogout"><i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4 p-md-5">
+                <h2 class="font-weight-bold mb-2" style="color: var(--euro-blue) !important;">Visión General</h2>
+                <p class="text-muted mb-4">Bienvenido al panel de administración de EuroCombo. Desde aquí podrás gestionar tu catálogo y categorías.</p>
+
+                <div class="row">
+                    <!-- PRODUCTOS -->
+                    <div class="col-md-4 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-title">PRODUCTOS ACTIVOS</div>
+                            <div class="stat-number" id="count-productos">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="color: var(--cart-orange);"></span>
+                            </div>
+                            <a href="productos.html" class="stat-link">Gestionar Productos <i class="fas fa-arrow-right ml-1"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- COMBOS -->
+                    <div class="col-md-4 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-title">COMBOS FAMILIARES</div>
+                            <div class="stat-number" id="count-combos">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="color: var(--cart-orange);"></span>
+                            </div>
+                            <a href="combos.html" class="stat-link">Gestionar Combos <i class="fas fa-arrow-right ml-1"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORÍAS -->
+                    <div class="col-md-4 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-title">TOTAL CATEGORÍAS</div>
+                            <div class="stat-number" id="count-categorias">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="color: var(--cart-orange);"></span>
+                            </div>
+                            <a href="categorias.html" class="stat-link">Gestionar Categorías <i class="fas fa-arrow-right ml-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // CONFIGURACIÓN SUPABASE
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // -----------------------------------------------------------------
+        // GUARDIÁN DE SEGURIDAD: COMPROBAR SI ESTÁ LOGUEADO
+        // -----------------------------------------------------------------
+        async function verificarSesion() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                // Si no hay sesión válida, lo patea al index.html
+                window.location.replace('login.html'); 
+            }
+        }
+        verificarSesion();
+        // -----------------------------------------------------------------
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. LÓGICA DEL SIDEBAR MÓVIL Y CLIC FUERA
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+
+            sidebarToggle.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                sidebar.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    if (sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+                        sidebar.classList.remove('active');
+                    }
+                }
+            });
+
+            // 2. FUNCIÓN PARA CONTAR ELEMENTOS EN CUALQUIER TABLA
+            async function actualizarConteo(tabla, idElemento) {
+                const { count, error } = await supabaseClient
+                    .from(tabla)
+                    .select('*', { count: 'exact', head: true }); // head:true hace que no descargue los datos, solo el número (es más rápido)
+
+                const divConteo = document.getElementById(idElemento);
+
+                if (error) {
+                    console.error(`Error al contar en ${tabla}:`, error);
+                    divConteo.innerHTML = '<span style="font-size: 1.5rem; color: red;">Error</span>';
+                } else {
+                    divConteo.innerText = count || 0; // Si no hay nada, pone 0
+                }
+            }
+
+            // 3. EJECUTAR LOS 3 CONTEOS AL MISMO TIEMPO
+            function cargarTodosLosConteos() {
+                actualizarConteo('productos', 'count-productos');
+                actualizarConteo('combos', 'count-combos');
+                actualizarConteo('categorias', 'count-categorias');
+            }
+
+            cargarTodosLosConteos();
+        });
+
+
+        // CERRAR SESIÓN
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.replace('login.html');
+        });
+
+        // REGISTRO DE SERVICE WORKER PARA PWA (INSTALACIÓN EN MÓVIL)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((reg) => {
+                    console.log('PWA lista para instalarse.');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
