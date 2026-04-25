@@ -11,13 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-    <!-- PWA / App Móvil -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0A2E5B">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="EuroAdmin">
-    <link rel="apple-touch-icon" href="img/logo-euro2.png">
 
     <style>
         :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; --light-bg: #F8F9FA; }
@@ -44,7 +37,7 @@
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
         }
         
-        /* TARJETA DE COMBO */
+        /* TARJETA COMBO */
         .combo-item-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; display: flex; align-items: stretch; overflow: hidden; padding: 15px; position: relative;}
         .combo-item-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-left: 4px solid var(--euro-blue); }
         .combo-item-admin.no-visible { opacity: 0.6; filter: grayscale(50%); border-left: 4px solid #999; }
@@ -57,12 +50,17 @@
         
         .badge-oferta { position: absolute; top: 15px; left: 15px; background: var(--cart-orange); color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 8px; border-radius: 5px; z-index: 2;}
 
-        /* LISTA DE CHECKBOXES */
-        .lista-productos-check { max-height: 180px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; background: #fdfdfd; }
-        .check-item { padding: 5px 0; border-bottom: 1px dashed #eee; display: flex; align-items: center; }
+        /* CHECKBOX Y CANTIDAD */
+        .lista-productos-check { max-height: 220px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; background: #fdfdfd; }
+        .check-item { padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center; }
         .check-item:last-child { border-bottom: none; }
-        .check-item input { margin-right: 10px; width: 16px; height: 16px; cursor: pointer; }
-        .check-item label { margin: 0; cursor: pointer; font-size: 0.9rem; flex-grow: 1; }
+        .check-item-left { display: flex; align-items: center; flex-grow: 1; }
+        .check-item input[type="checkbox"] { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; }
+        .check-item label { margin: 0; cursor: pointer; font-size: 0.9rem; }
+        
+        /* CAJITA DE CANTIDAD */
+        .qty-box { display: none; align-items: center; gap: 5px; }
+        .qty-box input { width: 60px; text-align: center; font-weight: bold; }
 
         #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         #previewContainer { margin-top: 15px; text-align: center; display: none; }
@@ -73,14 +71,12 @@
 </head>
 
 <body>
-    <!-- LOADER -->
     <div id="loader">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
         <h5 class="mt-3 font-weight-bold" style="color: var(--euro-blue);">Procesando Combo...</h5>
     </div>
 
     <div class="wrapper">
-        <!-- SIDEBAR -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
@@ -102,7 +98,6 @@
             </div>
         </nav>
 
-        <!-- CONTENIDO PRINCIPAL -->
         <div class="main-content">
             <header class="top-navbar">
                 <div class="d-flex align-items-center">
@@ -139,7 +134,7 @@
         </div>
     </div>
 
-    <!-- MODAL PRINCIPAL: NUEVO/EDITAR COMBO -->
+    <!-- MODAL PRINCIPAL -->
     <div class="modal fade" id="modalCombo" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content" style="border-radius: 15px;">
@@ -152,7 +147,6 @@
                         <input type="hidden" id="comboId">
                         
                         <div class="row">
-                            <!-- NOMBRE Y PRECIO -->
                             <div class="col-md-8 form-group">
                                 <label class="small font-weight-bold text-muted">NOMBRE DEL COMBO</label>
                                 <input type="text" id="comboNombre" class="form-control bg-light" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="Ej: Combo Fin de Semana">
@@ -163,14 +157,13 @@
                             </div>
                         </div>
 
-                        <!-- LISTA DE PRODUCTOS (CHECKBOXES) -->
+                        <!-- LISTA DE PRODUCTOS Y CANTIDADES -->
                         <div class="form-group">
                             <label class="small font-weight-bold text-muted">SELECCIONA LOS PRODUCTOS INCLUIDOS</label>
                             <div class="lista-productos-check" id="contenedorCheckboxes">
-                                <!-- Se llenará con JavaScript -->
                                 <div class="text-center text-muted small py-2">Cargando productos...</div>
                             </div>
-                            <small class="text-muted d-block mt-1">Marca las casillas de los productos que forman parte de este combo.</small>
+                            <small class="text-muted d-block mt-1">Marca la casilla y elige la cantidad de unidades por producto.</small>
                         </div>
                         
                         <!-- IMAGEN -->
@@ -193,7 +186,7 @@
         </div>
     </div>
 
-    <!-- MINI MODAL: PRECIO DE OFERTA -->
+    <!-- MINI MODAL OFERTA -->
     <div class="modal fade" id="modalOferta" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content" style="border-radius: 15px;">
@@ -217,7 +210,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE DETALLES DEL COMBO -->
+    <!-- MODAL DE DETALLES -->
     <div class="modal fade" id="modalDetalles" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
@@ -234,7 +227,7 @@
                     <div class="p-4">
                         <h6 class="font-weight-bold text-muted mb-3 small border-bottom pb-2">PRODUCTOS INCLUIDOS:</h6>
                         <ul id="detallesListaProductos" class="list-unstyled m-0" style="max-height: 200px; overflow-y: auto;">
-                            <!-- Items llenados por JS -->
+                            <!-- Llenado por JS -->
                         </ul>
                     </div>
                 </div>
@@ -254,24 +247,25 @@
         const BUCKET_NAME = 'imagenes_combos'; 
 
         // -----------------------------------------------------------------
-        // GUARDIÁN DE SEGURIDAD: COMPROBAR SI ESTÁ LOGUEADO
+        // GUARDIÁN DE SEGURIDAD
         // -----------------------------------------------------------------
         async function verificarSesion() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) {
-                // Si no hay sesión válida, lo patea al index.html
-                window.location.replace('login.html'); 
-            }
+            if (!session) { window.location.replace('login.html'); }
         }
         verificarSesion();
-        // -----------------------------------------------------------------
 
-        // Variable global para almacenar el catálogo de productos y buscar sus nombres después
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.replace('login.html'); 
+        });
+
         let catalogoProductos = [];
 
         document.addEventListener('DOMContentLoaded', () => {
 
-            // SIDEBAR MÓVIL
+            // SIDEBAR Y COMPORTAMIENTO MÓVIL
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             sidebarToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); });
@@ -281,15 +275,18 @@
                 }
             });
 
-            // LIMPIAR FORMULARIO
+            // LIMPIAR AL CREAR NUEVO
             document.getElementById('btnNuevoCombo').addEventListener('click', () => {
                 document.getElementById('formCombo').reset();
                 document.getElementById('comboId').value = '';
                 document.getElementById('modalTitulo').innerText = 'Nuevo Combo';
                 document.getElementById('previewContainer').style.display = 'none';
                 document.getElementById('imagePreview').src = '';
-                // Desmarcar todos los checkboxes
+                
+                // Limpiar checkboxes y esconder/resetear cantidades
                 document.querySelectorAll('.check-producto').forEach(chk => chk.checked = false);
+                document.querySelectorAll('.qty-box').forEach(box => box.style.display = 'none');
+                document.querySelectorAll('.input-qty').forEach(inp => inp.value = 1);
             });
 
             // VISTA PREVIA IMAGEN
@@ -307,7 +304,7 @@
                 }
             });
 
-            // 1. OBTENER PRODUCTOS PARA LOS CHECKBOXES
+            // 1. CARGAR LISTA DE PRODUCTOS CON CAMPO DE CANTIDAD
             async function cargarListaProductosParaCheck() {
                 const contenedor = document.getElementById('contenedorCheckboxes');
                 const { data, error } = await supabaseClient.from('productos').select('id, nombre, precio').order('nombre');
@@ -317,25 +314,44 @@
                     return;
                 }
                 
-                catalogoProductos = data; // Guardamos en global para usarlo en "Ver Detalles"
+                catalogoProductos = data; 
                 contenedor.innerHTML = '';
                 
                 if(data.length === 0){
-                    contenedor.innerHTML = '<div class="text-muted small p-2">No tienes productos. Ve a crearlos primero.</div>';
+                    contenedor.innerHTML = '<div class="text-muted small p-2">No tienes productos.</div>';
                     return;
                 }
 
                 data.forEach(prod => {
+                    // Diseño que incluye Checkbox + Campo de cantidad oculto por defecto
                     contenedor.innerHTML += `
                         <div class="check-item">
-                            <input type="checkbox" id="chk_prod_${prod.id}" class="check-producto" value="${prod.id}">
-                            <label for="chk_prod_${prod.id}">${prod.nombre} <span class="text-success small ml-1">($${prod.precio.toFixed(2)})</span></label>
+                            <div class="check-item-left">
+                                <input type="checkbox" id="chk_prod_${prod.id}" class="check-producto" value="${prod.id}" onchange="toggleCantidad(${prod.id})">
+                                <label for="chk_prod_${prod.id}">${prod.nombre} <span class="text-success small ml-1">($${prod.precio.toFixed(2)})</span></label>
+                            </div>
+                            <div class="qty-box" id="box_qty_${prod.id}">
+                                <label class="small text-muted mb-0 mr-1">Cant:</label>
+                                <input type="number" id="input_qty_${prod.id}" class="form-control form-control-sm input-qty" value="1" min="1">
+                            </div>
                         </div>
                     `;
                 });
             }
 
-            // GUARDAR COMBO
+            // FUNCIÓN GLOBAL PARA MOSTRAR/OCULTAR CAJITA DE CANTIDAD AL MARCAR EL CHECKBOX
+            window.toggleCantidad = function(id) {
+                const checkBox = document.getElementById(`chk_prod_${id}`);
+                const qtyBox = document.getElementById(`box_qty_${id}`);
+                if(checkBox.checked) {
+                    qtyBox.style.display = 'flex';
+                } else {
+                    qtyBox.style.display = 'none';
+                    document.getElementById(`input_qty_${id}`).value = 1; // Resetear
+                }
+            }
+
+            // GUARDAR COMBO CON CANTIDADES
             document.getElementById('btnGuardar').addEventListener('click', async (e) => {
                 e.preventDefault();
                 
@@ -344,19 +360,24 @@
                 const precio = document.getElementById('comboPrecio').value;
                 const archivo = document.getElementById('comboImagen').files[0];
 
-                // Extraer IDs de productos marcados
+                // Extraer productos y cantidades
                 const checkboxesMarcados = document.querySelectorAll('.check-producto:checked');
-                const productosSeleccionados = Array.from(checkboxesMarcados).map(chk => parseInt(chk.value));
+                
+                // CREAMOS UN ARRAY DE OBJETOS: [{id: 1, cantidad: 2}, {id: 3, cantidad: 1}]
+                const productosConCantidades = Array.from(checkboxesMarcados).map(chk => {
+                    const prodId = parseInt(chk.value);
+                    const prodQty = parseInt(document.getElementById(`input_qty_${prodId}`).value) || 1;
+                    return { id: prodId, cantidad: prodQty };
+                });
 
                 if (!nombre || !precio) return alert("Llena Nombre y Precio.");
-                if (productosSeleccionados.length === 0) return alert("Selecciona al menos 1 producto para este combo.");
-                if (!id && !archivo) return alert("Selecciona una foto para el nuevo combo.");
+                if (productosConCantidades.length === 0) return alert("Selecciona al menos 1 producto para este combo.");
+                if (!id && !archivo) return alert("Selecciona una foto para el combo.");
 
                 document.getElementById('loader').style.display = 'flex';
                 let imageUrl = null;
 
                 try {
-                    // SUBIR IMAGEN
                     if (archivo) {
                         const fileExt = archivo.name.split('.').pop();
                         const fileName = `${Date.now()}_combo.${fileExt}`;
@@ -369,12 +390,11 @@
                     const datosCombo = {
                         nombre: nombre,
                         precio: parseFloat(precio),
-                        productos_ids: productosSeleccionados // Se guarda como JSON en Supabase
+                        productos_ids: productosConCantidades // Guardamos la nueva estructura JSON
                     };
 
                     if (imageUrl) datosCombo.imagen_url = imageUrl;
 
-                    // GUARDAR DB
                     if (id) {
                         const { error } = await supabaseClient.from('combos').update(datosCombo).eq('id', id);
                         if (error) throw new Error(error.message);
@@ -395,7 +415,7 @@
                 }
             });
 
-            // 2. CARGAR COMBOS EN PANTALLA
+            // 2. CARGAR COMBOS
             window.cargarCombos = async function() {
                 const contenedor = document.getElementById('contenedor-combos');
                 contenedor.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border text-primary"></div></div>';
@@ -403,7 +423,7 @@
                 const { data, error } = await supabaseClient.from('combos').select('*').order('created_at', { ascending: false });
                 
                 if (error) {
-                    contenedor.innerHTML = '<div class="text-danger text-center">Error DB. ¿Creaste la columna productos_ids como JSONB?</div>';
+                    contenedor.innerHTML = '<div class="text-danger text-center">Error DB. Verifica columnas.</div>';
                     return;
                 }
                 
@@ -417,8 +437,8 @@
                     const imageUrl = combo.imagen_url || 'https://via.placeholder.com/100';
                     const nombreSafe = combo.nombre.replace(/'/g, "\\'");
                     
-                    // Convertir el JSON de productos a string para pasarlo en la función
-                    const productosIdsString = JSON.stringify(combo.productos_ids || []);
+                    // Pasar la data como string
+                    const dataString = JSON.stringify(combo.productos_ids || []);
                     
                     let precioHTML = `<h5 class="text-success font-weight-bold m-0 mb-1">$${combo.precio.toFixed(2)}</h5>`;
                     let btnOfertaHTML = `<button class="btn btn-sm btn-light text-warning shadow-sm" style="border-radius: 8px;" onclick="abrirOferta(${combo.id}, ${combo.precio})" title="Poner en Oferta"><i class="fas fa-tag"></i></button>`;
@@ -441,19 +461,16 @@
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="combo-item-admin ${claseVisible}">
                                 ${badgeOfertaHTML}
-                                <div class="combo-img-box">
-                                    <img src="${imageUrl}" alt="img">
-                                </div>
+                                <div class="combo-img-box"><img src="${imageUrl}" alt="img"></div>
                                 <div class="combo-info">
                                     <h6 class="font-weight-bold m-0" style="font-size: 1.1rem; line-height: 1.1;">${combo.nombre}</h6>
                                     <div class="mt-2">${precioHTML}</div>
-                                    <button class="btn btn-sm btn-outline-primary mt-2 shadow-none" style="border-radius: 20px; font-size: 0.75rem; font-weight: bold;" onclick='verDetalles("${nombreSafe}", ${combo.precio}, ${combo.en_oferta}, ${combo.precio_oferta || 0}, "${imageUrl}", ${productosIdsString})'>
+                                    <button class="btn btn-sm btn-outline-primary mt-2 shadow-none" style="border-radius: 20px; font-size: 0.75rem; font-weight: bold;" onclick='verDetalles("${nombreSafe}", ${combo.precio}, ${combo.en_oferta}, ${combo.precio_oferta || 0}, "${imageUrl}", ${dataString})'>
                                         <i class="fas fa-search-plus mr-1"></i> Ver Detalles
                                     </button>
                                 </div>
-                                
                                 <div class="combo-actions">
-                                    <button class="btn btn-sm btn-light text-primary shadow-sm" style="border-radius: 8px;" onclick='prepararEditar(${combo.id}, "${nombreSafe}", ${combo.precio}, "${imageUrl}", ${productosIdsString})'><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-light text-primary shadow-sm" style="border-radius: 8px;" onclick='prepararEditar(${combo.id}, "${nombreSafe}", ${combo.precio}, "${imageUrl}", ${dataString})'><i class="fas fa-edit"></i></button>
                                     ${btnOfertaHTML}
                                     ${btnVisibleHTML}
                                     <button class="btn btn-sm btn-light text-danger shadow-sm" style="border-radius: 8px;" onclick="eliminar(${combo.id})"><i class="fas fa-trash"></i></button>
@@ -463,8 +480,8 @@
                 });
             }
 
-            // ABRIR MODAL DE DETALLES
-            window.verDetalles = function(nombre, precioBase, enOferta, precioOferta, imgUrl, productosIds) {
+            // ABRIR MODAL DETALLES CON CANTIDADES
+            window.verDetalles = function(nombre, precioBase, enOferta, precioOferta, imgUrl, arrayData) {
                 document.getElementById('detallesImg').src = imgUrl;
                 document.getElementById('detallesNombre').innerText = nombre;
                 
@@ -477,28 +494,35 @@
                 const listaUL = document.getElementById('detallesListaProductos');
                 listaUL.innerHTML = '';
                 
-                // Buscar nombres de productos en nuestro catálogo global
-                productosIds.forEach(id => {
-                    const prodInfo = catalogoProductos.find(p => p.id === id);
+                arrayData.forEach(item => {
+                    // Soporte para formato nuevo [{id:1, cantidad:2}] y viejo [1, 2]
+                    const prodId = item.id || item; 
+                    const qty = item.cantidad || 1;
+                    
+                    const prodInfo = catalogoProductos.find(p => p.id === prodId);
                     if(prodInfo) {
-                        listaUL.innerHTML += `<li class="mb-2"><i class="fas fa-check text-success mr-2"></i> ${prodInfo.nombre}</li>`;
+                        listaUL.innerHTML += `
+                        <li class="mb-3 d-flex align-items-center">
+                            <span class="badge badge-pill shadow-sm mr-3" style="background-color: var(--euro-blue); color: white; font-size: 0.9rem; padding: 7px 12px; font-weight: bold; min-width: 45px; text-align: center;">
+                                ${qty}x
+                            </span> 
+                            <span style="font-size: 1rem; font-weight: 500; color: #444;">${prodInfo.nombre}</span>
+                        </li>`;
                     } else {
-                        listaUL.innerHTML += `<li class="mb-2"><i class="fas fa-question text-warning mr-2"></i> Producto no encontrado (ID: ${id})</li>`;
+                        listaUL.innerHTML += `<li class="mb-3"><i class="fas fa-question-circle text-warning mr-2"></i> Producto no encontrado (ID: ${prodId})</li>`;
                     }
                 });
 
                 $('#modalDetalles').modal('show');
             }
 
-            // VISIBILIDAD
-            window.toggleVisible = async function(id, estadoNuevo) {
+            // VISIBILIDAD, OFERTAS Y ELIMINAR (Igual que antes)
+            window.toggleVisible = async function(id, estado) {
                 document.getElementById('loader').style.display = 'flex';
-                await supabaseClient.from('combos').update({ visible: estadoNuevo }).eq('id', id);
+                await supabaseClient.from('combos').update({ visible: estado }).eq('id', id);
                 document.getElementById('loader').style.display = 'none';
                 cargarCombos();
             }
-
-            // OFERTAS
             window.abrirOferta = function(id, precioOriginal) {
                 document.getElementById('ofertaComboId').value = id;
                 document.getElementById('lblPrecioOriginal').innerText = "$" + precioOriginal.toFixed(2);
@@ -516,15 +540,13 @@
                 cargarCombos();
             }
             window.quitarOferta = async function(id) {
-                if(confirm("¿Quitar oferta y regresar a precio normal?")){
+                if(confirm("¿Quitar oferta?")){
                     document.getElementById('loader').style.display = 'flex';
                     await supabaseClient.from('combos').update({ en_oferta: false, precio_oferta: null }).eq('id', id);
                     document.getElementById('loader').style.display = 'none';
                     cargarCombos();
                 }
             }
-
-            // ELIMINAR
             window.eliminar = async function(id) {
                 if (confirm("¿Seguro que deseas eliminar este combo?")) {
                     document.getElementById('loader').style.display = 'flex';
@@ -534,17 +556,33 @@
                 }
             }
 
-            // PREPARAR EDICIÓN
-            window.prepararEditar = function(id, nombre, precio, urlActual, productosIds) {
+            // PREPARAR EDICIÓN RECUPERANDO CANTIDADES
+            window.prepararEditar = function(id, nombre, precio, urlActual, arrayData) {
                 document.getElementById('formCombo').reset();
                 document.getElementById('comboId').value = id;
                 document.getElementById('comboNombre').value = nombre;
                 document.getElementById('comboPrecio').value = precio;
                 document.getElementById('modalTitulo').innerText = 'Editar Combo';
                 
-                // Marcar los checkboxes de los productos que ya tiene
-                document.querySelectorAll('.check-producto').forEach(chk => {
-                    chk.checked = productosIds.includes(parseInt(chk.value));
+                // Primero ocultamos y limpiamos todos los checkboxes y cantidades
+                document.querySelectorAll('.check-producto').forEach(chk => chk.checked = false);
+                document.querySelectorAll('.qty-box').forEach(box => box.style.display = 'none');
+                document.querySelectorAll('.input-qty').forEach(inp => inp.value = 1);
+                
+                // Luego recorremos lo que está guardado en DB y lo mostramos
+                arrayData.forEach(item => {
+                    const prodId = item.id || item; 
+                    const qty = item.cantidad || 1;
+                    
+                    const checkHTML = document.getElementById(`chk_prod_${prodId}`);
+                    const qtyInput = document.getElementById(`input_qty_${prodId}`);
+                    const qtyBox = document.getElementById(`box_qty_${prodId}`);
+                    
+                    if (checkHTML) {
+                        checkHTML.checked = true;
+                        qtyBox.style.display = 'flex'; // Mostramos la caja
+                        qtyInput.value = qty;          // Ponemos la cantidad guardada
+                    }
                 });
                 
                 if(urlActual && urlActual !== 'null') {
@@ -556,29 +594,12 @@
                 $('#modalCombo').modal('show');
             }
 
-            // Arrancar todo
             async function iniciar() {
-                await cargarListaProductosParaCheck(); // Carga catálogo global y llena los checkboxes
-                cargarCombos();                        // Carga las tarjetas de los combos
+                await cargarListaProductosParaCheck();
+                cargarCombos();
             }
             iniciar();
         });
-
-        // CERRAR SESIÓN
-        document.getElementById('btnLogout').addEventListener('click', async (e) => {
-            e.preventDefault();
-            await supabaseClient.auth.signOut();
-            window.location.replace('login.html');
-        });
-
-        // REGISTRO DE SERVICE WORKER PARA PWA (INSTALACIÓN EN MÓVIL)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then((reg) => {
-                    console.log('PWA lista para instalarse.');
-                });
-            });
-        }
     </script>
 </body>
 </html>
