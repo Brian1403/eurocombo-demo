@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Novedades - EuroCombo</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/logo-euro2.png" rel="icon" type="image/png">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- PWA / App Móvil -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0A2E5B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EuroAdmin">
+    <link rel="apple-touch-icon" href="img/logo-euro2.png">
+
+    <style>
+        /* ==========================================================================
+           SOLUCIÓN DEFINITIVA PARA BOTONES BLANCOS
+           ========================================================================== */
+        body .btn.btn-primary, 
+        body .btn.btn-primary:hover, 
+        body .btn.btn-primary:focus, 
+        body .btn.btn-primary:active,
+        body .btn.btn-primary i {
+            color: #ffffff !important;
+        }
+
+        .text-blanco-puro, 
+        .text-blanco-puro:hover, 
+        .text-blanco-puro i {
+            color: #ffffff !important;
+        }
+
+        /* ==========================================================================
+           ESTILOS DE TARJETAS (CATEGORÍAS Y PRODUCTOS)
+           ========================================================================== */
+        .cat-item-card { background-color: #ffffff; border-radius: 15px; border: 1px solid #eee; transition: all 0.3s ease; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .cat-item-card:hover { border-color: var(--cart-orange); box-shadow: 0 8px 25px rgba(230, 74, 25, 0.15); transform: translateY(-4px); }
+        
+        .producto-card-cliente { background-color: #ffffff; border-radius: 15px; border: 1px solid #eee; transition: all 0.3s ease; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); height: 100%; display: flex; flex-direction: column; }
+        .producto-card-cliente:hover { border-color: var(--combo-green); box-shadow: 0 8px 25px rgba(23, 107, 40, 0.15); transform: translateY(-4px); }
+        .producto-img-container { height: 160px; width: 100%; position: relative; background: #f8f9fa; overflow: hidden; }
+        .producto-img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .producto-card-cliente:hover .producto-img-container img { transform: scale(1.05); }
+        
+        .badge-nuevo { position: absolute; top: 10px; left: 10px; background-color: var(--combo-green); color: white; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 5px; z-index: 2; }
+        .badge-oferta { position: absolute; top: 10px; right: 10px; background-color: var(--cart-orange); color: white; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 5px; z-index: 2; }
+
+        /* ESTILOS DEL RESULTADO DEL BUSCADOR EN TIEMPO REAL */
+        .search-result-item { display: flex; align-items: center; padding: 10px 15px; border-bottom: 1px solid #eee; transition: background 0.2s; text-decoration: none !important; }
+        .search-result-item:hover { background-color: #f8f9fa; }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; margin-right: 15px; }
+
+        /* ==========================================================================
+           RESPONSIVE - PRODUCTOS EN MÓVIL (2 POR FILA Y MÁS PEQUEÑOS)
+           ========================================================================== */
+        @media (max-width: 575.98px) {
+            .producto-img-container { height: 120px; }
+            .producto-card-cliente { border-radius: 12px; }
+            .producto-card-cliente .px-3 { padding-left: 10px !important; padding-right: 10px !important; }
+            .producto-card-cliente .py-3 { padding-top: 10px !important; padding-bottom: 10px !important; }
+            .producto-card-cliente .h6 { font-size: 0.85rem !important; margin-bottom: 5px !important; line-height: 1.1 !important; }
+            .producto-card-cliente .text-muted { font-size: 0.7rem; margin-bottom: 5px !important; }
+            .producto-card-cliente h5 { font-size: 0.95rem !important; }
+            .producto-card-cliente h6 del { font-size: 0.75rem !important; }
+            .producto-card-cliente .btn { padding: 4px 8px; font-size: 0.75rem; border-radius: 15px !important; }
+            .badge-nuevo { font-size: 0.6rem; padding: 2px 6px; top: 5px; left: 5px; }
+            .badge-oferta { font-size: 0.6rem; padding: 2px 6px; top: 5px; right: 5px; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <!-- HEADER SOLO PARA COMPUTADORAS -->
+        <div class="row align-items-center bg-light py-2 px-xl-5 d-none d-lg-flex">
+            <div class="col-lg-4">
+                <a href="index.html" class="text-decoration-none d-flex align-items-center">
+                    <img src="img/logo-euro.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: -10px; margin-bottom: -10px;">
+                </a>
+            </div>
+            <div class="col-lg-4 col-6 text-left position-relative">
+                <!-- BUSCADOR ESCRITORIO -->
+                <form onsubmit="event.preventDefault();">
+                    <div class="input-group shadow-sm" style="border-radius: 25px;">
+                        <input type="text" class="form-control border-light searchInput" placeholder="¿Qué se te antoja hoy? Buscar productos..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
+                        <div class="input-group-append">
+                            <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <div class="searchResults dropdown-menu w-100 shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050; max-height: 400px; overflow-y: auto; border-radius: 15px; margin-top: 5px;"></div>
+            </div>
+            <div class="col-lg-4 col-6 text-right">
+                <p class="m-0 text-muted">Atención al Cliente</p>
+                <h5 class="m-0 text-dark" style="font-weight: 700;">
+                    <a href="tel:+5218662125516" class="text-dark text-decoration-none">+52 1 866 212 5516</a>
+                </h5>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <div class="container-fluid bg-dark mb-30">
+        <div class="row px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn d-flex align-items-center justify-content-between bg-primary text-blanco-puro w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
+                    <h6 class="text-blanco-puro m-0"><i class="fa fa-bars mr-2"></i>Ver Menú</h6>
+                    <i class="fa fa-angle-down text-blanco-puro"></i>
+                </a>
+                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light shadow" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999; border-radius: 0 0 15px 15px;">
+                    <div class="navbar-nav w-100" style="padding-bottom: 10px;">
+                        <a href="shop.html?cat=combo" class="nav-item nav-link font-weight-bold">Combos Familiares</a>
+                        <a href="shop.html" class="nav-item nav-link">Ver Todo el Catálogo</a>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
+                    <a href="index.html" class="text-decoration-none d-lg-none">
+                        <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: 5px;">
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="index.html" class="nav-item nav-link">Inicio</a>
+                            <a href="shop.html" class="nav-item nav-link">Tienda</a>
+                            <a href="ofertas.html" class="nav-item nav-link">Promociones</a>
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Carrito <i class="fa fa-angle-down mt-1"></i></a>
+                                <div class="dropdown-menu bg-light rounded border-0 m-0 shadow">
+                                    <a href="cart.html" class="dropdown-item">Ver Carrito</a>
+                                    <a href="checkout.html" class="dropdown-item">Ir a Pagar</a>
+                                </div>
+                            </div>
+                            <a href="contact.html" class="nav-item nav-link">Contacto</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
+                            <a href="" class="btn px-0">
+                                <i class="fas fa-heart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
+                            </a>
+                            <a href="cart.html" class="btn px-0 ml-3">
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">3</span>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- BUSCADOR MÓVIL START -->
+    <div class="container-fluid d-lg-none mb-3 mt-3">
+        <div class="row px-xl-5">
+            <div class="col-12 position-relative">
+                <form onsubmit="event.preventDefault();">
+                    <div class="input-group shadow-sm" style="border-radius: 25px;">
+                        <input type="text" class="form-control border-light searchInput" placeholder="Buscar productos o categorías..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
+                        <div class="input-group-append">
+                            <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <div class="searchResults dropdown-menu shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 15px; width: calc(100% - 30px); z-index: 1050; max-height: 300px; overflow-y: auto; border-radius: 15px; margin-top: 5px;"></div>
+            </div>
+        </div>
+    </div>
+    <!-- BUSCADOR MÓVIL END -->
+
+    <!-- HEADER NOVEDADES -->
+    <div class="container-fluid mb-4">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <div class="text-center p-4 shadow-sm" style="background-color: var(--combo-green); border-radius: 15px;">
+                    <h2 class="text-white font-weight-bold m-0"><i class="fas fa-star mr-2"></i> Recién Llegados</h2>
+                    <p class="text-white mt-2 mb-0" style="font-size: 1.1rem;">Descubre los productos y combos que agregamos en los últimos días.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR DINÁMICO -->
+    <div class="container-fluid pt-4 pb-3">
+        <!-- COMBOS NUEVOS -->
+        <h3 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark"><span class="bg-secondary pr-3">Nuevos Combos</span></h3>
+        <div class="row px-xl-5" id="contenedor-nuevos-combos">
+            <div class="col-12 text-center py-4" id="cargando-combos">
+                <div class="spinner-border text-primary"></div>
+            </div>
+        </div>
+
+        <!-- PRODUCTOS NUEVOS -->
+        <h3 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark mt-5"><span class="bg-secondary pr-3">Nuevos Productos</span></h3>
+        <div class="row px-xl-5" id="contenedor-nuevos-productos">
+            <div class="col-12 text-center py-4" id="cargando-productos">
+                <div class="spinner-border text-primary"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INGREDIENTES COMBO -->
+    <div class="modal fade" id="modalIngredientes" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title font-weight-bold" style="color: var(--euro-blue);">
+                        <i class="fas fa-layer-group mr-2"></i>¿Qué incluye este combo?
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <h5 id="modalComboNombre" class="font-weight-bold text-dark"></h5>
+                    </div>
+                    <ul id="listaIngredientesCombo" class="list-group list-group-flush" style="max-height: 250px; overflow-y: auto;"></ul>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-primary btn-block text-blanco-puro font-weight-bold shadow-sm" data-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
+        <div class="row px-xl-5 pt-5 justify-content-center">
+            <div class="col-lg-6 col-md-12 mb-5 text-center text-lg-left">
+                <a href="index.html" class="text-decoration-none mb-4 d-inline-block">
+                    <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="max-height: 140px; width: auto; object-fit: contain;">
+                </a>
+                <p class="mb-4 text-light mt-3">En EuroCombo llevamos la mejor selección de alimentos y combos directamente a tu puerta. Calidad, frescura y rapidez.</p>
+                <p class="mb-2 text-light">
+                    <i class="fa fa-envelope text-primary mr-3"></i>
+                    <a href="mailto:robbycmf@gmail.com" class="text-light text-decoration-none">robbycmf@gmail.com</a>
+                </p>
+                <p class="mb-0 text-light">
+                    <i class="fab fa-whatsapp text-primary mr-3"></i>
+                    <a href="https://wa.me/5218662125516" target="_blank" class="text-light text-decoration-none">+52 1 866 212 5516</a>
+                </p>
+            </div>
+            <div class="col-lg-4 col-md-12 mb-5 text-center text-lg-left pl-lg-5">
+                <h5 class="text-white text-uppercase mb-4">Enlaces Rápidos</h5>
+                <div class="d-flex flex-column justify-content-center justify-content-lg-start">
+                    <a class="text-light mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
+                    <a class="text-light mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Tienda</a>
+                    <a class="text-light mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Ver Carrito</a>
+                    <a class="text-light" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top mx-xl-5 py-4 mt-3" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-12 text-center text-light">
+                <p class="mb-0">
+                    &copy; <a class="text-primary font-weight-bold text-decoration-none" href="index.html">EuroCombo</a>. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary text-blanco-puro back-to-top"><i class="fa fa-angle-double-up text-blanco-puro"></i></a>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/main.js"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let catalogoBusqueda = { productos: [], combos: [], categorias: [] };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inicializarBuscador();
+            cargarNovedades();
+        });
+
+        // ==============================================================================
+        // 1. BUSCADOR EN TIEMPO REAL CON REDIRECCIÓN EXACTA
+        // ==============================================================================
+        async function inicializarBuscador() {
+            try {
+                const [resProd, resCombos, resCat] = await Promise.all([
+                    supabaseClient.from('productos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, categoria_id').eq('visible', true),
+                    supabaseClient.from('combos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, productos_ids').eq('visible', true),
+                    supabaseClient.from('categorias').select('id, nombre')
+                ]);
+
+                if(!resProd.error) catalogoBusqueda.productos = resProd.data;
+                if(!resCombos.error) catalogoBusqueda.combos = resCombos.data;
+                if(!resCat.error) catalogoBusqueda.categorias = resCat.data;
+
+                configurarEventosBuscador();
+            } catch (error) {
+                console.error("Error al inicializar buscador:", error);
+            }
+        }
+
+        function configurarEventosBuscador() {
+            const inputs = document.querySelectorAll('.searchInput'); 
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase().trim();
+                    const container = input.closest('.position-relative');
+                    const resultsBox = container.querySelector('.searchResults');
+                    
+                    if(query.length < 2) {
+                        resultsBox.style.display = 'none';
+                        return;
+                    }
+
+                    const catMatchedIds = catalogoBusqueda.categorias
+                        .filter(c => c.nombre.toLowerCase().includes(query))
+                        .map(c => c.id);
+
+                    const prodFiltrados = catalogoBusqueda.productos.filter(p => {
+                        return p.nombre.toLowerCase().includes(query) || catMatchedIds.includes(p.categoria_id);
+                    });
+                    const prodIdsMatched = prodFiltrados.map(p => p.id);
+
+                    const combosFiltrados = catalogoBusqueda.combos.filter(c => {
+                        if(c.nombre.toLowerCase().includes(query)) return true;
+                        if(query.includes('combo')) return true; 
+                        
+                        if(c.productos_ids) {
+                            return c.productos_ids.some(item => {
+                                const pId = item.id || item; 
+                                return prodIdsMatched.includes(pId); 
+                            });
+                        }
+                        return false;
+                    });
+
+                    dibujarResultadosBuscador(prodFiltrados, combosFiltrados, query, resultsBox);
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                inputs.forEach(input => {
+                    const resultsBox = input.closest('.position-relative').querySelector('.searchResults');
+                    if(!input.contains(e.target) && !resultsBox.contains(e.target)) {
+                        resultsBox.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function resaltarTexto(texto, query) {
+            if(!query) return texto;
+            const regex = new RegExp(`(${query})`, 'gi');
+            return texto.replace(regex, '<span class="text-primary font-weight-bold">$1</span>');
+        }
+
+        function dibujarResultadosBuscador(productos, combos, query, resultsBox) {
+            resultsBox.innerHTML = '';
+
+            if(productos.length === 0 && combos.length === 0) {
+                resultsBox.innerHTML = '<div class="p-3 text-center text-muted">No se encontraron resultados para esta búsqueda.</div>';
+                resultsBox.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+
+            if(combos.length > 0) {
+                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Combos Sugeridos</div>';
+                combos.forEach(c => {
+                    const imgUrl = c.imagen_url || 'https://via.placeholder.com/50?text=Combo';
+                    const nombreResaltado = resaltarTexto(c.nombre, query);
+                    const link = `shop.html?cat=combo&hl=combo_${c.id}`;
+                    const precio = c.en_oferta ? c.precio_oferta : c.precio;
+                    
+                    html += `
+                        <a href="${link}" class="search-result-item">
+                            <img src="${imgUrl}" class="search-img" alt="">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${nombreResaltado} <span class="badge badge-warning ml-1" style="font-size:0.6rem;">COMBO</span></h6>
+                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
+                            </div>
+                        </a>
+                    `;
+                });
+            }
+
+            if(productos.length > 0) {
+                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Productos Sugeridos</div>';
+                productos.forEach(p => {
+                    const imgUrl = p.imagen_url || 'https://via.placeholder.com/50?text=Producto';
+                    const nombreResaltado = resaltarTexto(p.nombre, query);
+                    const link = `shop.html?cat=${p.categoria_id}&hl=prod_${p.id}`;
+                    const precio = p.en_oferta ? p.precio_oferta : p.precio;
+                    
+                    html += `
+                        <a href="${link}" class="search-result-item">
+                            <img src="${imgUrl}" class="search-img" alt="">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${nombreResaltado}</h6>
+                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
+                            </div>
+                        </a>
+                    `;
+                });
+            }
+
+            resultsBox.innerHTML = html;
+            resultsBox.style.display = 'block';
+        }
+
+        // ==============================================================================
+        // 2. CARGAR NOVEDADES
+        // ==============================================================================
+        async function cargarNovedades() {
+            const contCombos = document.getElementById('contenedor-nuevos-combos');
+            const contProductos = document.getElementById('contenedor-nuevos-productos');
+
+            // Calcular fecha límite (Hace 5 días exactos)
+            const hoy = new Date();
+            const cincoDiasAtras = new Date(hoy.setDate(hoy.getDate() - 5));
+            const fechaFiltro = cincoDiasAtras.toISOString();
+
+            try {
+                // CARGAR COMBOS NUEVOS
+                const { data: combos, error: errCombos } = await supabaseClient
+                    .from('combos').select('*')
+                    .eq('visible', true)
+                    .gte('created_at', fechaFiltro)
+                    .order('created_at', { ascending: false });
+                
+                document.getElementById('cargando-combos').remove();
+                if (combos.length === 0) {
+                    contCombos.innerHTML = '<div class="col-12 text-center text-muted"><p>No se agregaron combos en los últimos 5 días.</p></div>';
+                } else {
+                    let htmlCombos = '';
+                    combos.forEach(combo => {
+                        const imgUrl = combo.imagen_url || 'https://via.placeholder.com/300';
+                        let precioHTML = `<h5 class="text-success font-weight-bold m-0">$${combo.precio.toFixed(2)}</h5>`;
+                        let badgeOfertaHTML = ``;
+
+                        if (combo.en_oferta && combo.precio_oferta) {
+                            badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
+                            precioHTML = `
+                                <h5 class="text-danger font-weight-bold m-0">$${combo.precio_oferta.toFixed(2)}</h5>
+                                <h6 class="text-muted ml-2 m-0"><del>$${combo.precio.toFixed(2)}</del></h6>`;
+                        }
+
+                        htmlCombos += `
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 pb-1 mb-3">
+                                <div class="producto-card-cliente">
+                                    <div class="producto-img-container">
+                                        <div class="badge-nuevo">NUEVO</div>
+                                        ${badgeOfertaHTML}
+                                        <img src="${imgUrl}" alt="${combo.nombre}">
+                                    </div>
+                                    <div class="text-center py-3 px-3 d-flex flex-column flex-grow-1">
+                                        <a href="shop.html?cat=combo&hl=combo_${combo.id}" class="h6 text-decoration-none text-dark font-weight-bold mb-1" style="font-size: 1.1rem; line-height: 1.2;">${combo.nombre}</a>
+                                        <div class="d-flex align-items-center justify-content-center mt-auto mb-3">
+                                            ${precioHTML}
+                                        </div>
+                                        <button class="btn btn-outline-dark btn-sm btn-block mb-2 shadow-sm font-weight-bold" style="border-radius: 20px;" onclick="verIngredientesCombo(${combo.id}, '${combo.nombre.replace(/'/g, "\\'")}')">
+                                            <i class="fas fa-list mr-1"></i> Ver ingredientes
+                                        </button>
+                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="btnAnim(this)">
+                                            <i class="fa fa-shopping-cart text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-plus text-white"></i></span><span class="d-none d-sm-inline"> Agregar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+                    contCombos.innerHTML = htmlCombos;
+                }
+
+                // CARGAR PRODUCTOS NUEVOS
+                const { data: productos, error: errProds } = await supabaseClient
+                    .from('productos').select('*')
+                    .eq('visible', true)
+                    .gte('created_at', fechaFiltro)
+                    .order('created_at', { ascending: false });
+
+                document.getElementById('cargando-productos').remove();
+                if (productos.length === 0) {
+                    contProductos.innerHTML = '<div class="col-12 text-center text-muted"><p>No se agregaron productos en los últimos 5 días.</p></div>';
+                } else {
+                    let htmlProds = '';
+                    productos.forEach(prod => {
+                        const imgUrl = prod.imagen_url || 'https://via.placeholder.com/200';
+                        
+                        // Lógica de Formato y Marca agregada
+                        const txtFormato = prod.formato ? `<i class="fas fa-box text-black-50 mr-1"></i>${prod.formato}` : '';
+                        const txtMarca = prod.marca ? `<span class="mx-1">|</span> <i class="fas fa-tag text-black-50 mr-1"></i>${prod.marca}` : '';
+                        let subtituloHTML = '';
+                        if (txtFormato || txtMarca) {
+                            subtituloHTML = `<div class="small text-muted mb-2">${txtFormato} ${txtMarca}</div>`;
+                        }
+
+                        let precioHTML = `<h5 class="text-success font-weight-bold m-0">$${prod.precio.toFixed(2)}</h5>`;
+                        let badgeOfertaHTML = ``;
+
+                        if (prod.en_oferta && prod.precio_oferta) {
+                            badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
+                            precioHTML = `
+                                <h5 class="text-danger font-weight-bold m-0">$${prod.precio_oferta.toFixed(2)}</h5>
+                                <h6 class="text-muted ml-2 m-0"><del>$${prod.precio.toFixed(2)}</del></h6>`;
+                        }
+                        
+                        htmlProds += `
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 pb-1 mb-3">
+                                <div class="producto-card-cliente">
+                                    <a href="shop.html?cat=${prod.categoria_id}&hl=prod_${prod.id}" class="text-decoration-none">
+                                        <div class="producto-img-container">
+                                            <div class="badge-nuevo">NUEVO</div>
+                                            ${badgeOfertaHTML}
+                                            <img src="${imgUrl}" alt="${prod.nombre}">
+                                        </div>
+                                    </a>
+                                    <div class="text-center py-3 px-3 d-flex flex-column flex-grow-1">
+                                        <a href="shop.html?cat=${prod.categoria_id}&hl=prod_${prod.id}" class="h6 text-decoration-none text-dark font-weight-bold mb-1" style="font-size: 1.1rem; line-height: 1.2;">${prod.nombre}</a>
+                                        ${subtituloHTML}
+                                        <div class="d-flex align-items-center justify-content-center mt-auto mb-3">
+                                            ${precioHTML}
+                                        </div>
+                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="btnAnim(this)">
+                                            <i class="fa fa-shopping-cart text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-plus text-white"></i></span><span class="d-none d-sm-inline"> Agregar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+                    contProductos.innerHTML = htmlProds;
+                }
+            } catch (err) {
+                console.error("Error cargando novedades:", err);
+            }
+        }
+
+        // Lógica Modal Ingredientes
+        window.verIngredientesCombo = async function(comboId, comboNombre) {
+            document.getElementById('modalComboNombre').innerText = comboNombre;
+            const lista = document.getElementById('listaIngredientesCombo');
+            lista.innerHTML = '<li class="list-group-item text-center border-0"><div class="spinner-border text-primary"></div></li>';
+            $('#modalIngredientes').modal('show');
+
+            try {
+                const { data: comboData } = await supabaseClient.from('combos').select('productos_ids').eq('id', comboId).single();
+                const { data: catalogo } = await supabaseClient.from('productos').select('id, nombre');
+
+                lista.innerHTML = '';
+                const items = comboData.productos_ids || [];
+                
+                if(items.length === 0) {
+                    lista.innerHTML = '<li class="list-group-item text-center text-muted">No hay productos.</li>';
+                    return;
+                }
+
+                items.forEach(item => {
+                    const prodId = item.id || item; 
+                    const qty = item.cantidad || 1;
+                    const prodInfo = catalogo.find(p => p.id === prodId);
+                    if(prodInfo) {
+                        lista.innerHTML += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-2 border-bottom">
+                                <span class="text-dark"><i class="fas fa-check text-success mr-2"></i>${prodInfo.nombre}</span>
+                                <span class="badge badge-primary badge-pill text-blanco-puro shadow-sm px-2 py-1">${qty}x</span>
+                            </li>`;
+                    }
+                });
+            } catch(e) {
+                lista.innerHTML = `<li class="list-group-item text-center text-danger border-0">Error cargando ingredientes.</li>`;
+            }
+        }
+
+        window.btnAnim = function(btn) {
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-check text-white"></i></span><span class="d-none d-sm-inline"> ¡Agregado!</span>';
+            btn.classList.replace('btn-primary', 'bg-success');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.replace('bg-success', 'btn-primary');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

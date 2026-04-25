@@ -9765,3 +9765,38 @@ a:hover { color: var(--cart-orange); text-decoration: none; }
 .form-control { border-radius: 25px 0 0 25px !important; padding-left: 20px; }
 .input-group-text { border-radius: 0 25px 25px 0 !important; border-left: none; background: #fff; cursor: pointer; }
 
+/* ==========================================================================
+   AJUSTES EUROCOMBO - BOTONES BLANCOS Y RESPONSIVO MÓVIL
+   ========================================================================== */
+
+/* 1. Forzar texto e iconos blancos en todos los botones naranjas (primarios) */
+body .btn.btn-primary, 
+body .btn.btn-primary:hover, 
+body .btn.btn-primary:focus, 
+body .btn.btn-primary:active,
+body .btn.btn-primary i {
+    color: #ffffff !important;
+}
+
+/* 2. Ajustes para hacer las tarjetas de productos más pequeñas en celulares */
+@media (max-width: 575.98px) {
+    /* Reducir alto de la imagen */
+    .producto-img-container { height: 120px !important; }
+    
+    /* Reducir márgenes y textos internos de la tarjeta */
+    .producto-card-cliente { border-radius: 12px; }
+    .producto-card-cliente .px-3 { padding-left: 10px !important; padding-right: 10px !important; }
+    .producto-card-cliente .py-3 { padding-top: 10px !important; padding-bottom: 10px !important; }
+    
+    /* Achicar títulos y precios */
+    .producto-card-cliente .h6 { font-size: 0.85rem !important; margin-bottom: 5px !important; line-height: 1.1 !important; }
+    .producto-card-cliente .text-muted { font-size: 0.7rem !important; margin-bottom: 5px !important; }
+    .producto-card-cliente h5 { font-size: 0.95rem !important; }
+    .producto-card-cliente h6 del { font-size: 0.75rem !important; }
+    
+    /* Achicar el botón de agregar */
+    .producto-card-cliente .btn { padding: 4px 8px; font-size: 0.75rem; }
+    
+    /* Achicar la etiqueta de oferta */
+    .badge-oferta { font-size: 0.6rem; padding: 2px 6px; top: 5px; left: 5px; }
+}

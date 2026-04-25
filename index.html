@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title>EuroCombo - Tu comida en casa</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="EuroCombo, comida, combos, despensa, domicilio" name="keywords">
-    <meta content="EuroCombo, los mejores combos familiares y alimentos hasta la puerta de tu casa." name="description">
+    <meta content="EuroCombo, tienda en línea, comida, combos, despensa, domicilio" name="keywords">
+    <meta content="Descubre todos los detalles de nuestros increíbles combos y productos frescos." name="description">
 
     <!-- Favicon -->
     <link href="img/logo-euro2.png" rel="icon" type="image/png">
@@ -25,78 +25,127 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 
+    <!-- PWA / App Móvil -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0A2E5B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EuroAdmin">
+    <link rel="apple-touch-icon" href="img/logo-euro2.png">
+
+    <style>
+        /* SOLUCIÓN DEFINITIVA PARA BOTONES BLANCOS */
+        body .btn.btn-primary, 
+        body .btn.btn-primary:hover, 
+        body .btn.btn-primary:focus, 
+        body .btn.btn-primary:active,
+        body .btn.btn-primary i {
+            color: #ffffff !important;
+        }
+
+        .text-blanco-puro, 
+        .text-blanco-puro:hover, 
+        .text-blanco-puro i {
+            color: #ffffff !important;
+        }
+
+        /* ESTILOS DE TARJETAS (CATEGORÍAS Y PRODUCTOS) */
+        .cat-item-card { background-color: #ffffff; border-radius: 15px; border: 1px solid #eee; transition: all 0.3s ease; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .cat-item-card:hover { border-color: var(--cart-orange); box-shadow: 0 8px 25px rgba(230, 74, 25, 0.15); transform: translateY(-4px); }
+        .cat-item-card:hover h6 { color: var(--cart-orange) !important; }
+        .cat-item-card:hover small { color: #6c757d !important; }
+
+        .producto-card-cliente { background-color: #ffffff; border-radius: 15px; border: 1px solid #eee; transition: all 0.3s ease; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); height: 100%; display: flex; flex-direction: column; }
+        .producto-card-cliente:hover { border-color: var(--combo-green); box-shadow: 0 8px 25px rgba(23, 107, 40, 0.15); transform: translateY(-4px); }
+        .producto-img-container { height: 160px; width: 100%; position: relative; background: #f8f9fa; overflow: hidden; }
+        .producto-img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .producto-card-cliente:hover .producto-img-container img { transform: scale(1.05); }
+        
+        .badge-oferta { position: absolute; top: 10px; left: 10px; background-color: var(--cart-orange); color: white; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 5px; z-index: 2; }
+
+        /* ESTILOS DEL RESULTADO DEL BUSCADOR EN TIEMPO REAL */
+        .search-result-item { display: flex; align-items: center; padding: 10px 15px; border-bottom: 1px solid #eee; transition: background 0.2s; text-decoration: none !important; }
+        .search-result-item:hover { background-color: #f8f9fa; }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; margin-right: 15px; }
+
+        /* RESPONSIVE - PRODUCTOS EN MÓVIL (2 POR FILA) */
+        @media (max-width: 575.98px) {
+            .producto-img-container { height: 120px; }
+            .producto-card-cliente { border-radius: 12px; }
+            .producto-card-cliente .px-3 { padding-left: 10px !important; padding-right: 10px !important; }
+            .producto-card-cliente .py-3 { padding-top: 10px !important; padding-bottom: 10px !important; }
+            .producto-card-cliente .h6 { font-size: 0.85rem !important; margin-bottom: 5px !important; line-height: 1.1 !important; }
+            .producto-card-cliente .text-muted { font-size: 0.7rem; margin-bottom: 5px !important; }
+            .producto-card-cliente h5 { font-size: 0.95rem !important; }
+            .producto-card-cliente h6 del { font-size: 0.75rem !important; }
+            .producto-card-cliente .btn { padding: 4px 8px; font-size: 0.75rem; border-radius: 15px !important; }
+            .badge-oferta { font-size: 0.6rem; padding: 2px 6px; top: 5px; left: 5px; }
+        }
+
+        /* CAPAS DE DESVANECIMIENTO (FADE) ORIGINALES INTACTAS */
+        .contenedor-faded { position: relative; overflow: hidden; display: none; margin-top: -15px; }
+        #faded-categorias { max-height: 120px; }
+        #faded-productos { max-height: 250px; }
+        .capa-neblina { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(248, 249, 250, 0.1) 0%, rgba(248, 249, 250, 1) 85%); z-index: 5; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; }
+    </style>
 </head>
 
 <body>
     <!-- Topbar Start -->
     <div class="container-fluid">
-        
-        <!-- HEADER BLANCO CON LOGO MÁS GRANDE (PC) -->
+        <!-- HEADER SOLO PARA COMPUTADORAS -->
         <div class="row align-items-center bg-light py-2 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
                 <a href="index.html" class="text-decoration-none d-flex align-items-center">
-                    <!-- LOGO EUROCOMBO -->
                     <img src="img/logo-euro.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: -10px; margin-bottom: -10px;">
                 </a>
             </div>
-            <div class="col-lg-4 col-6 text-left">
-                <form action="">
+            <div class="col-lg-4 col-6 text-left position-relative">
+                <!-- BUSCADOR ESCRITORIO EN TIEMPO REAL -->
+                <form onsubmit="event.preventDefault();">
                     <div class="input-group shadow-sm" style="border-radius: 25px;">
-                        <input type="text" class="form-control border-light" placeholder="¿Qué se te antoja hoy? Buscar productos...">
+                        <input type="text" class="form-control border-light searchInput" placeholder="¿Qué se te antoja hoy? Buscar productos..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
                         <div class="input-group-append">
-                            <span class="input-group-text border-light text-primary">
+                            <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
                                 <i class="fa fa-search"></i>
                             </span>
                         </div>
                     </div>
                 </form>
+                <!-- CAJA DE RESULTADOS ESCRITORIO -->
+                <div class="searchResults dropdown-menu w-100 shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050; max-height: 400px; overflow-y: auto; border-radius: 15px; margin-top: 5px;"></div>
             </div>
             <div class="col-lg-4 col-6 text-right">
                 <p class="m-0 text-muted">Atención al Cliente</p>
-                <h5 class="m-0 text-dark" style="font-weight: 700;">+012 345 6789</h5>
+                <h5 class="m-0 text-dark" style="font-weight: 700;">
+                    <a href="tel:+5218662125516" class="text-dark text-decoration-none">+52 1 866 212 5516</a>
+                </h5>
             </div>
         </div>
     </div>
     <!-- Topbar End -->
 
-
     <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
-                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
-                    <h6 class="text-white m-0"><i class="fa fa-bars mr-2"></i>Ver Menú</h6>
-                    <i class="fa fa-angle-down text-white"></i>
+                <a class="btn d-flex align-items-center justify-content-between bg-primary text-blanco-puro w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
+                    <h6 class="text-blanco-puro m-0"><i class="fa fa-bars mr-2"></i>Ver Menú</h6>
+                    <i class="fa fa-angle-down text-blanco-puro"></i>
                 </a>
                 <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light shadow" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999; border-radius: 0 0 15px 15px;">
                     <div class="navbar-nav w-100" style="padding-bottom: 10px;">
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-toggle font-weight-bold" data-toggle="dropdown">Combos Familiares <i class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded border-0 m-0 shadow-sm">
-                                <a href="" class="dropdown-item">Desayunos</a>
-                                <a href="" class="dropdown-item">Almuerzos</a>
-                                <a href="" class="dropdown-item">Parrilladas</a>
-                            </div>
-                        </div>
-                        <a href="" class="nav-item nav-link">Cárnicos y Aves</a>
-                        <a href="" class="nav-item nav-link">Embutidos Premium</a>
-                        <a href="" class="nav-item nav-link">Quesos y Lácteos</a>
-                        <a href="" class="nav-item nav-link">Bebidas y Licores</a>
-                        <a href="" class="nav-item nav-link">Snacks y Postres</a>
-                        <a href="" class="nav-item nav-link">Frutas y Verduras</a>
-                        <a href="" class="nav-item nav-link">Despensa Básica</a>
+                        <a href="shop.html?cat=combo" class="nav-item nav-link font-weight-bold">Combos Familiares</a>
+                        <a href="shop.html" class="nav-item nav-link">Ver Todo el Catálogo</a>
                     </div>
                 </nav>
             </div>
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
-                    
-                    
-                    <!-- LOGO MÓVIL NUEVO (SIN FONDO BLANCO) -->
                     <a href="index.html" class="text-decoration-none d-lg-none">
                         <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: 5px;">
                     </a>
-
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -131,10 +180,32 @@
     </div>
     <!-- Navbar End -->
 
+    <!-- BUSCADOR MÓVIL START (ENTRE NAVBAR Y CARRUSEL) -->
+    <div class="container-fluid d-lg-none mb-3">
+        <div class="row px-xl-5">
+            <div class="col-12 position-relative">
+                <form onsubmit="event.preventDefault();">
+                    <div class="input-group shadow-sm" style="border-radius: 25px;">
+                        <input type="text" class="form-control border-light searchInput" placeholder="Buscar productos o categorías..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
+                        <div class="input-group-append">
+                            <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <!-- CAJA DE RESULTADOS MÓVIL -->
+                <div class="searchResults dropdown-menu shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 15px; width: calc(100% - 30px); z-index: 1050; max-height: 300px; overflow-y: auto; border-radius: 15px; margin-top: 5px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- BUSCADOR MÓVIL END -->
 
-    <!-- Carousel Start -->
+    <!-- Carousel y Cajas Start -->
     <div class="container-fluid mb-3">
         <div class="row px-xl-5">
+            <!-- Carrusel a la izquierda -->
             <div class="col-lg-8">
                 <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0 shadow-sm" data-ride="carousel" style="border-radius: 15px;">
                     <ol class="carousel-indicators">
@@ -148,8 +219,8 @@
                             <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                 <div class="p-3" style="max-width: 700px;">
                                     <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown font-weight-bold">Los Mejores Combos</h1>
-                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Ahorra tiempo y dinero con nuestros combos seleccionados. Calidad garantizada hasta la puerta de tu casa.</p>
-                                    <a class="btn btn-primary py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">Comprar Ahora</a>
+                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Ahorra tiempo y dinero con nuestros combos seleccionados. Calidad garantizada.</p>
+                                    <a class="btn btn-primary text-blanco-puro py-2 px-4 mt-3 animate__animated animate__fadeInUp font-weight-bold" href="shop.html">Comprar Ahora</a>
                                 </div>
                             </div>
                         </div>
@@ -158,8 +229,8 @@
                             <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                 <div class="p-3" style="max-width: 700px;">
                                     <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown font-weight-bold">Frescura en tu Mesa</h1>
-                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Carnes, embutidos y quesos de la mejor calidad. Seleccionamos cuidadosamente cada producto para ti.</p>
-                                    <a class="btn btn-primary py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">Ver Productos</a>
+                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Carnes, embutidos y quesos de la mejor calidad para ti.</p>
+                                    <a class="btn btn-primary text-blanco-puro py-2 px-4 mt-3 animate__animated animate__fadeInUp font-weight-bold" href="shop.html">Ver Productos</a>
                                 </div>
                             </div>
                         </div>
@@ -168,36 +239,37 @@
                             <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                 <div class="p-3" style="max-width: 700px;">
                                     <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown font-weight-bold">Snacks y Bebidas</h1>
-                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Date un gusto o prepárate para el fin de semana con nuestra gran variedad de bebidas y snacks.</p>
-                                    <a class="btn btn-primary py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">Descubrir</a>
+                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Date un gusto o prepárate para el fin de semana.</p>
+                                    <a class="btn btn-primary text-blanco-puro py-2 px-4 mt-3 animate__animated animate__fadeInUp font-weight-bold" href="shop.html">Descubrir</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            <!-- CAJAS DE OFERTAS RESTAURADAS a la derecha -->
             <div class="col-lg-4">
-                <div class="product-offer mb-30" style="height: 200px;">
+                <div class="product-offer mb-30 shadow-sm" style="height: 200px; border-radius: 15px; overflow: hidden;">
                     <img class="img-fluid" src="img/offer-1.jpg" alt="">
                     <div class="offer-text" style="background: rgba(10, 46, 91, 0.6);">
                         <h6 class="text-white text-uppercase">Ahorra 20%</h6>
                         <h3 class="text-white mb-3 font-weight-bold">Oferta del Día</h3>
-                        <a href="" class="btn btn-primary">Ver Oferta</a>
+                        <a href="ofertas.html" class="btn btn-primary text-blanco-puro font-weight-bold">Ver Oferta</a>
                     </div>
                 </div>
-                <div class="product-offer mb-30" style="height: 200px;">
+               <div class="product-offer mb-30 shadow-sm" style="height: 200px; border-radius: 15px; overflow: hidden;">
                     <img class="img-fluid" src="img/offer-2.jpg" alt="">
                     <div class="offer-text" style="background: rgba(23, 107, 40, 0.7);">
-                        <h6 class="text-white text-uppercase">Promoción</h6>
-                        <h3 class="text-white mb-3 font-weight-bold">Combos Familiares</h3>
-                        <a href="" class="btn btn-primary">Comprar Ahora</a>
+                        <h6 class="text-white text-uppercase">Novedades</h6>
+                        <h3 class="text-white mb-3 font-weight-bold">Recién Llegados</h3>
+                        <a href="nuevos.html" class="btn btn-primary text-blanco-puro font-weight-bold">Ver Nuevos</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Carousel End -->
-
 
     <!-- Featured Start -->
     <div class="container-fluid pt-5">
@@ -230,322 +302,585 @@
     </div>
     <!-- Featured End -->
 
-
-    <!-- Categories Start -->
+    <!-- SECCIÓN 1: CATEGORÍAS -->
     <div class="container-fluid pt-5">
         <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark"><span class="bg-secondary pr-3">¿Qué buscas hoy?</span></h2>
-        <div class="row px-xl-5 pb-3">
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <a class="text-decoration-none" href="">
-                    <div class="cat-item d-flex align-items-center mb-4">
-                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                            <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="img/cat-1.jpg" alt="">
-                        </div>
-                        <div class="flex-fill pl-3">
-                            <h6 class="font-weight-bold">Combos Familiares</h6>
-                            <small class="text-body">15 Productos</small>
-                        </div>
-                    </div>
-                </a>
+        
+        <div class="row px-xl-5 pb-3" id="categorias-principales">
+            <div class="col-12 text-center py-5" id="cargando-cat">
+                <div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando secciones...</p>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <a class="text-decoration-none" href="">
-                    <div class="cat-item img-zoom d-flex align-items-center mb-4">
-                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                            <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="img/cat-2.jpg" alt="">
-                        </div>
-                        <div class="flex-fill pl-3">
-                            <h6 class="font-weight-bold">Carnes y Aves</h6>
-                            <small class="text-body">25 Productos</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <a class="text-decoration-none" href="">
-                    <div class="cat-item img-zoom d-flex align-items-center mb-4">
-                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                            <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="img/cat-3.jpg" alt="">
-                        </div>
-                        <div class="flex-fill pl-3">
-                            <h6 class="font-weight-bold">Embutidos</h6>
-                            <small class="text-body">30 Productos</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <a class="text-decoration-none" href="">
-                    <div class="cat-item img-zoom d-flex align-items-center mb-4">
-                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                            <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="img/cat-4.jpg" alt="">
-                        </div>
-                        <div class="flex-fill pl-3">
-                            <h6 class="font-weight-bold">Quesos y Lácteos</h6>
-                            <small class="text-body">20 Productos</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <a class="text-decoration-none" href="">
-                    <div class="cat-item img-zoom d-flex align-items-center mb-4">
-                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                            <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="img/cat-5.jpg" alt="">
-                        </div>
-                        <div class="flex-fill pl-3">
-                            <h6 class="font-weight-bold">Bebidas y Licores</h6>
-                            <small class="text-body">45 Productos</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <a class="text-decoration-none" href="">
-                    <div class="cat-item img-zoom d-flex align-items-center mb-4">
-                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                            <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="img/cat-6.jpg" alt="">
-                        </div>
-                        <div class="flex-fill pl-3">
-                            <h6 class="font-weight-bold">Snacks y Dulces</h6>
-                            <small class="text-body">50 Productos</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <a class="text-decoration-none" href="">
-                    <div class="cat-item img-zoom d-flex align-items-center mb-4">
-                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                            <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="img/cat-7.jpg" alt="">
-                        </div>
-                        <div class="flex-fill pl-3">
-                            <h6 class="font-weight-bold">Frutas y Verduras</h6>
-                            <small class="text-body">40 Productos</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <a class="text-decoration-none" href="">
-                    <div class="cat-item img-zoom d-flex align-items-center mb-4">
-                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                            <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="img/cat-8.jpg" alt="">
-                        </div>
-                        <div class="flex-fill pl-3">
-                            <h6 class="font-weight-bold">Despensa Básica</h6>
-                            <small class="text-body">100 Productos</small>
-                        </div>
-                    </div>
+        </div>
+
+        <div class="contenedor-faded" id="faded-categorias">
+            <div class="row px-xl-5" id="categorias-secundarias"></div>
+            <div class="capa-neblina">
+                <a href="shop.html" class="btn btn-primary text-blanco-puro py-2 px-5 shadow font-weight-bold" style="border-radius: 25px; font-size: 1.1rem;">
+                    Ver Todas las Categorías <i class="fas fa-arrow-right ml-2 text-blanco-puro"></i>
                 </a>
             </div>
         </div>
+
+        <div class="row px-xl-5 pb-4 justify-content-center" id="boton-estatico-cat" style="display: none;">
+            <a href="shop.html" class="btn btn-primary text-blanco-puro py-2 px-5 shadow-sm font-weight-bold" style="border-radius: 25px; font-size: 1.1rem;">
+                Ver Tienda <i class="fas fa-arrow-right ml-2 text-blanco-puro"></i>
+            </a>
+        </div>
     </div>
-    <!-- Categories End -->
 
-
-    <!-- Products Start -->
+    <!-- SECCIÓN 2: PRODUCTOS -->
     <div class="container-fluid pt-5 pb-3">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark"><span class="bg-secondary pr-3">Combos Destacados</span></h2>
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark"><span class="bg-secondary pr-3">Novedades en Tienda</span></h2>
+        
+        <div class="row px-xl-5" id="productos-principales">
+            <div class="col-12 text-center py-5" id="cargando-prod">
+                <div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando últimos productos...</p>
+            </div>
+        </div>
+
+        <div class="contenedor-faded" id="faded-productos">
+            <div class="row px-xl-5" id="productos-secundarios"></div>
+            <div class="capa-neblina">
+                <a href="shop.html" class="btn btn-primary text-blanco-puro py-2 px-5 shadow font-weight-bold" style="border-radius: 25px; font-size: 1.1rem;">
+                    Ver Todo el Catálogo <i class="fas fa-arrow-right ml-2 text-blanco-puro"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="row px-xl-5 pb-4 justify-content-center" id="boton-estatico-prod" style="display: none;">
+            <a href="shop.html" class="btn btn-primary text-blanco-puro py-2 px-5 shadow-sm font-weight-bold" style="border-radius: 25px; font-size: 1.1rem;">
+                Ir a la Tienda <i class="fas fa-arrow-right ml-2 text-blanco-puro"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: COMBOS (CARRUSEL) -->
+    <div class="container-fluid pt-5 pb-5">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark"><span class="bg-secondary pr-3">Nuestros Combos Especiales</span></h2>
         <div class="row px-xl-5">
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <div class="product-item bg-white mb-4">
-                    <div class="product-img position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="img/product-1.jpg" alt="">
-                        <div class="product-action">
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center py-4 px-2">
-                        <a class="h6 text-decoration-none text-dark font-weight-bold" style="font-size: 1.1rem;" href="">Combo Parrillero Familiar</a>
-                        <div class="d-flex align-items-center justify-content-center mt-2">
-                            <h5>$45.00</h5><h6 class="text-muted ml-2"><del>$55.00</del></h6>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center mb-1">
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="text-muted ml-1">(99)</small>
-                        </div>
-                        <button class="btn btn-primary btn-block mt-3"><i class="fa fa-shopping-cart mr-2"></i>Agregar</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <div class="product-item bg-white mb-4">
-                    <div class="product-img position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="img/product-2.jpg" alt="">
-                        <div class="product-action">
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center py-4 px-2">
-                        <a class="h6 text-decoration-none text-dark font-weight-bold" style="font-size: 1.1rem;" href="">Pack Desayuno Express</a>
-                        <div class="d-flex align-items-center justify-content-center mt-2">
-                            <h5>$20.00</h5><h6 class="text-muted ml-2"><del>$25.00</del></h6>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center mb-1">
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star-half-alt text-primary mr-1"></small>
-                            <small class="text-muted ml-1">(85)</small>
-                        </div>
-                        <button class="btn btn-primary btn-block mt-3"><i class="fa fa-shopping-cart mr-2"></i>Agregar</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <div class="product-item bg-white mb-4">
-                    <div class="product-img position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="img/product-3.jpg" alt="">
-                        <div class="product-action">
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center py-4 px-2">
-                        <a class="h6 text-decoration-none text-dark font-weight-bold" style="font-size: 1.1rem;" href="">Surtido Embutidos Ibéricos</a>
-                        <div class="d-flex align-items-center justify-content-center mt-2">
-                            <h5>$35.00</h5><h6 class="text-muted ml-2"><del>$40.00</del></h6>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center mb-1">
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="far fa-star text-primary mr-1"></small>
-                            <small class="text-muted ml-1">(42)</small>
-                        </div>
-                        <button class="btn btn-primary btn-block mt-3"><i class="fa fa-shopping-cart mr-2"></i>Agregar</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <div class="product-item bg-white mb-4">
-                    <div class="product-img position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="img/product-4.jpg" alt="">
-                        <div class="product-action">
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center py-4 px-2">
-                        <a class="h6 text-decoration-none text-dark font-weight-bold" style="font-size: 1.1rem;" href="">Pack Cervezas Importadas</a>
-                        <div class="d-flex align-items-center justify-content-center mt-2">
-                            <h5>$18.00</h5><h6 class="text-muted ml-2"><del>$22.00</del></h6>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center mb-1">
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="text-muted ml-1">(110)</small>
-                        </div>
-                        <button class="btn btn-primary btn-block mt-3"><i class="fa fa-shopping-cart mr-2"></i>Agregar</button>
-                    </div>
+            <!-- Wrapper para inyección dinámica -->
+            <div class="col-12" id="combo-wrapper">
+                <div class="text-center py-5 w-100" id="cargando-combos">
+                    <div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando combos...</p>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Products End -->
 
-
+    <!-- MODAL INGREDIENTES COMBO -->
+    <div class="modal fade" id="modalIngredientes" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title font-weight-bold" style="color: var(--euro-blue);">
+                        <i class="fas fa-layer-group mr-2"></i>¿Qué incluye este combo?
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <h5 id="modalComboNombre" class="font-weight-bold text-dark"></h5>
+                    </div>
+                    <ul id="listaIngredientesCombo" class="list-group list-group-flush" style="max-height: 250px; overflow-y: auto;">
+                        <!-- Los ingredientes se cargan por JS -->
+                    </ul>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-primary btn-block text-blanco-puro font-weight-bold shadow-sm" data-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
-        <div class="row px-xl-5 pt-5">
-            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                <a href="index.html" class="text-decoration-none mb-4 d-block">
-                    <img src="img/logo-euro.png" alt="EuroCombo Logo" style="max-height: 50px; background-color: #fff; padding: 5px; border-radius: 8px;">
+        <div class="row px-xl-5 pt-5 justify-content-center">
+            <div class="col-lg-6 col-md-12 mb-5 text-center text-lg-left">
+                <a href="index.html" class="text-decoration-none mb-4 d-inline-block">
+                    <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="max-height: 140px; width: auto; object-fit: contain;">
                 </a>
-                <p class="mb-4 text-light">En EuroCombo llevamos la mejor selección de alimentos y combos directamente a tu puerta. Calidad, frescura y rapidez.</p>
-                <p class="mb-2 text-light"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Calle Principal, Ciudad, País</p>
-                <p class="mb-2 text-light"><i class="fa fa-envelope text-primary mr-3"></i>ventas@eurocombo.com</p>
-                <p class="mb-0 text-light"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
+                <p class="mb-4 text-light mt-3">En EuroCombo llevamos la mejor selección de alimentos y combos directamente a tu puerta. Calidad, frescura y rapidez.</p>
+                <p class="mb-2 text-light">
+                    <i class="fa fa-envelope text-primary mr-3"></i>
+                    <a href="mailto:robbycmf@gmail.com" class="text-light text-decoration-none">robbycmf@gmail.com</a>
+                </p>
+                <p class="mb-0 text-light">
+                    <i class="fab fa-whatsapp text-primary mr-3"></i>
+                    <a href="https://wa.me/5218662125516" target="_blank" class="text-light text-decoration-none">+52 1 866 212 5516</a>
+                </p>
             </div>
-            <div class="col-lg-8 col-md-12">
-                <div class="row">
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-white text-uppercase mb-4">Enlaces Rápidos</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-light mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
-                            <a class="text-light mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Tienda</a>
-                            <a class="text-light mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Ver Carrito</a>
-                            <a class="text-light mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Pagar</a>
-                            <a class="text-light" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-white text-uppercase mb-4">Mi Cuenta</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Mi Perfil</a>
-                            <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Mis Pedidos</a>
-                            <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Direcciones</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-white text-uppercase mb-4">Boletín Informativo</h5>
-                        <p class="text-light">Recibe nuestras mejores ofertas semanales de combos.</p>
-                        <form action="">
-                            <div class="input-group" style="border-radius: 25px; overflow: hidden;">
-                                <input type="text" class="form-control border-0" placeholder="Tu Correo Electrónico" style="border-radius: 0;">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" style="border-radius: 0;">Suscribirse</button>
-                                </div>
-                            </div>
-                        </form>
-                        <h6 class="text-white text-uppercase mt-4 mb-3">Síguenos</h6>
-                        <div class="d-flex">
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
+            <div class="col-lg-4 col-md-12 mb-5 text-center text-lg-left pl-lg-5">
+                <h5 class="text-white text-uppercase mb-4">Enlaces Rápidos</h5>
+                <div class="d-flex flex-column justify-content-center justify-content-lg-start">
+                    <a class="text-light mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
+                    <a class="text-light mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Tienda</a>
+                    <a class="text-light mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Ver Carrito</a>
+                    <a class="text-light" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
                 </div>
             </div>
         </div>
-        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
-            <div class="col-md-6 px-xl-0">
-                <p class="mb-md-0 text-center text-md-left text-light">
-                    &copy; <a class="text-primary font-weight-bold" href="#">EuroCombo</a>. Todos los derechos reservados.
+        <div class="row border-top mx-xl-5 py-4 mt-3" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-12 text-center text-light">
+                <p class="mb-0">
+                    &copy; <a class="text-primary font-weight-bold text-decoration-none" href="index.html">EuroCombo</a>. Todos los derechos reservados.
                 </p>
-            </div>
-            <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="Métodos de pago">
             </div>
         </div>
     </div>
     <!-- Footer End -->
 
-
     <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
+    <a href="#" class="btn btn-primary text-blanco-puro back-to-top"><i class="fa fa-angle-double-up text-blanco-puro"></i></a>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+    
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+    <!-- SCRIPT DINÁMICO COMPLETAMENTE RESTAURADO CON BUSCADOR -->
+    <script>
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let catalogoBusqueda = { productos: [], combos: [], categorias: [] };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inicializarBuscador(); 
+            cargarCategoriasCliente();
+            cargarProductosRecientes();
+            cargarCombosCarrusel();
+        });
+
+        // ==============================================================================
+        // 0. BUSCADOR EN TIEMPO REAL CON REDIRECCIÓN EXACTA
+        // ==============================================================================
+        async function inicializarBuscador() {
+            try {
+                const [resProd, resCombos, resCat] = await Promise.all([
+                    supabaseClient.from('productos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, categoria_id').eq('visible', true),
+                    supabaseClient.from('combos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, productos_ids').eq('visible', true),
+                    supabaseClient.from('categorias').select('id, nombre')
+                ]);
+
+                if(!resProd.error) catalogoBusqueda.productos = resProd.data;
+                if(!resCombos.error) catalogoBusqueda.combos = resCombos.data;
+                if(!resCat.error) catalogoBusqueda.categorias = resCat.data;
+
+                configurarEventosBuscador();
+            } catch (error) {
+                console.error("Error al inicializar buscador:", error);
+            }
+        }
+
+        function configurarEventosBuscador() {
+            const inputs = document.querySelectorAll('.searchInput'); 
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase().trim();
+                    const container = input.closest('.position-relative');
+                    const resultsBox = container.querySelector('.searchResults');
+                    
+                    if(query.length < 2) {
+                        resultsBox.style.display = 'none';
+                        return;
+                    }
+
+                    const catMatchedIds = catalogoBusqueda.categorias
+                        .filter(c => c.nombre.toLowerCase().includes(query))
+                        .map(c => c.id);
+
+                    const prodFiltrados = catalogoBusqueda.productos.filter(p => {
+                        return p.nombre.toLowerCase().includes(query) || catMatchedIds.includes(p.categoria_id);
+                    });
+                    const prodIdsMatched = prodFiltrados.map(p => p.id);
+
+                    const combosFiltrados = catalogoBusqueda.combos.filter(c => {
+                        if(c.nombre.toLowerCase().includes(query)) return true;
+                        if(query.includes('combo')) return true; 
+                        
+                        if(c.productos_ids) {
+                            return c.productos_ids.some(item => {
+                                const pId = item.id || item; 
+                                return prodIdsMatched.includes(pId); 
+                            });
+                        }
+                        return false;
+                    });
+
+                    dibujarResultadosBuscador(prodFiltrados, combosFiltrados, query, resultsBox);
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                inputs.forEach(input => {
+                    const resultsBox = input.closest('.position-relative').querySelector('.searchResults');
+                    if(!input.contains(e.target) && !resultsBox.contains(e.target)) {
+                        resultsBox.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function resaltarTexto(texto, query) {
+            if(!query) return texto;
+            const regex = new RegExp(`(${query})`, 'gi');
+            return texto.replace(regex, '<span class="text-primary font-weight-bold">$1</span>');
+        }
+
+        function dibujarResultadosBuscador(productos, combos, query, resultsBox) {
+            resultsBox.innerHTML = '';
+
+            if(productos.length === 0 && combos.length === 0) {
+                resultsBox.innerHTML = '<div class="p-3 text-center text-muted">No se encontraron resultados para esta búsqueda.</div>';
+                resultsBox.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+
+            if(combos.length > 0) {
+                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Combos Sugeridos</div>';
+                combos.forEach(c => {
+                    const imgUrl = c.imagen_url || 'https://via.placeholder.com/50?text=Combo';
+                    const nombreResaltado = resaltarTexto(c.nombre, query);
+                    const link = `shop.html?cat=combo&hl=combo_${c.id}`;
+                    const precio = c.en_oferta ? c.precio_oferta : c.precio;
+                    
+                    html += `
+                        <a href="${link}" class="search-result-item">
+                            <img src="${imgUrl}" class="search-img" alt="">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${nombreResaltado} <span class="badge badge-warning ml-1" style="font-size:0.6rem;">COMBO</span></h6>
+                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
+                            </div>
+                        </a>
+                    `;
+                });
+            }
+
+            if(productos.length > 0) {
+                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Productos Sugeridos</div>';
+                productos.forEach(p => {
+                    const imgUrl = p.imagen_url || 'https://via.placeholder.com/50?text=Producto';
+                    const nombreResaltado = resaltarTexto(p.nombre, query);
+                    const link = `shop.html?cat=${p.categoria_id}&hl=prod_${p.id}`;
+                    const precio = p.en_oferta ? p.precio_oferta : p.precio;
+                    
+                    html += `
+                        <a href="${link}" class="search-result-item">
+                            <img src="${imgUrl}" class="search-img" alt="">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${nombreResaltado}</h6>
+                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
+                            </div>
+                        </a>
+                    `;
+                });
+            }
+
+            resultsBox.innerHTML = html;
+            resultsBox.style.display = 'block';
+        }
+
+        // ==============================================================================
+        // 1. LÓGICA DE CATEGORÍAS (CON EFECTO FADE Y BOTONES RESTAURADOS)
+        // ==============================================================================
+        function generarTarjetaCategoria(cat, conteoProductos) {
+            const imgUrl = cat.imagen_url || 'https://via.placeholder.com/100?text=EuroCombo';
+            const cantidad = conteoProductos[cat.id] || 0; 
+            const textoProductos = cantidad === 1 ? '1 Producto' : `${cantidad} Productos`;
+
+            return `
+                <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                    <a class="text-decoration-none" href="shop.html?cat=${cat.id}">
+                        <div class="cat-item-card d-flex align-items-center mb-4">
+                            <div class="overflow-hidden" style="width: 100px; height: 100px; flex-shrink: 0; border-radius: 14px 0 0 14px;">
+                                <img class="img-fluid w-100 h-100" style="object-fit:cover;" src="${imgUrl}" alt="${cat.nombre}">
+                            </div>
+                            <div class="flex-fill pl-3 pr-2 py-2">
+                                <h6 class="font-weight-bold text-dark m-0" style="font-size: 1.05rem; line-height: 1.2;">${cat.nombre}</h6>
+                                <small class="text-muted mt-1 d-block">${textoProductos}</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        async function cargarCategoriasCliente() {
+            const containerPrinc = document.getElementById('categorias-principales');
+            const containerSecun = document.getElementById('categorias-secundarias');
+            const bloqueFade = document.getElementById('faded-categorias');
+            const btnEstatico = document.getElementById('boton-estatico-cat');
+            const cargando = document.getElementById('cargando-cat');
+
+            try {
+                const { data: categorias, error: catError } = await supabaseClient.from('categorias').select('*').order('nombre', { ascending: true });
+                if (catError) throw catError;
+
+                const { data: productos, error: prodError } = await supabaseClient.from('productos').select('categoria_id').eq('visible', true);
+                if (prodError) throw prodError;
+
+                const conteoProductos = {};
+                productos.forEach(prod => { conteoProductos[prod.categoria_id] = (conteoProductos[prod.categoria_id] || 0) + 1; });
+
+                if(cargando) cargando.remove();
+
+                if (categorias.length === 0) {
+                    containerPrinc.innerHTML = '<div class="col-12 text-center text-muted py-4"><p>Próximamente nuevas secciones.</p></div>';
+                    return;
+                }
+
+                const principales = categorias.slice(0, 8);
+                containerPrinc.innerHTML = principales.map(cat => generarTarjetaCategoria(cat, conteoProductos)).join('');
+
+                if (categorias.length > 8) {
+                    const secundarias = categorias.slice(8, 12); 
+                    containerSecun.innerHTML = secundarias.map(cat => generarTarjetaCategoria(cat, conteoProductos)).join('');
+                    bloqueFade.style.display = 'block'; 
+                } else {
+                    btnEstatico.style.display = 'flex'; 
+                }
+            } catch (err) {
+                console.error("Error categorías:", err);
+            }
+        }
+
+        // ==============================================================================
+        // 2. LÓGICA DE ÚLTIMOS PRODUCTOS (CON EFECTO FADE Y BOTÓN ORIGINAL MÓVIL)
+        // ==============================================================================
+        function generarTarjetaProducto(prod) {
+            const imgUrl = prod.imagen_url || 'https://via.placeholder.com/200?text=Sin+Foto';
+            const linkProducto = `shop.html?cat=${prod.categoria_id}&hl=prod_${prod.id}`;
+            const formatoTexto = prod.formato ? `<i class="fas fa-box text-black-50 mr-1"></i> ${prod.formato}` : '';
+            const marcaTexto = prod.marca ? `<span class="mx-1">|</span> <i class="fas fa-tag text-black-50 mr-1"></i> ${prod.marca}` : '';
+            
+            let precioHTML = `<h5 class="text-success font-weight-bold m-0">$${prod.precio.toFixed(2)}</h5>`;
+            let badgeOfertaHTML = ``;
+
+            if (prod.en_oferta && prod.precio_oferta) {
+                badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
+                precioHTML = `
+                    <h5 class="text-danger font-weight-bold m-0">$${prod.precio_oferta.toFixed(2)}</h5>
+                    <h6 class="text-muted ml-2 m-0"><del>$${prod.precio.toFixed(2)}</del></h6>
+                `;
+            }
+
+            return `
+                <div class="col-lg-3 col-md-4 col-sm-6 col-6 pb-1 mb-3">
+                    <div class="producto-card-cliente">
+                        <a href="${linkProducto}" class="text-decoration-none">
+                            <div class="producto-img-container">
+                                ${badgeOfertaHTML}
+                                <img src="${imgUrl}" alt="${prod.nombre}">
+                            </div>
+                        </a>
+                        <div class="text-center py-3 px-3 d-flex flex-column flex-grow-1">
+                            <a class="h6 text-decoration-none text-dark font-weight-bold mb-1" style="font-size: 1.1rem; line-height: 1.2;" href="${linkProducto}">
+                                ${prod.nombre}
+                            </a>
+                            <div class="small text-muted mb-2">${formatoTexto} ${marcaTexto}</div>
+                            
+                            <div class="d-flex align-items-center justify-content-center mt-auto mb-3">
+                                ${precioHTML}
+                            </div>
+                            <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="agregarAlCarritoLocal(${prod.id}, '${prod.nombre.replace(/'/g, "\\'")}')">
+                                <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function cargarProductosRecientes() {
+            const containerPrinc = document.getElementById('productos-principales');
+            const containerSecun = document.getElementById('productos-secundarios');
+            const bloqueFade = document.getElementById('faded-productos');
+            const btnEstatico = document.getElementById('boton-estatico-prod');
+            const cargando = document.getElementById('cargando-prod');
+
+            try {
+                const { data: productos, error } = await supabaseClient
+                    .from('productos').select('*').eq('visible', true).order('created_at', { ascending: false }).limit(16);
+
+                if (error) throw error;
+                if(cargando) cargando.remove();
+
+                if (productos.length === 0) {
+                    containerPrinc.innerHTML = '<div class="col-12 text-center text-muted py-4"><p>Aún no hay productos en la tienda.</p></div>';
+                    return;
+                }
+
+                const principales = productos.slice(0, 12);
+                containerPrinc.innerHTML = principales.map(p => generarTarjetaProducto(p)).join('');
+
+                if (productos.length > 12) {
+                    const secundarias = productos.slice(12, 16); 
+                    containerSecun.innerHTML = secundarias.map(p => generarTarjetaProducto(p)).join('');
+                    bloqueFade.style.display = 'block'; 
+                } else {
+                    btnEstatico.style.display = 'flex'; 
+                }
+            } catch (err) {
+                console.error("Error productos:", err);
+            }
+        }
+
+        // ==============================================================================
+        // 3. LÓGICA DEL CARRUSEL DE COMBOS
+        // ==============================================================================
+        async function cargarCombosCarrusel() {
+            const wrapper = $('#combo-wrapper');
+
+            try {
+                const { data: combos, error } = await supabaseClient
+                    .from('combos').select('*').eq('visible', true).order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (combos.length === 0) {
+                    wrapper.html('<div class="text-center text-muted w-100 py-4"><p>No hay combos disponibles.</p></div>');
+                    return;
+                }
+
+                let html = '<div class="owl-carousel related-carousel" id="carrusel-combos-dinamico">';
+                
+                combos.forEach(combo => {
+                    const imgUrl = combo.imagen_url || 'https://via.placeholder.com/300?text=Combo';
+                    let precioHTML = `<h5 class="text-success font-weight-bold m-0">$${combo.precio.toFixed(2)}</h5>`;
+                    let badgeOfertaHTML = ``;
+
+                    if (combo.en_oferta && combo.precio_oferta) {
+                        badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
+                        precioHTML = `<h5 class="text-danger font-weight-bold m-0">$${combo.precio_oferta.toFixed(2)}</h5><h6 class="text-muted ml-2 m-0"><del>$${combo.precio.toFixed(2)}</del></h6>`;
+                    }
+
+                    html += `
+                        <div class="product-item bg-white mb-4 mx-2 shadow-sm" style="border-radius: 15px; border: 1px solid #eee; overflow: hidden;">
+                            <div class="product-img position-relative overflow-hidden" style="height: 220px;">
+                                ${badgeOfertaHTML}
+                                <img class="img-fluid w-100 h-100" src="${imgUrl}" alt="${combo.nombre}" style="object-fit: cover;">
+                            </div>
+                            <div class="text-center py-4 px-3">
+                                <a class="h6 text-decoration-none text-dark font-weight-bold" href="shop.html?cat=combo&hl=combo_${combo.id}" style="font-size: 1.1rem; line-height: 1.2;">
+                                    ${combo.nombre}
+                                </a>
+                                <div class="d-flex align-items-center justify-content-center mt-2 mb-3">
+                                    ${precioHTML}
+                                </div>
+                                <button class="btn btn-outline-dark btn-sm btn-block mb-2 shadow-sm font-weight-bold" style="border-radius: 20px;" onclick="verIngredientesCombo(${combo.id}, '${combo.nombre.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-list mr-1"></i> Ver ingredientes
+                                </button>
+                                <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="agregarAlCarritoLocal(${combo.id}, '${combo.nombre.replace(/'/g, "\\'")}')">
+                                    <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+
+                wrapper.html(html);
+
+                $('#carrusel-combos-dinamico').owlCarousel({
+                    loop: true,           
+                    margin: 15,           
+                    nav: true,            
+                    navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'], 
+                    dots: false,
+                    autoplay: true,       
+                    autoplayTimeout: 3000,
+                    autoplayHoverPause: true, 
+                    responsive: {
+                        0: { items: 1 },
+                        576: { items: 2 },
+                        768: { items: 3 },
+                        992: { items: 4 }
+                    }
+                });
+
+            } catch (err) {
+                console.error("Error combos:", err);
+            }
+        }
+
+        // ==============================================================================
+        // 4. ANIMACIÓN Y VER INGREDIENTES
+        // ==============================================================================
+        window.agregarAlCarritoLocal = function(id, nombre) {
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check text-blanco-puro mr-2"></i>¡Agregado!';
+            btn.classList.replace('btn-primary', 'bg-success');
+            btn.classList.add('border-success', 'text-blanco-puro');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.replace('bg-success', 'btn-primary');
+                btn.classList.remove('border-success');
+            }, 1000);
+        }
+
+        window.verIngredientesCombo = async function(comboId, comboNombre) {
+            $('#carrusel-combos-dinamico').trigger('stop.owl.autoplay');
+            
+            document.getElementById('modalComboNombre').innerText = comboNombre;
+            const lista = document.getElementById('listaIngredientesCombo');
+            lista.innerHTML = '<li class="list-group-item text-center border-0"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando productos...</p></li>';
+            $('#modalIngredientes').modal('show');
+
+            try {
+                const { data: comboData, error: comboErr } = await supabaseClient
+                    .from('combos').select('productos_ids').eq('id', comboId).single();
+                
+                if (comboErr || !comboData.productos_ids) throw new Error("No se pudieron cargar los ingredientes.");
+
+                const { data: productos, error: prodErr } = await supabaseClient
+                    .from('productos').select('id, nombre');
+
+                if (prodErr) throw new Error("Error cargando el catálogo.");
+
+                lista.innerHTML = '';
+                const items = comboData.productos_ids;
+                
+                if(items.length === 0) {
+                    lista.innerHTML = '<li class="list-group-item text-center text-muted border-0">Este combo no tiene productos asignados.</li>';
+                }
+
+                items.forEach(item => {
+                    const prodId = item.id || item; 
+                    const qty = item.cantidad || 1;
+                    const prodInfo = productos.find(p => p.id === prodId);
+                    
+                    if(prodInfo) {
+                        lista.innerHTML += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-2 border-bottom">
+                                <span class="text-dark"><i class="fas fa-check text-success mr-2"></i>${prodInfo.nombre}</span>
+                                <span class="badge badge-primary badge-pill text-blanco-puro shadow-sm px-2 py-1">${qty}x</span>
+                            </li>
+                        `;
+                    }
+                });
+
+            } catch(e) {
+                lista.innerHTML = `<li class="list-group-item text-center text-danger border-0">${e.message}</li>`;
+            }
+        }
+
+        $('#modalIngredientes').on('hidden.bs.modal', function () {
+            $('#carrusel-combos-dinamico').trigger('play.owl.autoplay', [3000]); 
+        });
+    </script>
 </body>
 
 </html>
