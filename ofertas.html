@@ -85,7 +85,7 @@
             .producto-card-cliente .text-muted { font-size: 0.7rem; margin-bottom: 5px !important; }
             .producto-card-cliente h5 { font-size: 0.95rem !important; }
             .producto-card-cliente h6 del { font-size: 0.75rem !important; }
-            .producto-card-cliente .btn { padding: 4px 8px; font-size: 0.75rem; border-radius: 15px !important; }
+            .producto-card-cliente .btn { padding: 4px 8px; font-size: 0.75rem; border-radius: 15px !important; margin-bottom: 5px; }
             .badge-oferta { font-size: 0.6rem; padding: 2px 6px; top: 5px; left: 5px; }
         }
     </style>
@@ -145,9 +145,18 @@
                     <a href="index.html" class="text-decoration-none d-lg-none">
                         <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: 5px;">
                     </a>
-                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+
+                    <!-- BOTÓN DE CARRITO MÓVIL Y BOTÓN DE MENÚ -->
+                    <div class="d-flex align-items-center d-lg-none">
+                        <a href="cart.html" class="btn px-0 ml-2 mr-3 position-relative">
+                            <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                            <span class="badge text-white bg-primary border border-secondary rounded-circle cart-badge" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.html" class="nav-item nav-link">Inicio</a>
@@ -162,16 +171,15 @@
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contacto</a>
                         </div>
+                        
+                        <!-- CARRITO ESCRITORIO (Sin corazón) -->
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="" class="btn px-0">
-                                <i class="fas fa-heart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
-                            </a>
                             <a href="cart.html" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">3</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle cart-badge" style="padding-bottom: 2px;">0</span>
                             </a>
                         </div>
+
                     </div>
                 </nav>
             </div>
@@ -312,10 +320,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             inicializarBuscador();
             cargarOfertas();
+            actualizarBadgeCarrito(); // Inicializar conteo de carrito
         });
 
         // ==============================================================================
-        // 1. BUSCADOR EN TIEMPO REAL CON REDIRECCIÓN EXACTA
+        // 1. BUSCADOR EN TIEMPO REAL
         // ==============================================================================
         async function inicializarBuscador() {
             try {
@@ -446,9 +455,8 @@
             resultsBox.style.display = 'block';
         }
 
-
         // ==============================================================================
-        // 2. CARGAR OFERTAS
+        // 2. CARGAR OFERTAS DESDE SUPABASE
         // ==============================================================================
         async function cargarOfertas() {
             const contCombos = document.getElementById('contenedor-ofertas-combos');
@@ -482,8 +490,8 @@
                                         <button class="btn btn-outline-dark btn-sm btn-block mb-2 shadow-sm font-weight-bold" style="border-radius: 20px;" onclick="verIngredientesCombo(${combo.id}, '${combo.nombre.replace(/'/g, "\\'")}')">
                                             <i class="fas fa-list mr-1"></i> Ver ingredientes
                                         </button>
-                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="btnAnim(this)">
-                                            <i class="fa fa-shopping-cart text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-plus text-white"></i></span><span class="d-none d-sm-inline"> Agregar</span>
+                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="agregarAlCarritoLocal(${combo.id}, '${combo.nombre.replace(/'/g, "\\'")}', ${combo.precio_oferta}, '${imgUrl}', 'combo')">
+                                            <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
                                         </button>
                                     </div>
                                 </div>
@@ -491,7 +499,8 @@
                     });
                     contCombos.innerHTML = htmlCombos;
                 }
-// CARGAR PRODUCTOS EN OFERTA
+
+                // CARGAR PRODUCTOS EN OFERTA
                 const { data: productos, error: errProds } = await supabaseClient
                     .from('productos').select('*').eq('visible', true).eq('en_oferta', true);
 
@@ -527,8 +536,8 @@
                                             <h5 class="text-danger font-weight-bold m-0">$${prod.precio_oferta.toFixed(2)}</h5>
                                             <h6 class="text-muted ml-2 m-0"><del>$${prod.precio.toFixed(2)}</del></h6>
                                         </div>
-                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="btnAnim(this)">
-                                            <i class="fa fa-shopping-cart text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-plus text-white"></i></span><span class="d-none d-sm-inline"> Agregar</span>
+                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="agregarAlCarritoLocal(${prod.id}, '${prod.nombre.replace(/'/g, "\\'")}', ${prod.precio_oferta}, '${imgUrl}', 'producto')">
+                                            <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
                                         </button>
                                     </div>
                                 </div>
@@ -541,7 +550,9 @@
             }
         }
 
-        // Lógica Modal Ingredientes
+        // ==============================================================================
+        // 3. LÓGICA MODAL INGREDIENTES
+        // ==============================================================================
         window.verIngredientesCombo = async function(comboId, comboNombre) {
             document.getElementById('modalComboNombre').innerText = comboNombre;
             const lista = document.getElementById('listaIngredientesCombo');
@@ -577,16 +588,47 @@
             }
         }
 
-        window.btnAnim = function(btn) {
+        // ==============================================================================
+        // 4. LÓGICA DEL CARRITO (LOCALSTORAGE)
+        // ==============================================================================
+        window.agregarAlCarritoLocal = function(id, nombre, precio, imagen_url, tipo) {
+            const btn = event.currentTarget;
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-check text-white"></i></span><span class="d-none d-sm-inline"> ¡Agregado!</span>';
+            
+            let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
+            let productoExistente = carrito.find(item => item.id === id && item.tipo === tipo);
+
+            if (productoExistente) {
+                productoExistente.cantidad += 1; 
+            } else {
+                carrito.push({
+                    id: id,
+                    nombre: nombre,
+                    precio: parseFloat(precio),
+                    imagen_url: imagen_url,
+                    tipo: tipo, 
+                    cantidad: 1
+                });
+            }
+
+            localStorage.setItem('euroCarrito', JSON.stringify(carrito));
+            actualizarBadgeCarrito();
+
+            btn.innerHTML = '<i class="fas fa-check text-blanco-puro mr-2"></i>¡Agregado!';
             btn.classList.replace('btn-primary', 'bg-success');
-            btn.classList.add('border-success');
+            btn.classList.add('border-success', 'text-blanco-puro');
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.classList.replace('bg-success', 'btn-primary');
-                btn.classList.remove('border-success');
+                btn.classList.remove('border-success', 'text-blanco-puro');
             }, 1000);
+        }
+
+        function actualizarBadgeCarrito() {
+            let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
+            let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            const badges = document.querySelectorAll('.cart-badge');
+            badges.forEach(badge => { badge.innerText = totalItems; });
         }
     </script>
 </body>

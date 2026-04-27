@@ -19,6 +19,12 @@
     <style>
         body .btn.btn-primary, body .btn.btn-primary:hover, body .btn.btn-primary i { color: #ffffff !important; }
         
+        .text-blanco-puro, 
+        .text-blanco-puro:hover, 
+        .text-blanco-puro i {
+            color: #ffffff !important;
+        }
+
         .producto-card-cliente { background-color: #ffffff; border-radius: 15px; border: 1px solid #eee; transition: all 0.3s ease; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); height: 100%; display: flex; flex-direction: column; }
         .producto-card-cliente:hover { border-color: var(--combo-green); box-shadow: 0 8px 25px rgba(23, 107, 40, 0.15); transform: translateY(-4px); }
         .producto-img-container { height: 200px; width: 100%; position: relative; background: #f8f9fa; overflow: hidden; }
@@ -117,9 +123,18 @@
                     <a href="index.html" class="text-decoration-none d-lg-none">
                         <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: 5px;">
                     </a>
-                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+                    
+                    <!-- BOTÓN DE CARRITO MÓVIL Y BOTÓN DE MENÚ -->
+                    <div class="d-flex align-items-center d-lg-none">
+                        <a href="cart.html" class="btn px-0 ml-2 mr-3 position-relative">
+                            <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                            <span class="badge text-white bg-primary border border-secondary rounded-circle cart-badge" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.html" class="nav-item nav-link">Inicio</a>
@@ -135,13 +150,9 @@
                             <a href="contact.html" class="nav-item nav-link">Contacto</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="" class="btn px-0">
-                                <i class="fas fa-heart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
-                            </a>
                             <a href="cart.html" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle cart-badge" style="padding-bottom: 2px;">0</span>
                             </a>
                         </div>
                     </div>
@@ -311,6 +322,7 @@
             await inicializarTienda();
             configurarEventosFiltros();
             leerFiltrosDeURL(); 
+            actualizarBadgeCarrito(); // Inicializar conteo de carrito
         });
 
         // ==========================================
@@ -534,7 +546,6 @@
                     const imgUrl = item.imagen_url || 'https://via.placeholder.com/300?text=EuroCombo';
                     const link = isCombo ? `detail.html?combo=${item.id}` : `detail.html?id=${item.id}`;
                     
-                    // Aquí está la magia: Agregamos el formato y la MARCA si existen
                     let subtituloHTML = '';
                     if (!isCombo) {
                         const txtFormato = item.formato ? `<i class="fas fa-box text-black-50 mr-1"></i>${item.formato}` : '';
@@ -557,7 +568,9 @@
                     let btnIngredientes = isCombo ? `<button class="btn btn-outline-dark btn-sm btn-block mb-2 shadow-sm font-weight-bold" style="border-radius: 20px;" onclick="verIngredientesCombo(${item.id}, '${item.nombre.replace(/'/g, "\\'")}')"><i class="fas fa-list mr-1"></i> Ver ingredientes</button>` : '';
 
                     const divId = isCombo ? `combo_${item.id}` : `prod_${item.id}`;
+                    const tipoParam = isCombo ? 'combo' : 'producto';
 
+                    // BOTÓN DE AGREGAR AL CARRITO (IDÉNTICO AL DEL INDEX)
                     html += `
                         <div class="col-lg-4 col-md-6 col-sm-6 col-6 pb-1 mb-4" id="${divId}">
                             <div class="producto-card-cliente h-100">
@@ -569,8 +582,8 @@
                                     ${subtituloHTML}
                                     <div class="d-flex align-items-center justify-content-center mt-auto mb-3">${precioHTML}</div>
                                     ${btnIngredientes}
-                                    <button class="btn btn-primary btn-block font-weight-bold shadow-sm text-white mt-auto" onclick="agregarAlCarritoLocal(${item.id}, '${item.nombre.replace(/'/g, "\\'")}')">
-                                        <i class="fa fa-shopping-cart text-white mr-2 d-none d-sm-inline"></i><span class="d-sm-none">Agregar</span><span class="d-none d-sm-inline"> al Carrito</span>
+                                    <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm mt-auto" onclick="agregarAlCarritoLocal(${item.id}, '${item.nombre.replace(/'/g, "\\'")}', ${item.finalPrice}, '${imgUrl}', '${tipoParam}')">
+                                        <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
                                     </button>
                                 </div>
                             </div>
@@ -645,7 +658,7 @@
         }
 
         // ==========================================
-        // 5. MODAL INGREDIENTES Y BOTÓN AGREGAR
+        // 5. MODAL INGREDIENTES Y LÓGICA DE CARRITO GLOBAL
         // ==========================================
         window.verIngredientesCombo = async function(comboId, comboNombre) {
             document.getElementById('modalComboNombre').innerText = comboNombre;
@@ -664,13 +677,53 @@
             } catch(e) { }
         }
 
-        window.agregarAlCarritoLocal = function(id, nombre) {
+        // NUEVA FUNCIÓN AGREGAR AL CARRITO LOCALSTORAGE (Homologada con index.html)
+        window.agregarAlCarritoLocal = function(id, nombre, precio, imagen_url, tipo) {
             const btn = event.currentTarget;
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check text-white mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-check text-white"></i></span><span class="d-none d-sm-inline"> ¡Agregado!</span>';
+            
+            // Obtener carrito actual
+            let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
+            
+            // Buscar si el producto ya existe
+            let productoExistente = carrito.find(item => item.id === id && item.tipo === tipo);
+
+            if (productoExistente) {
+                productoExistente.cantidad += 1; 
+            } else {
+                carrito.push({
+                    id: id,
+                    nombre: nombre,
+                    precio: parseFloat(precio),
+                    imagen_url: imagen_url,
+                    tipo: tipo, 
+                    cantidad: 1
+                });
+            }
+
+            // Guardar y actualizar
+            localStorage.setItem('euroCarrito', JSON.stringify(carrito));
+            actualizarBadgeCarrito();
+
+            // Animación del botón
+            btn.innerHTML = '<i class="fas fa-check text-blanco-puro mr-2"></i>¡Agregado!';
             btn.classList.replace('btn-primary', 'bg-success');
-            btn.classList.add('border-success');
-            setTimeout(() => { btn.innerHTML = originalText; btn.classList.replace('bg-success', 'btn-primary'); btn.classList.remove('border-success'); }, 1000);
+            btn.classList.add('border-success', 'text-blanco-puro');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.replace('bg-success', 'btn-primary');
+                btn.classList.remove('border-success', 'text-blanco-puro');
+            }, 1000);
+        }
+
+        // Función auxiliar para actualizar la burbuja con el número de items
+        function actualizarBadgeCarrito() {
+            let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
+            let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            
+            // Actualiza todos los iconos de carrito que tengan la clase 'cart-badge'
+            const badges = document.querySelectorAll('.cart-badge');
+            badges.forEach(badge => { badge.innerText = totalItems; });
         }
     </script>
 </body>

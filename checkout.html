@@ -18,84 +18,116 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Libraries Stylesheet -->
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 
-    
+    <!-- PWA / App Móvil -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0A2E5B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EuroAdmin">
+    <link rel="apple-touch-icon" href="img/logo-euro2.png">
+
+    <style>
+        /* ESTILOS HOMOLOGADOS DEL INDEX */
+        body .btn.btn-primary, 
+        body .btn.btn-primary:hover, 
+        body .btn.btn-primary:focus, 
+        body .btn.btn-primary:active,
+        body .btn.btn-primary i {
+            color: #ffffff !important;
+        }
+        .text-blanco-puro, 
+        .text-blanco-puro:hover, 
+        .text-blanco-puro i {
+            color: #ffffff !important;
+        }
+
+        /* BOTÓN WHATSAPP */
+        .btn-whatsapp { background-color: #25D366; border-color: #25D366; color: white !important; }
+        .btn-whatsapp:hover { background-color: #1ebe5d; border-color: #1ebe5d; color: white !important; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
+
+        /* ESTILOS DEL RESULTADO DEL BUSCADOR EN TIEMPO REAL */
+        .search-result-item { display: flex; align-items: center; padding: 10px 15px; border-bottom: 1px solid #eee; transition: background 0.2s; text-decoration: none !important; }
+        .search-result-item:hover { background-color: #f8f9fa; }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; margin-right: 15px; }
+
+        /* VALIDACIONES FORMULARIO */
+        .is-invalid { border-color: #dc3545 !important; }
+        
+        /* EFECTO HOVER EN COMBOS PARA DESPLEGABLE */
+        .combo-header:hover { background-color: #f8f9fa; border-radius: 5px; }
+    </style>
 </head>
 
 <body>
-    
-        <!-- HEADER BLANCO CON LOGO MÁS GRANDE -->
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <!-- HEADER SOLO PARA COMPUTADORAS -->
         <div class="row align-items-center bg-light py-2 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
                 <a href="index.html" class="text-decoration-none d-flex align-items-center">
-                    <!-- LOGO EUROCOMBO -->
                     <img src="img/logo-euro.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: -10px; margin-bottom: -10px;">
                 </a>
             </div>
-            <div class="col-lg-4 col-6 text-left">
-                <form action="">
+            <div class="col-lg-4 col-6 text-left position-relative">
+                <form onsubmit="event.preventDefault();">
                     <div class="input-group shadow-sm" style="border-radius: 25px;">
-                        <input type="text" class="form-control border-light" placeholder="¿Qué se te antoja hoy? Buscar productos...">
+                        <input type="text" class="form-control border-light searchInput" placeholder="¿Qué se te antoja hoy? Buscar productos..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
                         <div class="input-group-append">
-                            <span class="input-group-text border-light text-primary">
+                            <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
                                 <i class="fa fa-search"></i>
                             </span>
                         </div>
                     </div>
                 </form>
+                <!-- CAJA DE RESULTADOS ESCRITORIO -->
+                <div class="searchResults dropdown-menu w-100 shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050; max-height: 400px; overflow-y: auto; border-radius: 15px; margin-top: 5px;"></div>
             </div>
             <div class="col-lg-4 col-6 text-right">
                 <p class="m-0 text-muted">Atención al Cliente</p>
-                <h5 class="m-0 text-dark" style="font-weight: 700;">+012 345 6789</h5>
+                <h5 class="m-0 text-dark" style="font-weight: 700;">
+                    <a href="tel:+5218662125516" class="text-dark text-decoration-none">+52 1 866 212 5516</a>
+                </h5>
             </div>
         </div>
     </div>
     <!-- Topbar End -->
 
-
     <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
-                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
-                    <h6 class="text-white m-0"><i class="fa fa-bars mr-2"></i>Ver Menú</h6>
-                    <i class="fa fa-angle-down text-white"></i>
+                <a class="btn d-flex align-items-center justify-content-between bg-primary text-blanco-puro w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
+                    <h6 class="text-blanco-puro m-0"><i class="fa fa-bars mr-2"></i>Ver Menú</h6>
+                    <i class="fa fa-angle-down text-blanco-puro"></i>
                 </a>
                 <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light shadow" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999; border-radius: 0 0 15px 15px;">
                     <div class="navbar-nav w-100" style="padding-bottom: 10px;">
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-toggle font-weight-bold" data-toggle="dropdown">Combos Familiares <i class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded border-0 m-0 shadow-sm">
-                                <a href="" class="dropdown-item">Desayunos</a>
-                                <a href="" class="dropdown-item">Almuerzos</a>
-                                <a href="" class="dropdown-item">Parrilladas</a>
-                            </div>
-                        </div>
-                        <a href="" class="nav-item nav-link">Cárnicos y Aves</a>
-                        <a href="" class="nav-item nav-link">Embutidos Premium</a>
-                        <a href="" class="nav-item nav-link">Quesos y Lácteos</a>
-                        <a href="" class="nav-item nav-link">Bebidas y Licores</a>
-                        <a href="" class="nav-item nav-link">Snacks y Postres</a>
-                        <a href="" class="nav-item nav-link">Frutas y Verduras</a>
-                        <a href="" class="nav-item nav-link">Despensa Básica</a>
+                        <a href="shop.html?cat=combo" class="nav-item nav-link font-weight-bold">Combos Familiares</a>
+                        <a href="shop.html" class="nav-item nav-link">Ver Todo el Catálogo</a>
                     </div>
                 </nav>
             </div>
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
-                    <!-- LOGO MÓVIL NUEVO (SIN FONDO BLANCO) -->
                     <a href="index.html" class="text-decoration-none d-lg-none">
                         <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: 5px;">
                     </a>
-                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+
+                    <!-- BOTÓN DE CARRITO MÓVIL Y BOTÓN DE MENÚ -->
+                    <div class="d-flex align-items-center d-lg-none">
+                        <a href="cart.html" class="btn px-0 ml-2 mr-3 position-relative">
+                            <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                            <span class="badge text-white bg-primary border border-secondary rounded-circle cart-badge" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.html" class="nav-item nav-link">Inicio</a>
@@ -110,14 +142,12 @@
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contacto</a>
                         </div>
+                        
+                        <!-- CARRITO ESCRITORIO -->
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="" class="btn px-0">
-                                <i class="fas fa-heart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
-                            </a>
                             <a href="cart.html" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">3</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle cart-badge" style="padding-bottom: 2px;">0</span>
                             </a>
                         </div>
                     </div>
@@ -127,6 +157,25 @@
     </div>
     <!-- Navbar End -->
 
+    <!-- BUSCADOR MÓVIL START -->
+    <div class="container-fluid d-lg-none mb-3 mt-3">
+        <div class="row px-xl-5">
+            <div class="col-12 position-relative">
+                <form onsubmit="event.preventDefault();">
+                    <div class="input-group shadow-sm" style="border-radius: 25px;">
+                        <input type="text" class="form-control border-light searchInput" placeholder="Buscar productos..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
+                        <div class="input-group-append">
+                            <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <div class="searchResults dropdown-menu shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 15px; width: calc(100% - 30px); z-index: 1050; max-height: 300px; overflow-y: auto; border-radius: 15px; margin-top: 5px;"></div>
+            </div>
+        </div>
+    </div>
+    <!-- BUSCADOR MÓVIL END -->
 
     <!-- Breadcrumb Start -->
     <div class="container-fluid">
@@ -135,6 +184,7 @@
                 <nav class="breadcrumb bg-white shadow-sm mb-30" style="border-radius: 15px;">
                     <a class="breadcrumb-item text-dark" href="index.html">Inicio</a>
                     <a class="breadcrumb-item text-dark" href="shop.html">Tienda</a>
+                    <a class="breadcrumb-item text-dark" href="cart.html">Carrito</a>
                     <span class="breadcrumb-item active">Finalizar Compra</span>
                 </nav>
             </div>
@@ -142,174 +192,79 @@
     </div>
     <!-- Breadcrumb End -->
 
+    <!-- MENSAJE PROFESIONAL -->
+    <div class="container-fluid mb-3">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <div class="alert shadow-sm border-0" style="background-color: var(--euro-blue); color: white; border-radius: 15px; font-size: 1.05rem;">
+                    <i class="fas fa-handshake mr-2" style="color: var(--cart-orange); font-size: 1.3rem;"></i> 
+                    <strong>¡Gracias por tu preferencia!</strong> Estás a un paso de disfrutar los mejores productos. Por favor, completa tus datos para enviar tu pedido directamente a nuestro equipo a través de WhatsApp.
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Checkout Start -->
     <div class="container-fluid">
         <div class="row px-xl-5">
             <!-- Columna de Datos de Envío -->
             <div class="col-lg-8">
-                <h5 class="section-title position-relative text-uppercase mb-3 text-dark"><span class="bg-secondary pr-3">Detalles de Facturación y Envío</span></h5>
-                <div class="bg-white p-30 mb-5">
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label>Nombre</label>
-                            <input class="form-control" type="text" placeholder="Ej. Juan">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Apellidos</label>
-                            <input class="form-control" type="text" placeholder="Ej. Pérez">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Correo Electrónico</label>
-                            <input class="form-control" type="email" placeholder="ejemplo@correo.com">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Teléfono Móvil (Para la entrega)</label>
-                            <input class="form-control" type="text" placeholder="+123 456 789">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Dirección de Envío (Calle y Número)</label>
-                            <input class="form-control" type="text" placeholder="Av. Principal 123">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Referencia (Opcional)</label>
-                            <input class="form-control" type="text" placeholder="Casa de portón azul...">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>País / Región</label>
-                            <select class="custom-select">
-                                <option selected>Selecciona tu país...</option>
-                                <option>España</option>
-                                <option>México</option>
-                                <option>Colombia</option>
-                                <option>Argentina</option>
-                                <option>Chile</option>
-                                <option>Perú</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Ciudad</label>
-                            <input class="form-control" type="text" placeholder="Ej. Madrid">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Estado / Provincia</label>
-                            <input class="form-control" type="text" placeholder="Ej. Madrid">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Código Postal</label>
-                            <input class="form-control" type="text" placeholder="28001">
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="newaccount">
-                                <label class="custom-control-label" for="newaccount">Crear una cuenta para futuras compras</label>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="shipto">
-                                <label class="custom-control-label" for="shipto"  data-toggle="collapse" data-target="#shipping-address">Enviar a una dirección diferente</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Dirección de envío alternativa (oculta por defecto) -->
-                <div class="collapse mb-5" id="shipping-address">
-                    <h5 class="section-title position-relative text-uppercase mb-3 text-dark"><span class="bg-secondary pr-3">Dirección de Entrega Alternativa</span></h5>
-                    <div class="bg-white p-30">
+                <h5 class="section-title position-relative text-uppercase mb-3 text-dark"><span class="bg-secondary pr-3">Detalles de Entrega</span></h5>
+                <div class="bg-white p-4 mb-5 shadow-sm" style="border-radius: 15px;">
+                    
+                    <form id="formulario-pedido">
                         <div class="row">
-                            <div class="col-md-6 form-group">
-                                <label>Nombre de quien recibe</label>
-                                <input class="form-control" type="text" placeholder="Ej. María">
+                            <div class="col-md-6 form-group mb-4">
+                                <label class="font-weight-bold text-dark">Nombre <span class="text-danger">*</span></label>
+                                <input class="form-control bg-light border-0 py-4" type="text" id="c-nombre" placeholder="Ej. Juan" required style="border-radius: 10px;">
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Apellidos</label>
-                                <input class="form-control" type="text" placeholder="Ej. López">
+                            <div class="col-md-6 form-group mb-4">
+                                <label class="font-weight-bold text-dark">Apellidos <span class="text-danger">*</span></label>
+                                <input class="form-control bg-light border-0 py-4" type="text" id="c-apellidos" placeholder="Ej. Pérez" required style="border-radius: 10px;">
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Teléfono Móvil</label>
-                                <input class="form-control" type="text" placeholder="+123 456 789">
+                            <div class="col-md-6 form-group mb-4">
+                                <label class="font-weight-bold text-dark">Cédula de Identidad (CI) <span class="text-danger">*</span></label>
+                                <input class="form-control bg-light border-0 py-4" type="text" id="c-ci" placeholder="Ej. 12345678" required style="border-radius: 10px;">
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Dirección</label>
-                                <input class="form-control" type="text" placeholder="Calle Secundaria 456">
+                            <div class="col-md-6 form-group mb-4">
+                                <label class="font-weight-bold text-dark">Teléfono Móvil <span class="text-danger">*</span></label>
+                                <input class="form-control bg-light border-0 py-4" type="tel" id="c-telefono" placeholder="Ej. 123 456 7890" required style="border-radius: 10px;">
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Ciudad</label>
-                                <input class="form-control" type="text" placeholder="Ciudad">
+                            <div class="col-md-12 form-group mb-4">
+                                <label class="font-weight-bold text-dark">Dirección Exacta de Envío <span class="text-danger">*</span></label>
+                                <input class="form-control bg-light border-0 py-4" type="text" id="c-direccion" placeholder="Calle, Número de casa, Zona/Barrio" required style="border-radius: 10px;">
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Código Postal</label>
-                                <input class="form-control" type="text" placeholder="12345">
+                            <div class="col-md-12 form-group mb-2">
+                                <label class="font-weight-bold text-dark">Referencia del domicilio (Opcional)</label>
+                                <textarea class="form-control bg-light border-0" id="c-referencia" rows="2" placeholder="Ej. Casa de portón azul junto a la farmacia..." style="border-radius: 10px;"></textarea>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
             
-            <!-- Columna de Resumen de Pedido y Pago -->
+            <!-- Columna de Resumen de Pedido y Botón -->
             <div class="col-lg-4">
-                <!-- Resumen -->
                 <h5 class="section-title position-relative text-uppercase mb-3 text-dark"><span class="bg-secondary pr-3">Tu Pedido</span></h5>
-                <div class="bg-white p-30 mb-5">
-                    <div class="border-bottom">
-                        <h6 class="mb-3 text-muted">Productos</h6>
-                        <div class="d-flex justify-content-between">
-                            <p class="text-dark font-weight-bold">Combo Parrillero (x1)</p>
-                            <p>$45.00</p>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p class="text-dark font-weight-bold">Pack Desayuno (x2)</p>
-                            <p>$40.00</p>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p class="text-dark font-weight-bold">Surtido Embutidos (x1)</p>
-                            <p>$35.00</p>
-                        </div>
+                <div class="bg-white p-4 mb-5 shadow-sm" style="border-radius: 15px;">
+                    
+                    <div class="border-bottom pb-2" id="checkout-items">
+                        <!-- INYECCIÓN DINÁMICA DE PRODUCTOS -->
+                        <div class="text-center py-3"><div class="spinner-border text-primary spinner-border-sm"></div> Cargando detalles del pedido...</div>
                     </div>
-                    <div class="border-bottom pt-3 pb-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h6 class="text-muted">Subtotal</h6>
-                            <h6 class="text-dark font-weight-bold">$120.00</h6>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="text-muted">Envío a Domicilio</h6>
-                            <h6 class="text-dark font-weight-bold">$5.00</h6>
-                        </div>
-                    </div>
+
                     <div class="pt-3">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5 class="text-dark font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold" style="color: var(--cart-orange);">$125.00</h5>
+                        <div class="d-flex justify-content-between mt-2 mb-4">
+                            <h5 class="text-dark font-weight-bold">Total a Pagar</h5>
+                            <h5 class="font-weight-bold" style="color: var(--cart-orange);" id="checkout-total">$0.00</h5>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Metodos de pago -->
-                <div class="mb-5">
-                    <h5 class="section-title position-relative text-uppercase mb-3 text-dark"><span class="bg-secondary pr-3">Método de Pago</span></h5>
-                    <div class="bg-white p-30">
-                        <div class="form-group">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="card" checked>
-                                <label class="custom-control-label text-dark font-weight-bold" for="card">Tarjeta de Crédito / Débito</label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="paypal">
-                                <label class="custom-control-label text-dark font-weight-bold" for="paypal">PayPal</label>
-                            </div>
-                        </div>
-                        <div class="form-group mb-4">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="cash">
-                                <label class="custom-control-label text-dark font-weight-bold" for="cash">Efectivo contra entrega</label>
-                            </div>
-                            <small class="text-muted d-block mt-2 ml-4">Ideal para recibir tus alimentos y pagar directamente al repartidor.</small>
-                        </div>
-                        <button class="btn btn-block btn-primary font-weight-bold py-3 shadow-sm" style="font-size: 1.1rem;">Confirmar Pedido</button>
+                        
+                        <button type="button" class="btn btn-whatsapp text-blanco-puro btn-block font-weight-bold py-3 shadow-sm transition" style="border-radius: 25px; font-size: 1.1rem;" onclick="enviarPedidoWhatsApp()">
+                            Enviar por WhatsApp <i class="fab fa-whatsapp ml-2 text-blanco-puro" style="font-size: 1.3rem;"></i>
+                        </button>
+                        <p class="text-center text-muted mt-3 mb-0" style="font-size: 0.8rem;">
+                            Serás redirigido a WhatsApp para confirmar los detalles con un asesor de ventas.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -317,90 +272,360 @@
     </div>
     <!-- Checkout End -->
 
-
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
-        <div class="row px-xl-5 pt-5">
-            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                <a href="index.html" class="text-decoration-none mb-4 d-block">
-                    <img src="img/logo-euro.png" alt="EuroCombo Logo" style="max-height: 50px; background-color: #fff; padding: 5px; border-radius: 8px;">
+        <div class="row px-xl-5 pt-5 justify-content-center">
+            <div class="col-lg-6 col-md-12 mb-5 text-center text-lg-left">
+                <a href="index.html" class="text-decoration-none mb-4 d-inline-block">
+                    <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="max-height: 140px; width: auto; object-fit: contain;">
                 </a>
-                <p class="mb-4 text-light">En EuroCombo llevamos la mejor selección de alimentos y combos directamente a tu puerta. Calidad, frescura y rapidez.</p>
-                <p class="mb-2 text-light"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Calle Principal, Ciudad, País</p>
-                <p class="mb-2 text-light"><i class="fa fa-envelope text-primary mr-3"></i>ventas@eurocombo.com</p>
-                <p class="mb-0 text-light"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
+                <p class="mb-4 text-light mt-3">En EuroCombo llevamos la mejor selección de alimentos y combos directamente a tu puerta. Calidad, frescura y rapidez.</p>
+                <p class="mb-2 text-light">
+                    <i class="fa fa-envelope text-primary mr-3"></i>
+                    <a href="mailto:robbycmf@gmail.com" class="text-light text-decoration-none">robbycmf@gmail.com</a>
+                </p>
+                <p class="mb-0 text-light">
+                    <i class="fab fa-whatsapp text-primary mr-3"></i>
+                    <a href="https://wa.me/5218662125516" target="_blank" class="text-light text-decoration-none">+52 1 866 212 5516</a>
+                </p>
             </div>
-            <div class="col-lg-8 col-md-12">
-                <div class="row">
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-white text-uppercase mb-4">Enlaces Rápidos</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-light mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
-                            <a class="text-light mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Tienda</a>
-                            <a class="text-light mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Ver Carrito</a>
-                            <a class="text-light mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Pagar</a>
-                            <a class="text-light" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-white text-uppercase mb-4">Mi Cuenta</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Mi Perfil</a>
-                            <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Mis Pedidos</a>
-                            <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Direcciones</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-white text-uppercase mb-4">Boletín Informativo</h5>
-                        <p class="text-light">Recibe nuestras mejores ofertas semanales de combos.</p>
-                        <form action="">
-                            <div class="input-group" style="border-radius: 25px; overflow: hidden;">
-                                <input type="text" class="form-control border-0" placeholder="Tu Correo Electrónico" style="border-radius: 0;">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" style="border-radius: 0;">Suscribirse</button>
-                                </div>
-                            </div>
-                        </form>
-                        <h6 class="text-white text-uppercase mt-4 mb-3">Síguenos</h6>
-                        <div class="d-flex">
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
+            <div class="col-lg-4 col-md-12 mb-5 text-center text-lg-left pl-lg-5">
+                <h5 class="text-white text-uppercase mb-4">Enlaces Rápidos</h5>
+                <div class="d-flex flex-column justify-content-center justify-content-lg-start">
+                    <a class="text-light mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
+                    <a class="text-light mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Tienda</a>
+                    <a class="text-light mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Ver Carrito</a>
+                    <a class="text-light" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
                 </div>
             </div>
         </div>
-        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
-            <div class="col-md-6 px-xl-0">
-                <p class="mb-md-0 text-center text-md-left text-light">
-                    &copy; <a class="text-primary font-weight-bold" href="#">EuroCombo</a>. Todos los derechos reservados.
+        <div class="row border-top mx-xl-5 py-4 mt-3" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-12 text-center text-light">
+                <p class="mb-0">
+                    &copy; <a class="text-primary font-weight-bold text-decoration-none" href="index.html">EuroCombo</a>. Todos los derechos reservados.
                 </p>
-            </div>
-            <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="Métodos de pago">
             </div>
         </div>
     </div>
     <!-- Footer End -->
 
-
     <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
+    <a href="#" class="btn btn-primary text-blanco-puro back-to-top"><i class="fa fa-angle-double-up text-blanco-puro"></i></a>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+        let catalogoBusqueda = { productos: [], combos: [], categorias: [] };
+        let totalGeneralPedido = 0;
+        let resumenWhatsAppGlobal = "";
+
+        // DICCIONARIO DE EMOJIS NATIVOS
+        const E_WAVE  = '👋';
+        const E_CLIP  = '📋';
+        const E_USER  = '👤';
+        const E_ID    = '🆔';
+        const E_PHONE = '📞';
+        const E_PIN   = '📍';
+        const E_MEMO  = '📝';
+        const E_BAG   = '🛍️';
+        const E_CART  = '🛒';
+        const E_BOX   = '📦';
+        const E_DOT   = '🔸';
+        const E_MONEY = '💰';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inicializarBuscador();
+            actualizarBadgeCarrito();
+            renderizarResumenCheckout();
+        });
+
+        // ==============================================================================
+        // LÓGICA DEL CARRITO Y RESUMEN AVANZADO (CON MARCAS Y COMBOS DESPLEGABLES)
+        // ==============================================================================
+        function obtenerCarrito() {
+            let carritoGuardado = localStorage.getItem('euroCarrito');
+            return carritoGuardado ? JSON.parse(carritoGuardado) : [];
+        }
+
+        function actualizarBadgeCarrito() {
+            let carrito = obtenerCarrito();
+            let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            const badges = document.querySelectorAll('.cart-badge');
+            badges.forEach(badge => { badge.innerText = totalItems; });
+        }
+
+        async function renderizarResumenCheckout() {
+            let carrito = obtenerCarrito();
+            let contenedor = document.getElementById('checkout-items');
+            
+            if(carrito.length === 0) {
+                window.location.href = 'cart.html'; 
+                return;
+            }
+
+            try {
+                const { data: dbProductos } = await supabaseClient.from('productos').select('id, nombre, formato, marca');
+                const { data: dbCombos } = await supabaseClient.from('combos').select('id, productos_ids');
+
+                let html = '<h6 class="mb-3 text-muted">Productos seleccionados:</h6>';
+                totalGeneralPedido = 0;
+                resumenWhatsAppGlobal = ""; 
+
+                carrito.forEach((item, index) => {
+                    let subtotal = item.precio * item.cantidad;
+                    totalGeneralPedido += subtotal;
+
+                    if (item.tipo === 'producto') {
+                        let prodDB = dbProductos.find(p => p.id === item.id);
+                        let detallesHTML = "";
+                        let wDetalle = "";
+
+                        if(prodDB && (prodDB.formato || prodDB.marca)) {
+                            let f = prodDB.formato || '';
+                            let m = prodDB.marca ? ` | ${prodDB.marca}` : '';
+                            detallesHTML = `<div class="small text-muted mt-1"><i class="fas fa-tag mr-1 text-black-50"></i>${f}${m}</div>`;
+                            wDetalle = ` (${f}${m})`.trim();
+                        }
+
+                        html += `
+                            <div class="mb-3 pb-3 border-bottom" style="border-color: #f5f5f5 !important;">
+                                <div class="d-flex justify-content-between">
+                                    <div style="max-width: 75%;">
+                                        <p class="text-dark font-weight-semi-bold m-0" style="font-size: 0.95rem;">${item.cantidad}x ${item.nombre}</p>
+                                        ${detallesHTML}
+                                    </div>
+                                    <p class="m-0 font-weight-bold text-dark">$${subtotal.toFixed(2)}</p>
+                                </div>
+                            </div>
+                        `;
+                        resumenWhatsAppGlobal += `${E_CART} ${item.cantidad}x ${item.nombre}${wDetalle} - $${subtotal.toFixed(2)}\n`;
+                    } 
+                    else if (item.tipo === 'combo') {
+                        let comboDB = dbCombos.find(c => c.id === item.id);
+                        let listaIngredientesHtml = '';
+                        let wIngredientes = '';
+
+                        if(comboDB && comboDB.productos_ids && comboDB.productos_ids.length > 0) {
+                            listaIngredientesHtml += `
+                                <div class="collapse mt-2" id="collapseCombo${index}">
+                                    <ul class="list-unstyled ml-2 mb-0" style="font-size: 0.8rem; border-left: 2px solid var(--cart-orange); padding-left: 10px;">
+                            `;
+
+                            comboDB.productos_ids.forEach(pItem => {
+                                let pId = pItem.id || pItem;
+                                let pQty = pItem.cantidad || 1;
+                                let prodInfo = dbProductos.find(p => p.id === pId);
+
+                                if(prodInfo) {
+                                    let f = prodInfo.formato || '';
+                                    let m = prodInfo.marca ? ` | ${prodInfo.marca}` : '';
+                                    let txtDetalle = (f || m) ? ` <span class="text-muted">(${f}${m})</span>` : '';
+                                    
+                                    listaIngredientesHtml += `<li class="mb-1 py-1"><i class="fas fa-check text-success mr-1"></i> ${pQty}x ${prodInfo.nombre}${txtDetalle}</li>`;
+                                    
+                                    let wTxt = (f || m) ? ` (${f}${m})`.trim() : '';
+                                    wIngredientes += `   ${E_DOT} ${pQty}x ${prodInfo.nombre}${wTxt}\n`;
+                                }
+                            });
+                            listaIngredientesHtml += `</ul></div>`;
+                        }
+
+                        html += `
+                            <div class="mb-3 pb-3 border-bottom" style="border-color: #f5f5f5 !important;">
+                                <div class="d-flex justify-content-between align-items-center combo-header p-1" data-toggle="collapse" data-target="#collapseCombo${index}" style="cursor: pointer;">
+                                    <div style="max-width: 75%;">
+                                        <p class="text-dark font-weight-semi-bold m-0" style="font-size: 0.95rem;">
+                                            ${item.cantidad}x ${item.nombre} <span class="badge badge-warning ml-1" style="font-size: 0.6rem;">COMBO</span>
+                                            <i class="fas fa-chevron-down ml-2 text-muted" style="font-size: 0.8rem;"></i>
+                                        </p>
+                                    </div>
+                                    <p class="m-0 font-weight-bold text-dark">$${subtotal.toFixed(2)}</p>
+                                </div>
+                                ${listaIngredientesHtml}
+                            </div>
+                        `;
+                        
+                        resumenWhatsAppGlobal += `${E_BOX} ${item.cantidad}x ${item.nombre} (COMBO) - $${subtotal.toFixed(2)}\n${wIngredientes}`;
+                    }
+                });
+
+                contenedor.innerHTML = html;
+                document.getElementById('checkout-total').innerText = `$${totalGeneralPedido.toFixed(2)}`;
+
+            } catch (error) {
+                console.error("Error al renderizar resumen avanzado:", error);
+                contenedor.innerHTML = '<div class="text-danger text-center">Ocurrió un error al cargar los detalles.</div>';
+            }
+        }
+
+        // ==============================================================================
+        // LÓGICA DE ENVÍO A WHATSAPP Y VALIDACIONES
+        // ==============================================================================
+        function enviarPedidoWhatsApp() {
+            const inputNombre = document.getElementById('c-nombre');
+            const inputApellidos = document.getElementById('c-apellidos');
+            const inputCI = document.getElementById('c-ci');
+            const inputTelefono = document.getElementById('c-telefono');
+            const inputDireccion = document.getElementById('c-direccion');
+            const inputReferencia = document.getElementById('c-referencia');
+
+            const nombre = inputNombre.value.trim();
+            const apellidos = inputApellidos.value.trim();
+            const ci = inputCI.value.trim();
+            const telefono = inputTelefono.value.trim();
+            const direccion = inputDireccion.value.trim();
+            const referencia = inputReferencia.value.trim() || 'Sin referencia';
+
+            const inputs = [inputNombre, inputApellidos, inputCI, inputTelefono, inputDireccion];
+            inputs.forEach(input => input.classList.remove('is-invalid'));
+
+            let hayErrores = false;
+            if(!nombre) { inputNombre.classList.add('is-invalid'); hayErrores = true; }
+            if(!apellidos) { inputApellidos.classList.add('is-invalid'); hayErrores = true; }
+            if(!ci) { inputCI.classList.add('is-invalid'); hayErrores = true; }
+            if(!telefono) { inputTelefono.classList.add('is-invalid'); hayErrores = true; }
+            if(!direccion) { inputDireccion.classList.add('is-invalid'); hayErrores = true; }
+
+            if(hayErrores) {
+                alert("⚠️ Por favor, completa todos los campos marcados en rojo antes de enviar tu pedido.");
+                return;
+            }
+
+            // Construir el mensaje de WhatsApp usando las variables nativas de emoji
+            let mensaje = `*¡Hola EuroCombo!* ${E_WAVE}\nQuiero confirmar el siguiente pedido:\n\n`;
+            
+            mensaje += `${E_CLIP} *DATOS DE ENTREGA*\n`;
+            mensaje += `${E_USER} Nombre: ${nombre} ${apellidos}\n`;
+            mensaje += `${E_ID} CI: ${ci}\n`;
+            mensaje += `${E_PHONE} Teléfono: ${telefono}\n`;
+            mensaje += `${E_PIN} Dirección: ${direccion}\n`;
+            mensaje += `${E_MEMO} Referencia: ${referencia}\n\n`;
+
+            mensaje += `${E_BAG} *RESUMEN DE COMPRA*\n`;
+            mensaje += resumenWhatsAppGlobal;
+            mensaje += `\n${E_MONEY} *TOTAL A PAGAR: $${totalGeneralPedido.toFixed(2)}*\n\n`;
+            mensaje += `¡Quedo a la espera de su confirmación!`;
+
+            // Redirigir a WhatsApp
+            const numeroWhatsApp = "5218662125516";
+            const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            
+            window.open(urlWhatsApp, '_blank');
+        }
+
+        // ==============================================================================
+        // LÓGICA DEL BUSCADOR EN TIEMPO REAL
+        // ==============================================================================
+        async function inicializarBuscador() {
+            try {
+                const [resProd, resCombos, resCat] = await Promise.all([
+                    supabaseClient.from('productos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, categoria_id').eq('visible', true),
+                    supabaseClient.from('combos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, productos_ids').eq('visible', true),
+                    supabaseClient.from('categorias').select('id, nombre')
+                ]);
+
+                if(!resProd.error) catalogoBusqueda.productos = resProd.data;
+                if(!resCombos.error) catalogoBusqueda.combos = resCombos.data;
+                if(!resCat.error) catalogoBusqueda.categorias = resCat.data;
+
+                configurarEventosBuscador();
+            } catch (error) {
+                console.error("Error al inicializar buscador:", error);
+            }
+        }
+
+        function configurarEventosBuscador() {
+            const inputs = document.querySelectorAll('.searchInput'); 
+            inputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase().trim();
+                    const container = input.closest('.position-relative');
+                    const resultsBox = container.querySelector('.searchResults');
+                    
+                    if(query.length < 2) { resultsBox.style.display = 'none'; return; }
+
+                    const catMatchedIds = catalogoBusqueda.categorias.filter(c => c.nombre.toLowerCase().includes(query)).map(c => c.id);
+                    const prodFiltrados = catalogoBusqueda.productos.filter(p => p.nombre.toLowerCase().includes(query) || catMatchedIds.includes(p.categoria_id));
+                    const prodIdsMatched = prodFiltrados.map(p => p.id);
+
+                    const combosFiltrados = catalogoBusqueda.combos.filter(c => {
+                        if(c.nombre.toLowerCase().includes(query)) return true;
+                        if(query.includes('combo')) return true; 
+                        if(c.productos_ids) return c.productos_ids.some(item => prodIdsMatched.includes(item.id || item));
+                        return false;
+                    });
+
+                    dibujarResultadosBuscador(prodFiltrados, combosFiltrados, query, resultsBox);
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                inputs.forEach(input => {
+                    const resultsBox = input.closest('.position-relative').querySelector('.searchResults');
+                    if(!input.contains(e.target) && !resultsBox.contains(e.target)) resultsBox.style.display = 'none';
+                });
+            });
+        }
+
+        function resaltarTexto(texto, query) {
+            if(!query) return texto;
+            return texto.replace(new RegExp(`(${query})`, 'gi'), '<span class="text-primary font-weight-bold">$1</span>');
+        }
+
+        function dibujarResultadosBuscador(productos, combos, query, resultsBox) {
+            resultsBox.innerHTML = '';
+            if(productos.length === 0 && combos.length === 0) {
+                resultsBox.innerHTML = '<div class="p-3 text-center text-muted">No se encontraron resultados.</div>';
+                resultsBox.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+            if(combos.length > 0) {
+                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Combos</div>';
+                combos.forEach(c => {
+                    const imgUrl = c.imagen_url || 'https://via.placeholder.com/50';
+                    const link = `shop.html?cat=combo&hl=combo_${c.id}`;
+                    const precio = c.en_oferta ? c.precio_oferta : c.precio;
+                    html += `
+                        <a href="${link}" class="search-result-item">
+                            <img src="${imgUrl}" class="search-img" alt="">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${resaltarTexto(c.nombre, query)}</h6>
+                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
+                            </div>
+                        </a>`;
+                });
+            }
+
+            if(productos.length > 0) {
+                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Productos</div>';
+                productos.forEach(p => {
+                    const imgUrl = p.imagen_url || 'https://via.placeholder.com/50';
+                    const link = `shop.html?cat=${p.categoria_id}&hl=prod_${p.id}`;
+                    const precio = p.en_oferta ? p.precio_oferta : p.precio;
+                    html += `
+                        <a href="${link}" class="search-result-item">
+                            <img src="${imgUrl}" class="search-img" alt="">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${resaltarTexto(p.nombre, query)}</h6>
+                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
+                            </div>
+                        </a>`;
+                });
+            }
+            resultsBox.innerHTML = html;
+            resultsBox.style.display = 'block';
+        }
+    </script>
 </body>
-
 </html>

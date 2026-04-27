@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -141,9 +142,18 @@
                     <a href="index.html" class="text-decoration-none d-lg-none">
                         <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: 5px;">
                     </a>
-                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+
+                    <!-- BOTÓN DE CARRITO MÓVIL Y BOTÓN DE MENÚ -->
+                    <div class="d-flex align-items-center d-lg-none">
+                        <a href="cart.html" class="btn px-0 ml-2 mr-3 position-relative">
+                            <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                            <span class="badge text-white bg-primary border border-secondary rounded-circle cart-badge" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.html" class="nav-item nav-link">Inicio</a>
@@ -158,14 +168,12 @@
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contacto</a>
                         </div>
+                        
+                        <!-- CARRITO ESCRITORIO (Sin el corazón) -->
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="" class="btn px-0">
-                                <i class="fas fa-heart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
-                            </a>
                             <a href="cart.html" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">3</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle cart-badge" style="padding-bottom: 2px;">0</span>
                             </a>
                         </div>
                     </div>
@@ -307,6 +315,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             inicializarBuscador();
             cargarNovedades();
+            actualizarBadgeCarrito(); // Inicializar conteo del carrito
         });
 
         // ==============================================================================
@@ -468,10 +477,12 @@
                     let htmlCombos = '';
                     combos.forEach(combo => {
                         const imgUrl = combo.imagen_url || 'https://via.placeholder.com/300';
+                        let precioFinal = combo.precio;
                         let precioHTML = `<h5 class="text-success font-weight-bold m-0">$${combo.precio.toFixed(2)}</h5>`;
                         let badgeOfertaHTML = ``;
 
                         if (combo.en_oferta && combo.precio_oferta) {
+                            precioFinal = combo.precio_oferta;
                             badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
                             precioHTML = `
                                 <h5 class="text-danger font-weight-bold m-0">$${combo.precio_oferta.toFixed(2)}</h5>
@@ -494,8 +505,8 @@
                                         <button class="btn btn-outline-dark btn-sm btn-block mb-2 shadow-sm font-weight-bold" style="border-radius: 20px;" onclick="verIngredientesCombo(${combo.id}, '${combo.nombre.replace(/'/g, "\\'")}')">
                                             <i class="fas fa-list mr-1"></i> Ver ingredientes
                                         </button>
-                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="btnAnim(this)">
-                                            <i class="fa fa-shopping-cart text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-plus text-white"></i></span><span class="d-none d-sm-inline"> Agregar</span>
+                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="agregarAlCarritoLocal(${combo.id}, '${combo.nombre.replace(/'/g, "\\'")}', ${precioFinal}, '${imgUrl}', 'combo')">
+                                            <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
                                         </button>
                                     </div>
                                 </div>
@@ -527,10 +538,12 @@
                             subtituloHTML = `<div class="small text-muted mb-2">${txtFormato} ${txtMarca}</div>`;
                         }
 
+                        let precioFinal = prod.precio;
                         let precioHTML = `<h5 class="text-success font-weight-bold m-0">$${prod.precio.toFixed(2)}</h5>`;
                         let badgeOfertaHTML = ``;
 
                         if (prod.en_oferta && prod.precio_oferta) {
+                            precioFinal = prod.precio_oferta;
                             badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
                             precioHTML = `
                                 <h5 class="text-danger font-weight-bold m-0">$${prod.precio_oferta.toFixed(2)}</h5>
@@ -553,8 +566,8 @@
                                         <div class="d-flex align-items-center justify-content-center mt-auto mb-3">
                                             ${precioHTML}
                                         </div>
-                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="btnAnim(this)">
-                                            <i class="fa fa-shopping-cart text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-plus text-white"></i></span><span class="d-none d-sm-inline"> Agregar</span>
+                                        <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="agregarAlCarritoLocal(${prod.id}, '${prod.nombre.replace(/'/g, "\\'")}', ${precioFinal}, '${imgUrl}', 'producto')">
+                                            <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
                                         </button>
                                     </div>
                                 </div>
@@ -603,14 +616,54 @@
             }
         }
 
-        window.btnAnim = function(btn) {
+        // ==============================================================================
+        // 3. LÓGICA DEL CARRITO (LOCALSTORAGE)
+        // ==============================================================================
+        window.agregarAlCarritoLocal = function(id, nombre, precio, imagen_url, tipo) {
+            const btn = event.currentTarget;
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check text-blanco-puro mr-1 d-none d-sm-inline"></i><span class="d-sm-none"><i class="fas fa-check text-white"></i></span><span class="d-none d-sm-inline"> ¡Agregado!</span>';
+            
+            // Obtener carrito actual
+            let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
+            
+            // Buscar si el producto ya existe
+            let productoExistente = carrito.find(item => item.id === id && item.tipo === tipo);
+
+            if (productoExistente) {
+                productoExistente.cantidad += 1; 
+            } else {
+                carrito.push({
+                    id: id,
+                    nombre: nombre,
+                    precio: parseFloat(precio),
+                    imagen_url: imagen_url,
+                    tipo: tipo, 
+                    cantidad: 1
+                });
+            }
+
+            // Guardar y actualizar
+            localStorage.setItem('euroCarrito', JSON.stringify(carrito));
+            actualizarBadgeCarrito();
+
+            // Animación del botón
+            btn.innerHTML = '<i class="fas fa-check text-blanco-puro mr-2"></i>¡Agregado!';
             btn.classList.replace('btn-primary', 'bg-success');
+            btn.classList.add('border-success', 'text-blanco-puro');
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.classList.replace('bg-success', 'btn-primary');
+                btn.classList.remove('border-success');
             }, 1000);
+        }
+
+        function actualizarBadgeCarrito() {
+            let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
+            let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            
+            // Actualiza todos los iconos de carrito que tengan la clase 'cart-badge'
+            const badges = document.querySelectorAll('.cart-badge');
+            badges.forEach(badge => { badge.innerText = totalItems; });
         }
     </script>
 </body>
