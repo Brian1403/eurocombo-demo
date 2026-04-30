@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Reseñas - EuroCombo</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <!-- Favicon -->
+    <link href="img/logo-euro2.png" rel="icon" type="image/png">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; }
+        
+        body .btn.btn-primary, body .btn.btn-primary:hover, body .btn.btn-primary i {
+            color: #ffffff !important;
+        }
+
+        .resena-card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .resena-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border-bottom: 4px solid var(--cart-orange);
+            transform: translateY(-3px);
+        }
+
+        /* Buscador móvil/escritorio igual a tu index */
+        .search-result-item { display: flex; align-items: center; padding: 10px 15px; border-bottom: 1px solid #eee; text-decoration: none !important; }
+        .search-result-item:hover { background-color: #f8f9fa; }
+        .search-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; margin-right: 15px; }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row align-items-center bg-light py-2 px-xl-5 d-none d-lg-flex">
+            <div class="col-lg-4">
+                <a href="index.html" class="text-decoration-none d-flex align-items-center">
+                    <img src="img/logo-euro.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: -10px; margin-bottom: -10px;">
+                </a>
+            </div>
+            <div class="col-lg-4 col-6 text-left position-relative">
+                <form onsubmit="event.preventDefault();">
+                    <div class="input-group shadow-sm" style="border-radius: 25px;">
+                        <input type="text" class="form-control border-light searchInput" placeholder="Buscar productos..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
+                        <div class="input-group-append">
+                            <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                </form>
+                <div class="searchResults dropdown-menu w-100 shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050; max-height: 400px; overflow-y: auto; border-radius: 15px; margin-top: 5px;"></div>
+            </div>
+            <div class="col-lg-4 col-6 text-right">
+                <p class="m-0 text-muted">Atención al Cliente</p>
+                <h5 class="m-0 text-dark" style="font-weight: 700;">
+                    <a href="tel:+5218662125516" class="text-dark text-decoration-none">+52 1 866 212 5516</a>
+                </h5>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <div class="container-fluid bg-dark mb-30">
+        <div class="row px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px; color: white;">
+                    <h6 class="text-white m-0"><i class="fa fa-bars mr-2"></i>Ver Menú</h6>
+                    <i class="fa fa-angle-down text-white"></i>
+                </a>
+                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light shadow" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999; border-radius: 0 0 15px 15px;">
+                    <div class="navbar-nav w-100" style="padding-bottom: 10px;">
+                        <a href="shop.html?cat=combo" class="nav-item nav-link font-weight-bold">Combos Familiares</a>
+                        <a href="shop.html" class="nav-item nav-link">Ver Todo el Catálogo</a>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
+                    <a href="index.html" class="text-decoration-none d-lg-none">
+                        <img src="img/logo-euro-movil.png" alt="Logo" style="height: 100px; margin-top: 5px;">
+                    </a>
+                    <div class="d-flex align-items-center d-lg-none">
+                        <a href="cart.html" class="btn px-0 ml-2 mr-3 position-relative">
+                            <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                            <span class="badge text-white bg-primary cart-badge rounded-circle" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse"><span class="navbar-toggler-icon"></span></button>
+                    </div>
+
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="index.html" class="nav-item nav-link">Inicio</a>
+                            <a href="shop.html" class="nav-item nav-link">Tienda</a>
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Carrito <i class="fa fa-angle-down mt-1"></i></a>
+                                <div class="dropdown-menu bg-light rounded border-0 m-0 shadow">
+                                    <a href="cart.html" class="dropdown-item">Ver Carrito</a>
+                                    <a href="checkout.html" class="dropdown-item">Ir a Pagar</a>
+                                </div>
+                            </div>
+                            <!-- AQUI ESTÁ EL ENLACE A RESEÑAS ACTIVO -->
+                            <a href="resenas.html" class="nav-item nav-link active">Reseñas</a>
+                            <a href="contact.html" class="nav-item nav-link">Contacto</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
+                            <a href="cart.html" class="btn px-0 ml-3">
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle cart-badge" style="padding-bottom: 2px;">0</span>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30 shadow-sm" style="border-radius: 15px;">
+                    <a class="breadcrumb-item text-dark" href="index.html">Inicio</a>
+                    <span class="breadcrumb-item active">Reseñas</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- SECCIÓN RESEÑAS START -->
+    <div class="container-fluid pt-3 pb-5">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark"><span class="bg-secondary pr-3">Lo que dicen nuestros clientes</span></h2>
+        
+        <!-- Carrusel de Reseñas -->
+        <div class="row px-xl-5 mb-5">
+            <div class="col-12">
+                <div id="carrusel-resenas" class="owl-carousel related-carousel">
+                    <!-- Las reseñas se inyectan aquí con JS -->
+                    <div class="text-center py-5 w-100"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando opiniones...</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario para dejar reseña -->
+        <div class="row px-xl-5 justify-content-center mt-4">
+            <div class="col-lg-8">
+                <div class="bg-white p-4 p-md-5 shadow-sm" style="border-radius: 15px; border-top: 5px solid var(--cart-orange);">
+                    <div class="text-center mb-4">
+                        <h4 class="font-weight-bold text-dark"><i class="fas fa-comment-dots text-primary mr-2"></i>Cuéntanos tu experiencia</h4>
+                        <p class="text-muted">Tu opinión es muy importante para nosotros y para futuros clientes.</p>
+                    </div>
+                    
+                    <form id="form-resena">
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <label class="small font-weight-bold text-muted mb-1">Nombre o Apodo *</label>
+                                <input type="text" id="resNombre" class="form-control bg-light" placeholder="Ej: Familia López" required style="border-radius: 10px; border: 1px solid #e0e0e0; height: 50px;">
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                <label class="small font-weight-bold text-muted mb-1">Calificación *</label>
+                                <select id="resEstrellas" class="form-control bg-light font-weight-bold text-warning" style="border-radius: 10px; border: 1px solid #e0e0e0; height: 50px; cursor: pointer;">
+                                    <option value="5">⭐⭐⭐⭐⭐ ¡Excelente!</option>
+                                    <option value="4">⭐⭐⭐⭐ Muy Bueno</option>
+                                    <option value="3">⭐⭐⭐ Bueno</option>
+                                    <option value="2">⭐⭐ Regular</option>
+                                    <option value="1">⭐ Podría mejorar</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="small font-weight-bold text-muted mb-1">Tu Opinión *</label>
+                            <textarea id="resOpinion" class="form-control bg-light" rows="4" placeholder="¿Qué te pareció la calidad y el servicio?" required style="border-radius: 10px; border: 1px solid #e0e0e0;"></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg text-white font-weight-bold shadow-sm px-5" style="border-radius: 25px;" id="btnEnviarResena">
+                                <i class="fas fa-paper-plane mr-2"></i>Publicar Reseña
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- SECCIÓN RESEÑAS END -->
+
+    <!-- Footer Start (Igual) -->
+    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
+        <div class="row px-xl-5 pt-5 justify-content-center">
+            <div class="col-lg-6 col-md-12 mb-5 text-center text-lg-left">
+                <img src="img/logo-euro-movil.png" alt="Logo" style="max-height: 140px;" class="mb-4">
+                <p class="mb-4 text-light">En EuroCombo llevamos la mejor selección de alimentos y combos directamente a tu puerta.</p>
+                <p class="mb-2 text-light"><i class="fa fa-envelope text-primary mr-3"></i>robbycmf@gmail.com</p>
+                <p class="mb-0 text-light"><i class="fab fa-whatsapp text-primary mr-3"></i>+52 1 866 212 5516</p>
+            </div>
+            <div class="col-lg-4 col-md-12 mb-5 text-center text-lg-left pl-lg-5">
+                <h5 class="text-white text-uppercase mb-4">Enlaces Rápidos</h5>
+                <div class="d-flex flex-column justify-content-center justify-content-lg-start">
+                    <a class="text-light mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
+                    <a class="text-light mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Tienda</a>
+                    <a class="text-light mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Ver Carrito</a>
+                    <a class="text-light" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top mx-xl-5 py-4 mt-3" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-12 text-center text-light">
+                <p class="mb-0">&copy; <a class="text-primary font-weight-bold text-decoration-none" href="index.html">EuroCombo</a>. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top" style="color: white !important;"><i class="fa fa-angle-double-up text-white"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarBadgeCarrito(); 
+            cargarResenas(); 
+            inicializarBuscador(); // Por si buscan algo desde esta página
+        });
+
+        function actualizarBadgeCarrito() {
+            let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
+            let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            document.querySelectorAll('.cart-badge').forEach(badge => { badge.innerText = totalItems; });
+        }
+
+        // ==========================================
+        // 1. CARGAR RESEÑAS EN EL CARRUSEL
+        // ==========================================
+        async function cargarResenas() {
+            const wrapper = $('#carrusel-resenas');
+            
+            try {
+                // Solo traemos las visibles (aprobadas o publicadas)
+                const { data: resenas, error } = await supabaseClient
+                    .from('resenas')
+                    .select('*')
+                    .eq('visible', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (resenas.length === 0) {
+                    wrapper.html('<div class="text-center text-muted w-100 py-5 bg-white shadow-sm" style="border-radius: 15px;"><i class="fas fa-comment-slash fa-2x mb-3 text-black-50"></i><p class="m-0">Aún no hay opiniones. ¡Sé el primero en contarnos tu experiencia!</p></div>');
+                    return;
+                }
+
+                if (wrapper.hasClass('owl-loaded')) {
+                    wrapper.trigger('destroy.owl.carousel');
+                    wrapper.removeClass('owl-loaded');
+                    wrapper.empty();
+                }
+
+                let html = '';
+                resenas.forEach(r => {
+                    let estrellasHtml = '';
+                    for(let i=0; i<5; i++) {
+                        if(i < r.estrellas) estrellasHtml += '<i class="fas fa-star text-warning"></i>';
+                        else estrellasHtml += '<i class="far fa-star text-warning"></i>';
+                    }
+                    
+                    const fecha = new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                    html += `
+                        <div class="resena-card p-4 mx-2 mt-2 mb-2">
+                            <div>
+                                <div class="mb-2" style="font-size: 0.9rem;">${estrellasHtml}</div>
+                                <p class="m-0 text-dark" style="font-size: 0.95rem; font-style: italic; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">"${r.opinion}"</p>
+                            </div>
+                            <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                                <h6 class="font-weight-bold m-0 text-primary"><i class="fas fa-user-circle mr-2"></i>${r.nombre}</h6>
+                                <small class="text-muted">${fecha}</small>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                wrapper.html(html);
+
+                // Inicializar OwlCarousel (Muestra 3 reseñas a la vez en PC)
+                wrapper.owlCarousel({
+                    loop: resenas.length > 3,           
+                    margin: 15,           
+                    nav: false,            
+                    dots: true,
+                    autoplay: true,       
+                    autoplayTimeout: 5000,
+                    autoplayHoverPause: true, 
+                    responsive: {
+                        0: { items: 1 },
+                        768: { items: 2 },
+                        992: { items: 3 }
+                    }
+                });
+
+            } catch (err) {
+                console.error("Error al cargar reseñas:", err);
+                wrapper.html('<div class="text-center text-danger w-100 py-4">Error al cargar las reseñas.</div>');
+            }
+        }
+
+        // ==========================================
+        // 2. ENVIAR NUEVA RESEÑA A SUPABASE
+        // ==========================================
+        document.getElementById('form-resena').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviarResena');
+            const originalText = btn.innerHTML;
+            
+            const nombre = document.getElementById('resNombre').value.trim();
+            const estrellas = parseInt(document.getElementById('resEstrellas').value);
+            const opinion = document.getElementById('resOpinion').value.trim();
+
+            if(!nombre || !opinion) return;
+
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Enviando...';
+            btn.disabled = true;
+
+            try {
+                // Se guardan por defecto como visible: true
+                const { error } = await supabaseClient.from('resenas').insert([{
+                    nombre: nombre,
+                    estrellas: estrellas,
+                    opinion: opinion,
+                    visible: true 
+                }]);
+
+                if(error) throw error;
+
+                document.getElementById('form-resena').reset();
+                btn.innerHTML = '<i class="fas fa-check text-white mr-2"></i>¡Opinión publicada!';
+                btn.classList.replace('btn-primary', 'bg-success');
+                
+                // Recargar el carrusel para ver la nueva reseña
+                cargarResenas(); 
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.replace('bg-success', 'btn-primary');
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch(err) {
+                console.error(err);
+                alert("Hubo un error al enviar tu reseña. Intenta de nuevo.");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // (Opcional) Funcionalidad básica del buscador global en esta página
+        let catalogoBusqueda = { productos: [], combos: [], categorias: [] };
+        async function inicializarBuscador() {
+            try {
+                const [resProd, resCombos, resCat] = await Promise.all([
+                    supabaseClient.from('productos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, categoria_id').eq('visible', true),
+                    supabaseClient.from('combos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta').eq('visible', true),
+                    supabaseClient.from('categorias').select('id, nombre')
+                ]);
+                if(!resProd.error) catalogoBusqueda.productos = resProd.data;
+                if(!resCombos.error) catalogoBusqueda.combos = resCombos.data;
+                if(!resCat.error) catalogoBusqueda.categorias = resCat.data;
+
+                document.querySelectorAll('.searchInput').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const query = e.target.value.toLowerCase().trim();
+                        const resultsBox = input.closest('.position-relative').querySelector('.searchResults');
+                        if(query.length < 2) { resultsBox.style.display = 'none'; return; }
+
+                        const catIds = catalogoBusqueda.categorias.filter(c => c.nombre.toLowerCase().includes(query)).map(c => c.id);
+                        const prodFiltrados = catalogoBusqueda.productos.filter(p => p.nombre.toLowerCase().includes(query) || catIds.includes(p.categoria_id));
+                        const combosFiltrados = catalogoBusqueda.combos.filter(c => c.nombre.toLowerCase().includes(query) || query.includes('combo'));
+
+                        resultsBox.innerHTML = '';
+                        if(prodFiltrados.length === 0 && combosFiltrados.length === 0) {
+                            resultsBox.innerHTML = '<div class="p-3 text-center text-muted">Sin resultados.</div>';
+                        } else {
+                            combosFiltrados.forEach(c => {
+                                const p = c.en_oferta ? c.precio_oferta : c.precio;
+                                resultsBox.innerHTML += `<a href="shop.html?cat=combo&hl=combo_${c.id}" class="search-result-item"><img src="${c.imagen_url||'https://via.placeholder.com/50'}" class="search-img"><div class="flex-grow-1"><h6 class="m-0 text-dark" style="font-size: 0.95rem;">${c.nombre} <span class="badge badge-warning ml-1">COMBO</span></h6><small class="text-success font-weight-bold">$${p.toFixed(2)}</small></div></a>`;
+                            });
+                            prodFiltrados.forEach(p => {
+                                const pr = p.en_oferta ? p.precio_oferta : p.precio;
+                                resultsBox.innerHTML += `<a href="shop.html?cat=${p.categoria_id}&hl=prod_${p.id}" class="search-result-item"><img src="${p.imagen_url||'https://via.placeholder.com/50'}" class="search-img"><div class="flex-grow-1"><h6 class="m-0 text-dark" style="font-size: 0.95rem;">${p.nombre}</h6><small class="text-success font-weight-bold">$${pr.toFixed(2)}</small></div></a>`;
+                            });
+                        }
+                        resultsBox.style.display = 'block';
+                    });
+                });
+                document.addEventListener('click', (e) => {
+                    document.querySelectorAll('.searchResults').forEach(box => {
+                        if(!box.parentNode.contains(e.target)) box.style.display = 'none';
+                    });
+                });
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>

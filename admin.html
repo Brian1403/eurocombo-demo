@@ -39,7 +39,6 @@
         .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         
-        /* RESPONSIVE MÓVIL */
         @media (max-width: 768px) { 
             .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
@@ -48,10 +47,17 @@
         /* TARJETAS DE ESTADÍSTICAS */
         .stat-card { background-color: #fff; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column;}
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-bottom: 4px solid var(--combo-green); }
-        .stat-title { color: var(--combo-green); font-weight: 700; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; margin-bottom: 15px; }
-        .stat-number { color: var(--cart-orange); font-size: 2.8rem; font-weight: 700; margin-bottom: 15px; flex-grow: 1; }
+        .stat-title { color: var(--combo-green); font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px; margin-bottom: 15px; }
+        .stat-number { color: var(--cart-orange); font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; flex-grow: 1; line-height: 1;}
         .stat-link { color: var(--euro-blue); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: 0.3s; margin-top: auto;}
         .stat-link:hover { color: var(--cart-orange); text-decoration: none; padding-left: 5px;}
+        
+        /* TARJETAS DE ALERTAS */
+        .card-alert-red { border-bottom: 4px solid #dc3545; }
+        .text-alert-red { color: #dc3545 !important; }
+        
+        .card-alert-blue { border-bottom: 4px solid #17a2b8; }
+        .text-alert-blue { color: #17a2b8 !important; }
     </style>
 </head>
 
@@ -66,12 +72,14 @@
             <div class="sidebar-menu">
                 <div class="menu-title">Principal</div>
                 <a href="admin.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="pedidos.html"><i class="fas fa-clipboard-list"></i> Pedidos Web</a>
+                <a href="admin-resenas.html"><i class="fas fa-star"></i> Reseñas</a> <!-- ENLACE RESEÑAS -->
 
                 <div class="menu-title mt-3">Gestión</div>
-                <!-- ENLACES ACTUALIZADOS -->
                 <a href="productos.html"><i class="fas fa-box"></i> Productos</a>
                 <a href="combos.html"><i class="fas fa-layer-group"></i> Combos</a>
                 <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+                <a href="admin-carrusel.html"><i class="fas fa-images"></i> Carrusel</a>
             </div>
 
             <div class="sidebar-footer">
@@ -106,11 +114,34 @@
 
             <div class="container-fluid p-4 p-md-5">
                 <h2 class="font-weight-bold mb-2" style="color: var(--euro-blue) !important;">Visión General</h2>
-                <p class="text-muted mb-4">Bienvenido al panel de administración de EuroCombo. Desde aquí podrás gestionar tu catálogo y categorías.</p>
+                <p class="text-muted mb-4">Bienvenido al panel de administración. Aquí tienes un resumen de tu tienda.</p>
 
+                <!-- TARJETAS DE MÉTRICAS -->
                 <div class="row">
-                    <!-- PRODUCTOS -->
-                    <div class="col-md-4 mb-4">
+                    <!-- PEDIDOS NUEVOS -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="stat-card card-alert-red" id="box-pedidos">
+                            <div class="stat-title text-alert-red"><i class="fas fa-bell mr-2"></i>PEDIDOS NUEVOS</div>
+                            <div class="stat-number text-alert-red" id="count-pedidos-nuevos">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            </div>
+                            <a href="pedidos.html" class="stat-link text-alert-red">Ver Pedidos <i class="fas fa-arrow-right ml-1"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- RESEÑAS NUEVAS -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="stat-card card-alert-blue" id="box-resenas">
+                            <div class="stat-title text-alert-blue"><i class="fas fa-star mr-2"></i>RESEÑAS NUEVAS</div>
+                            <div class="stat-number text-alert-blue" id="count-resenas-nuevas">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            </div>
+                            <a href="admin-resenas.html" class="stat-link text-alert-blue">Moderar Reseñas <i class="fas fa-arrow-right ml-1"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- PRODUCTOS ACTIVOS -->
+                    <div class="col-md-6 col-lg-4 mb-4">
                         <div class="stat-card">
                             <div class="stat-title">PRODUCTOS ACTIVOS</div>
                             <div class="stat-number" id="count-productos">
@@ -120,8 +151,8 @@
                         </div>
                     </div>
 
-                    <!-- COMBOS -->
-                    <div class="col-md-4 mb-4">
+                    <!-- COMBOS FAMILIARES -->
+                    <div class="col-md-6 col-lg-6 mb-4">
                         <div class="stat-card">
                             <div class="stat-title">COMBOS FAMILIARES</div>
                             <div class="stat-number" id="count-combos">
@@ -132,9 +163,9 @@
                     </div>
 
                     <!-- CATEGORÍAS -->
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-6 col-lg-6 mb-4">
                         <div class="stat-card">
-                            <div class="stat-title">TOTAL CATEGORÍAS</div>
+                            <div class="stat-title">CATEGORÍAS</div>
                             <div class="stat-number" id="count-categorias">
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="color: var(--cart-orange);"></span>
                             </div>
@@ -142,6 +173,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -157,64 +189,92 @@
         const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // -----------------------------------------------------------------
-        // GUARDIÁN DE SEGURIDAD: COMPROBAR SI ESTÁ LOGUEADO
-        // -----------------------------------------------------------------
         async function verificarSesion() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) {
-                // Si no hay sesión válida, lo patea al index.html
-                window.location.replace('login.html'); 
-            }
+            if (!session) { window.location.replace('login.html'); }
         }
         verificarSesion();
-        // -----------------------------------------------------------------
 
         document.addEventListener('DOMContentLoaded', () => {
             
-            // 1. LÓGICA DEL SIDEBAR MÓVIL Y CLIC FUERA
+            // SIDEBAR MOBILE TOGGLE
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
-
-            sidebarToggle.addEventListener('click', (e) => {
-                e.stopPropagation(); 
-                sidebar.classList.toggle('active');
-            });
-
+            sidebarToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); });
             document.addEventListener('click', (e) => {
-                if (window.innerWidth <= 768) {
-                    if (sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
-                        sidebar.classList.remove('active');
-                    }
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
                 }
             });
 
-            // 2. FUNCIÓN PARA CONTAR ELEMENTOS EN CUALQUIER TABLA
+            // FUNCIÓN GENÉRICA PARA CONTAR
             async function actualizarConteo(tabla, idElemento) {
-                const { count, error } = await supabaseClient
-                    .from(tabla)
-                    .select('*', { count: 'exact', head: true }); // head:true hace que no descargue los datos, solo el número (es más rápido)
-
+                const { count, error } = await supabaseClient.from(tabla).select('*', { count: 'exact', head: true }); 
                 const divConteo = document.getElementById(idElemento);
-
                 if (error) {
-                    console.error(`Error al contar en ${tabla}:`, error);
                     divConteo.innerHTML = '<span style="font-size: 1.5rem; color: red;">Error</span>';
                 } else {
-                    divConteo.innerText = count || 0; // Si no hay nada, pone 0
+                    divConteo.innerText = count || 0; 
                 }
             }
 
-            // 3. EJECUTAR LOS 3 CONTEOS AL MISMO TIEMPO
-            function cargarTodosLosConteos() {
+            // CONTADOR PEDIDOS NUEVOS
+            async function actualizarConteoNuevosPedidos() {
+                const ultimoVisto = localStorage.getItem('ultimoVistoPedidos');
+                let query = supabaseClient.from('pedidos').select('*', { count: 'exact', head: true });
+                if (ultimoVisto) query = query.gt('created_at', ultimoVisto);
+
+                const { count, error } = await query;
+                const divConteo = document.getElementById('count-pedidos-nuevos');
+                const boxContainer = document.getElementById('box-pedidos');
+
+                if (!error) {
+                    divConteo.innerText = count || 0;
+                    if(count === 0) {
+                        boxContainer.classList.remove('card-alert-red');
+                        boxContainer.querySelectorAll('.text-alert-red').forEach(el => {
+                            el.classList.remove('text-alert-red');
+                            el.style.color = '#6c757d';
+                        });
+                        boxContainer.style.borderBottomColor = '#eee';
+                    }
+                }
+            }
+
+            // CONTADOR RESEÑAS NUEVAS
+            async function actualizarConteoNuevasResenas() {
+                const ultimoVisto = localStorage.getItem('ultimoVistoResenas');
+                let query = supabaseClient.from('resenas').select('*', { count: 'exact', head: true });
+                if (ultimoVisto) query = query.gt('created_at', ultimoVisto);
+
+                const { count, error } = await query;
+                const divConteo = document.getElementById('count-resenas-nuevas');
+                const boxContainer = document.getElementById('box-resenas');
+
+                if (!error) {
+                    divConteo.innerText = count || 0;
+                    if(count === 0) {
+                        boxContainer.classList.remove('card-alert-blue');
+                        boxContainer.querySelectorAll('.text-alert-blue').forEach(el => {
+                            el.classList.remove('text-alert-blue');
+                            el.style.color = '#6c757d';
+                        });
+                        boxContainer.style.borderBottomColor = '#eee';
+                    }
+                }
+            }
+
+            // INICIAR CARGA DE TODOS LOS CAJONES
+            function iniciarDashboard() {
+                actualizarConteoNuevosPedidos();
+                actualizarConteoNuevasResenas();
                 actualizarConteo('productos', 'count-productos');
                 actualizarConteo('combos', 'count-combos');
                 actualizarConteo('categorias', 'count-categorias');
             }
 
-            cargarTodosLosConteos();
+            iniciarDashboard();
         });
-
 
         // CERRAR SESIÓN
         document.getElementById('btnLogout').addEventListener('click', async (e) => {
@@ -222,15 +282,6 @@
             await supabaseClient.auth.signOut();
             window.location.replace('login.html');
         });
-
-        // REGISTRO DE SERVICE WORKER PARA PWA (INSTALACIÓN EN MÓVIL)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then((reg) => {
-                    console.log('PWA lista para instalarse.');
-                });
-            });
-        }
     </script>
 </body>
 </html>

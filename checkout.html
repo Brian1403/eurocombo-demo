@@ -132,7 +132,7 @@
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.html" class="nav-item nav-link">Inicio</a>
                             <a href="shop.html" class="nav-item nav-link">Tienda</a>
-                            <a href="detail.html" class="nav-item nav-link">Promociones</a>
+                            
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle active" data-toggle="dropdown">Carrito <i class="fa fa-angle-down mt-1"></i></a>
                                 <div class="dropdown-menu bg-light rounded border-0 m-0 shadow">
@@ -140,6 +140,7 @@
                                     <a href="checkout.html" class="dropdown-item active">Ir a Pagar</a>
                                 </div>
                             </div>
+                            <a href="resenas.html" class="nav-item nav-link">Reseñas</a>
                             <a href="contact.html" class="nav-item nav-link">Contacto</a>
                         </div>
                         
@@ -468,9 +469,9 @@
         }
 
         // ==============================================================================
-        // LÓGICA DE ENVÍO A WHATSAPP Y VALIDACIONES
+        // LÓGICA DE ENVÍO A WHATSAPP Y GUARDADO EN SUPABASE
         // ==============================================================================
-        function enviarPedidoWhatsApp() {
+        async function enviarPedidoWhatsApp() {
             const inputNombre = document.getElementById('c-nombre');
             const inputApellidos = document.getElementById('c-apellidos');
             const inputCI = document.getElementById('c-ci');
@@ -500,26 +501,71 @@
                 return;
             }
 
-            // Construir el mensaje de WhatsApp usando las variables nativas de emoji
-            let mensaje = `*¡Hola EuroCombo!* ${E_WAVE}\nQuiero confirmar el siguiente pedido:\n\n`;
-            
-            mensaje += `${E_CLIP} *DATOS DE ENTREGA*\n`;
-            mensaje += `${E_USER} Nombre: ${nombre} ${apellidos}\n`;
-            mensaje += `${E_ID} CI: ${ci}\n`;
-            mensaje += `${E_PHONE} Teléfono: ${telefono}\n`;
-            mensaje += `${E_PIN} Dirección: ${direccion}\n`;
-            mensaje += `${E_MEMO} Referencia: ${referencia}\n\n`;
+            // Cambiar estado del botón para que el usuario sepa que está cargando
+            const btnSubmit = document.querySelector('.btn-whatsapp');
+            const originalBtnText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span> Procesando pedido...';
+            btnSubmit.style.pointerEvents = 'none';
 
-            mensaje += `${E_BAG} *RESUMEN DE COMPRA*\n`;
-            mensaje += resumenWhatsAppGlobal;
-            mensaje += `\n${E_MONEY} *TOTAL A PAGAR: $${totalGeneralPedido.toFixed(2)}*\n\n`;
-            mensaje += `¡Quedo a la espera de su confirmación!`;
-
-            // Redirigir a WhatsApp
-            const numeroWhatsApp = "5218662125516";
-            const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            // 1. GUARDAR EN BASE DE DATOS SUPABASE
+            const carritoActual = obtenerCarrito();
             
-            window.open(urlWhatsApp, '_blank');
+            const nuevoPedido = {
+                cliente_nombre: nombre,
+                cliente_apellidos: apellidos,
+                cliente_ci: ci,
+                cliente_telefono: telefono,
+                cliente_direccion: direccion,
+                cliente_referencia: referencia,
+                total: totalGeneralPedido,
+                detalles: carritoActual, // Guardamos el JSON crudo del carrito
+                estado: 'Pendiente'
+            };
+
+            try {
+                // Insertar en la tabla "pedidos"
+                const { error } = await supabaseClient.from('pedidos').insert([nuevoPedido]);
+                
+                if (error) throw new Error(error.message);
+
+                // 2. CONSTRUIR MENSAJE WHATSAPP
+                let mensaje = `*¡Hola EuroCombo!* ${E_WAVE}\nQuiero confirmar el siguiente pedido:\n\n`;
+                mensaje += `${E_CLIP} *DATOS DE ENTREGA*\n`;
+                mensaje += `${E_USER} Nombre: ${nombre} ${apellidos}\n`;
+                mensaje += `${E_ID} CI: ${ci}\n`;
+                mensaje += `${E_PHONE} Teléfono: ${telefono}\n`;
+                mensaje += `${E_PIN} Dirección: ${direccion}\n`;
+                mensaje += `${E_MEMO} Referencia: ${referencia}\n\n`;
+                
+                mensaje += `${E_BAG} *RESUMEN DE COMPRA*\n`;
+                mensaje += resumenWhatsAppGlobal;
+                mensaje += `\n${E_MONEY} *TOTAL A PAGAR: $${totalGeneralPedido.toFixed(2)}*\n\n`;
+                mensaje += `¡Quedo a la espera de su confirmación!`;
+
+                // 3. ENVIAR Y REDIRIGIR
+                const numeroWhatsApp = "5218662125516";
+                const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+                
+                window.open(urlWhatsApp, '_blank');
+
+                // VACIAR CARRITO
+                localStorage.removeItem('euroCarrito');
+                actualizarBadgeCarrito();
+                
+                btnSubmit.innerHTML = '¡Pedido Enviado! <i class="fas fa-check ml-2 text-white"></i>';
+                btnSubmit.classList.replace('btn-whatsapp', 'bg-success');
+
+                // Volver al inicio después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+
+            } catch(e) {
+                console.error("Error al guardar el pedido:", e);
+                alert("Hubo un error de conexión al registrar tu pedido. Por favor, intenta nuevamente.");
+                btnSubmit.innerHTML = originalBtnText;
+                btnSubmit.style.pointerEvents = 'auto';
+            }
         }
 
         // ==============================================================================

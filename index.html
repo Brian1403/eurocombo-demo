@@ -162,7 +162,7 @@
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.html" class="nav-item nav-link active">Inicio</a>
                             <a href="shop.html" class="nav-item nav-link">Tienda</a>
-                            <a href="detail.html" class="nav-item nav-link">Promociones</a>
+                            
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Carrito <i class="fa fa-angle-down mt-1"></i></a>
                                 <div class="dropdown-menu bg-light rounded border-0 m-0 shadow">
@@ -170,10 +170,12 @@
                                     <a href="checkout.html" class="dropdown-item">Ir a Pagar</a>
                                 </div>
                             </div>
+                            <!-- ENLACE DE RESEÑAS -->
+                            <a href="resenas.html" class="nav-item nav-link">Reseñas</a>
                             <a href="contact.html" class="nav-item nav-link">Contacto</a>
                         </div>
                         
-                        <!-- CARRITO ESCRITORIO (Sin el corazón) -->
+                        <!-- CARRITO ESCRITORIO -->
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                             <a href="cart.html" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
@@ -187,7 +189,7 @@
     </div>
     <!-- Navbar End -->
 
-    <!-- BUSCADOR MÓVIL START (ENTRE NAVBAR Y CARRUSEL) -->
+    <!-- BUSCADOR MÓVIL START -->
     <div class="container-fluid d-lg-none mb-3">
         <div class="row px-xl-5">
             <div class="col-12 position-relative">
@@ -212,46 +214,22 @@
     <!-- Carousel y Cajas Start -->
     <div class="container-fluid mb-3">
         <div class="row px-xl-5">
-            <!-- Carrusel a la izquierda -->
+            <!-- Carrusel Principal (AHORA ES DINÁMICO) -->
             <div class="col-lg-8">
-                <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0 shadow-sm" data-ride="carousel" style="border-radius: 15px;">
-                    <ol class="carousel-indicators">
-                        <li data-target="#header-carousel" data-slide-to="0" class="active"></li>
-                        <li data-target="#header-carousel" data-slide-to="1"></li>
-                        <li data-target="#header-carousel" data-slide-to="2"></li>
+                <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0 shadow-sm" data-ride="carousel" style="border-radius: 15px; overflow: hidden;">
+                    
+                    <ol class="carousel-indicators" id="carrusel-indicadores">
+                        <!-- Se llena con JS -->
                     </ol>
-                    <div class="carousel-inner">
-                        <div class="carousel-item position-relative active" style="height: 430px;">
-                            <img class="position-absolute w-100 h-100" src="img/carousel-1.jpg" style="object-fit: cover;">
-                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                <div class="p-3" style="max-width: 700px;">
-                                    <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown font-weight-bold">Los Mejores Combos</h1>
-                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Ahorra tiempo y dinero con nuestros combos seleccionados. Calidad garantizada.</p>
-                                    <a class="btn btn-primary text-blanco-puro py-2 px-4 mt-3 animate__animated animate__fadeInUp font-weight-bold" href="shop.html">Comprar Ahora</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="carousel-item position-relative" style="height: 430px;">
-                            <img class="position-absolute w-100 h-100" src="img/carousel-2.jpg" style="object-fit: cover;">
-                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                <div class="p-3" style="max-width: 700px;">
-                                    <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown font-weight-bold">Frescura en tu Mesa</h1>
-                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Carnes, embutidos y quesos de la mejor calidad para ti.</p>
-                                    <a class="btn btn-primary text-blanco-puro py-2 px-4 mt-3 animate__animated animate__fadeInUp font-weight-bold" href="shop.html">Ver Productos</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="carousel-item position-relative" style="height: 430px;">
-                            <img class="position-absolute w-100 h-100" src="img/carousel-3.jpg" style="object-fit: cover;">
-                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                <div class="p-3" style="max-width: 700px;">
-                                    <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown font-weight-bold">Snacks y Bebidas</h1>
-                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Date un gusto o prepárate para el fin de semana.</p>
-                                    <a class="btn btn-primary text-blanco-puro py-2 px-4 mt-3 animate__animated animate__fadeInUp font-weight-bold" href="shop.html">Descubrir</a>
-                                </div>
-                            </div>
+                    
+                    <div class="carousel-inner" id="carrusel-items">
+                        <!-- Loader mientras carga de Supabase -->
+                        <div class="text-center py-5 mt-5">
+                            <div class="spinner-border text-primary"></div>
+                            <p class="text-muted mt-2">Cargando promociones...</p>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             
@@ -451,7 +429,7 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
 
-    <!-- SCRIPT DINÁMICO COMPLETAMENTE RESTAURADO CON BUSCADOR Y CARRITO -->
+    <!-- SCRIPT DINÁMICO RESTAURADO CON BUSCADOR, CARRITO Y NUEVO CARRUSEL PRINCIPAL -->
     <script>
         const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
@@ -460,12 +438,81 @@
         let catalogoBusqueda = { productos: [], combos: [], categorias: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
+            cargarCarruselHero(); // NUEVA FUNCION
             inicializarBuscador(); 
             cargarCategoriasCliente();
             cargarProductosRecientes();
             cargarCombosCarrusel();
-            actualizarBadgeCarrito(); // Iniciar conteo del carrito
+            actualizarBadgeCarrito();
         });
+
+        // ==============================================================================
+        // NUEVO: CARGAR CARRUSEL PRINCIPAL (HERO) DESDE SUPABASE
+        // ==============================================================================
+        async function cargarCarruselHero() {
+            const indicadores = document.getElementById('carrusel-indicadores');
+            const items = document.getElementById('carrusel-items');
+
+            try {
+                const { data: slides, error } = await supabaseClient
+                    .from('carrusel')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                // Si la tabla está vacía, mostramos uno por defecto para que no quede en blanco
+                if (!slides || slides.length === 0) {
+                    indicadores.innerHTML = '<li data-target="#header-carousel" data-slide-to="0" class="active"></li>';
+                    items.innerHTML = `
+                        <div class="carousel-item position-relative active" style="height: 430px;">
+                            <img class="position-absolute w-100 h-100" src="img/carousel-1.jpg" style="object-fit: cover;">
+                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                                <div class="p-3" style="max-width: 700px;">
+                                    <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown font-weight-bold">Bienvenido a EuroCombo</h1>
+                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn" style="font-size: 1.1rem;">Los mejores productos hasta tu puerta.</p>
+                                    <a class="btn btn-primary text-blanco-puro py-2 px-4 mt-3 animate__animated animate__fadeInUp font-weight-bold" href="shop.html">Comprar Ahora</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let indHTML = '';
+                let itemsHTML = '';
+
+                slides.forEach((slide, index) => {
+                    const activeClass = index === 0 ? 'active' : '';
+                    
+                    indHTML += `<li data-target="#header-carousel" data-slide-to="${index}" class="${activeClass}"></li>`;
+                    
+                    itemsHTML += `
+                        <div class="carousel-item position-relative ${activeClass}" style="height: 430px;">
+                            <img class="position-absolute w-100 h-100" src="${slide.imagen_url}" style="object-fit: cover;">
+                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center" style="background: rgba(0, 0, 0, 0.3);">
+                                <div class="p-3 text-center" style="max-width: 700px;">
+                                    <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown font-weight-bold">${slide.titulo}</h1>
+                                    <p class="mx-md-5 px-5 text-white animate__animated animate__bounceIn" style="font-size: 1.1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">${slide.descripcion}</p>
+                                    <a class="btn btn-primary text-blanco-puro py-2 px-4 mt-3 animate__animated animate__fadeInUp font-weight-bold shadow-sm" style="border-radius: 25px;" href="shop.html">${slide.texto_boton}</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                indicadores.innerHTML = indHTML;
+                items.innerHTML = itemsHTML;
+
+                // Reiniciamos el componente de Bootstrap para que funcione correctamente la rotación
+                $('#header-carousel').carousel();
+
+            } catch (err) {
+                console.error("Error al cargar el carrusel principal:", err);
+                items.innerHTML = '<div class="text-center py-5 mt-5 text-danger">Error al cargar las promociones.</div>';
+            }
+        }
+
 
         // ==============================================================================
         // 0. BUSCADOR EN TIEMPO REAL CON REDIRECCIÓN EXACTA
@@ -878,7 +925,7 @@
             badges.forEach(badge => { badge.innerText = totalItems; });
         }
 
-        // ------------------ MODAL INGREDIENTES ------------------
+        // ------------------ MODAL INGREDIENTES MODIFICADO CON FORMATO Y MARCA ------------------
         window.verIngredientesCombo = async function(comboId, comboNombre) {
             $('#carrusel-combos-dinamico').trigger('stop.owl.autoplay');
             
@@ -893,8 +940,9 @@
                 
                 if (comboErr || !comboData.productos_ids) throw new Error("No se pudieron cargar los ingredientes.");
 
+                // Seleccionamos también formato y marca
                 const { data: productos, error: prodErr } = await supabaseClient
-                    .from('productos').select('id, nombre');
+                    .from('productos').select('id, nombre, formato, marca');
 
                 if (prodErr) throw new Error("Error cargando el catálogo.");
 
@@ -911,9 +959,16 @@
                     const prodInfo = productos.find(p => p.id === prodId);
                     
                     if(prodInfo) {
+                        let f = prodInfo.formato || '';
+                        let m = prodInfo.marca ? ` | ${prodInfo.marca}` : '';
+                        let txtDetalle = (f || m) ? `<small class="d-block text-muted mt-1" style="font-size: 0.75rem;"><i class="fas fa-tag text-black-50 mr-1"></i>${f}${m}</small>` : '';
+
                         lista.innerHTML += `
                             <li class="list-group-item d-flex justify-content-between align-items-center px-2 border-bottom">
-                                <span class="text-dark"><i class="fas fa-check text-success mr-2"></i>${prodInfo.nombre}</span>
+                                <div class="text-dark" style="max-width: 85%;">
+                                    <i class="fas fa-check text-success mr-2"></i><span class="font-weight-semi-bold">${prodInfo.nombre}</span>
+                                    ${txtDetalle}
+                                </div>
                                 <span class="badge badge-primary badge-pill text-blanco-puro shadow-sm px-2 py-1">${qty}x</span>
                             </li>
                         `;

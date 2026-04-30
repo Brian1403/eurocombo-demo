@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Pedidos - EuroCombo Admin</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/logo-euro2.png" rel="icon" type="image/png">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; --light-bg: #F8F9FA; }
+        body { background-color: var(--light-bg); font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        .wrapper { display: flex; width: 100%; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 250px; background-color: var(--euro-blue); color: white; display: flex; flex-direction: column; transition: all 0.3s; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar-menu { padding-top: 20px; flex: 1; }
+        .menu-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; font-weight: 700; }
+        .sidebar a { padding: 12px 20px; font-size: 1rem; color: rgba(255, 255, 255, 0.8); display: block; text-decoration: none; transition: 0.3s; border-left: 4px solid transparent; }
+        .sidebar a:hover { color: white; background-color: rgba(255, 255, 255, 0.05); }
+        .sidebar a.active { color: white; background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--cart-orange); font-weight: 500; }
+        .sidebar a i { width: 25px; }
+        .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
+        
+        /* NAVBAR */
+        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        @media (max-width: 768px) { 
+            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
+        }
+
+        /* TARJETA DE PEDIDO */
+        .pedido-card { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; padding: 20px; height: 100%; display: flex; flex-direction: column;}
+        .pedido-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-top: 4px solid var(--euro-blue); }
+        .estado-badge { font-size: 0.75rem; padding: 5px 10px; border-radius: 20px; font-weight: bold; letter-spacing: 0.5px;}
+        
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+        <h5 class="mt-3 font-weight-bold" style="color: var(--euro-blue);">Procesando...</h5>
+    </div>
+
+    <div class="wrapper">
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-title">Principal</div>
+                <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="pedidos.html" class="active"><i class="fas fa-clipboard-list"></i> Pedidos Web</a>
+                <a href="admin-resenas.html"><i class="fas fa-star"></i> Reseñas</a>
+                
+                <div class="menu-title mt-3">Gestión</div>
+                <a href="productos.html"><i class="fas fa-box"></i> Productos</a>
+                <a href="combos.html"><i class="fas fa-layer-group"></i> Combos</a>
+                <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+                <a href="admin-carrusel.html"><i class="fas fa-images"></i> Carrusel</a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="text-white-50 mb-1">Sesión iniciada como:</div>
+                <div class="font-weight-bold">Administrador</div>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <!-- NAVBAR ACTUALIZADO -->
+            <header class="top-navbar">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm text-white d-md-none mr-3" id="sidebarToggle"><i class="fas fa-bars fa-lg"></i></button>
+                    <h5 class="m-0 font-weight-bold text-white d-none d-md-block">Gestión de Pedidos</h5>
+                </div>
+                <div>
+                    <div class="dropdown">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg mr-2"></i> Admin
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow border-0 mt-2" style="border-radius: 10px;">
+                            <a href="#" class="dropdown-item"><i class="fas fa-cog mr-2"></i> Configuración</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item text-danger" id="btnLogout"><i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <div>
+                        <h2 class="font-weight-bold mb-1" style="color: var(--euro-blue) !important;">Registro de Pedidos</h2>
+                        <p class="text-muted m-0">Historial de compras enviadas por los clientes.</p>
+                    </div>
+                    <button class="btn btn-danger shadow-sm font-weight-bold" style="border-radius: 25px; padding: 10px 20px;" onclick="vaciarRegistro()">
+                        <i class="fas fa-trash-alt mr-2"></i> Vaciar Registro
+                    </button>
+                </div>
+                
+                <div class="row" id="contenedor-pedidos">
+                    <!-- Los pedidos se inyectan aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLES DEL PEDIDO -->
+    <div class="modal fade" id="modalPedidoDetalle" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title font-weight-bold" style="color: var(--euro-blue);"><i class="fas fa-receipt mr-2"></i>Detalle de Compra</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="bg-light p-3 rounded mb-3">
+                        <h6 class="font-weight-bold text-dark border-bottom pb-2 mb-2"><i class="fas fa-user mr-2 text-primary"></i>Datos del Cliente</h6>
+                        <p class="mb-1 small"><strong>Nombre:</strong> <span id="mdlNombre"></span></p>
+                        <p class="mb-1 small"><strong>CI:</strong> <span id="mdlCI"></span></p>
+                        <p class="mb-1 small"><strong>Teléfono:</strong> <a href="#" id="mdlTelLink" target="_blank"><span id="mdlTel"></span> <i class="fab fa-whatsapp text-success ml-1"></i></a></p>
+                        <p class="mb-1 small"><strong>Dirección:</strong> <span id="mdlDir"></span></p>
+                        <p class="mb-0 small"><strong>Referencia:</strong> <span id="mdlRef"></span></p>
+                    </div>
+
+                    <h6 class="font-weight-bold text-dark border-bottom pb-2"><i class="fas fa-shopping-bag mr-2 text-primary"></i>Productos Solicitados</h6>
+                    <ul id="mdlListaProductos" class="list-group list-group-flush mb-3" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Se llena con JS -->
+                    </ul>
+                    
+                    <div class="d-flex justify-content-between align-items-center bg-dark text-white p-3 rounded">
+                        <h6 class="m-0 font-weight-bold">Total a Cobrar:</h6>
+                        <h4 class="m-0 font-weight-bold" style="color: var(--cart-orange);" id="mdlTotal"></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function verificarSesion() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.replace('login.html'); }
+        }
+        verificarSesion();
+
+        // Variable global para guardar la visita anterior
+        let fechaUltimaVisita = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            
+            sidebarToggle.addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                sidebar.classList.toggle('active'); 
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // 1. LEER LA FECHA DE LA ÚLTIMA VISITA (Si no existe, ponemos una muy vieja)
+            fechaUltimaVisita = localStorage.getItem('ultimoVistoPedidos') || '2000-01-01T00:00:00.000Z';
+            
+            // 2. ACTUALIZAR LA FECHA AHORA (Para que si recargas, ya no salgan como nuevos)
+            localStorage.setItem('ultimoVistoPedidos', new Date().toISOString());
+
+            cargarPedidos();
+        });
+
+        async function cargarPedidos() {
+            const contenedor = document.getElementById('contenedor-pedidos');
+            contenedor.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border text-primary"></div><p>Cargando pedidos...</p></div>';
+
+            const { data, error } = await supabaseClient.from('pedidos').select('*').order('created_at', { ascending: false });
+
+            if (error) {
+                contenedor.innerHTML = '<div class="text-danger text-center w-100 p-4">Error cargando pedidos. Verifica la base de datos.</div>';
+                return;
+            }
+
+            contenedor.innerHTML = '';
+            if (data.length === 0) {
+                contenedor.innerHTML = `<div class="col-12 text-center py-5"><i class="fas fa-clipboard-check" style="font-size: 50px; color: #ddd; margin-bottom: 15px;"></i><h5 class="text-muted">No hay pedidos registrados.</h5></div>`;
+                return;
+            }
+
+            data.forEach(pedido => {
+                // Formatear Fecha
+                const fecha = new Date(pedido.created_at);
+                const fechaFormateada = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                // Convertir los detalles a string seguro para pasarlo al botón
+                const detallesJSON = JSON.stringify(pedido.detalles).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
+                // LOGICA DE ETIQUETA "NUEVO"
+                let etiquetaHTML = '';
+                // Comparamos si este pedido se creó DESPUÉS de tu última visita
+                if (pedido.created_at > fechaUltimaVisita) {
+                    etiquetaHTML = '<span class="badge estado-badge bg-danger text-white shadow-sm">NUEVO</span>';
+                }
+
+                contenedor.innerHTML += `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="pedido-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                                <span class="text-muted small"><i class="far fa-clock mr-1"></i> ${fechaFormateada}</span>
+                                ${etiquetaHTML}
+                            </div>
+                            
+                            <h6 class="font-weight-bold text-dark mb-1"><i class="fas fa-user mr-2 text-primary"></i>${pedido.cliente_nombre} ${pedido.cliente_apellidos}</h6>
+                            <p class="text-muted small mb-1"><i class="fas fa-map-marker-alt mr-2 text-danger"></i>${pedido.cliente_direccion}</p>
+                            <p class="text-muted small mb-3"><i class="fas fa-phone mr-2 text-success"></i>${pedido.cliente_telefono}</p>
+                            
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                <h5 class="text-success font-weight-bold m-0">$${pedido.total.toFixed(2)}</h5>
+                                <div>
+                                    <button class="btn btn-sm btn-light text-primary shadow-sm mr-1" onclick="verDetalles('${pedido.cliente_nombre}', '${pedido.cliente_apellidos}', '${pedido.cliente_ci}', '${pedido.cliente_telefono}', '${pedido.cliente_direccion}', '${pedido.cliente_referencia}', ${pedido.total}, '${detallesJSON}')" title="Ver Ticket">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-light text-danger shadow-sm" onclick="eliminarPedido(${pedido.id})" title="Borrar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // MOSTRAR DETALLES EN EL MODAL
+        window.verDetalles = function(nombre, apellidos, ci, tel, dir, ref, total, detallesRaw) {
+            document.getElementById('mdlNombre').innerText = `${nombre} ${apellidos}`;
+            document.getElementById('mdlCI').innerText = ci;
+            document.getElementById('mdlTel').innerText = tel;
+            document.getElementById('mdlTelLink').href = `https://wa.me/${tel.replace(/\D/g,'')}`;
+            document.getElementById('mdlDir').innerText = dir;
+            document.getElementById('mdlRef').innerText = ref;
+            document.getElementById('mdlTotal').innerText = `$${total.toFixed(2)}`;
+
+            const lista = document.getElementById('mdlListaProductos');
+            lista.innerHTML = '';
+            
+            try {
+                const carrito = JSON.parse(detallesRaw);
+                carrito.forEach(item => {
+                    let tipoBadge = item.tipo === 'combo' ? '<span class="badge badge-warning ml-1" style="font-size: 0.6rem;">COMBO</span>' : '';
+                    let totalItem = item.precio * item.cantidad;
+                    lista.innerHTML += `
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <div><span class="font-weight-bold text-dark">${item.cantidad}x</span> ${item.nombre} ${tipoBadge}</div>
+                            <span class="font-weight-bold text-success">$${totalItem.toFixed(2)}</span>
+                        </li>
+                    `;
+                });
+            } catch(e) {
+                lista.innerHTML = '<li class="text-danger">Error al leer los productos.</li>';
+            }
+
+            $('#modalPedidoDetalle').modal('show');
+        }
+
+        // ELIMINAR 1 PEDIDO
+        window.eliminarPedido = async function(id) {
+            if(confirm("¿Seguro que deseas eliminar este pedido del historial?")) {
+                document.getElementById('loader').style.display = 'flex';
+                await supabaseClient.from('pedidos').delete().eq('id', id);
+                document.getElementById('loader').style.display = 'none';
+                cargarPedidos();
+            }
+        }
+
+        // VACIAR TODO EL REGISTRO
+        window.vaciarRegistro = async function() {
+            if(confirm("⚠️ ADVERTENCIA: ¿Estás completamente seguro de borrar TODOS los pedidos? Esta acción no se puede deshacer.")) {
+                let codigo = prompt("Escribe 'BORRAR' para confirmar:");
+                if(codigo === 'BORRAR') {
+                    document.getElementById('loader').style.display = 'flex';
+                    // Truco en Supabase para borrar todo (neq id a 0)
+                    await supabaseClient.from('pedidos').delete().neq('id', 0);
+                    document.getElementById('loader').style.display = 'none';
+                    cargarPedidos();
+                    alert("Registro vaciado correctamente.");
+                } else {
+                    alert("Operación cancelada. El código no coincide.");
+                }
+            }
+        }
+
+        // CERRAR SESIÓN
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.replace('login.html');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Carrusel - EuroCombo Admin</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/logo-euro2.png" rel="icon" type="image/png">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; --light-bg: #F8F9FA; }
+        body { background-color: var(--light-bg); font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        .wrapper { display: flex; width: 100%; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 250px; background-color: var(--euro-blue); color: white; display: flex; flex-direction: column; transition: all 0.3s; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar-menu { padding-top: 20px; flex: 1; }
+        .menu-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; font-weight: 700; }
+        .sidebar a { padding: 12px 20px; font-size: 1rem; color: rgba(255, 255, 255, 0.8); display: block; text-decoration: none; transition: 0.3s; border-left: 4px solid transparent; }
+        .sidebar a:hover { color: white; background-color: rgba(255, 255, 255, 0.05); }
+        .sidebar a.active { color: white; background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--cart-orange); font-weight: 500; }
+        .sidebar a i { width: 25px; }
+        .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
+        
+        /* NAVBAR */
+        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        @media (max-width: 768px) { 
+            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
+        }
+
+        /* TARJETA DE SLIDE */
+        .slide-card { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; overflow: hidden; display: flex; flex-direction: column; height: 100%;}
+        .slide-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-top: 4px solid var(--cart-orange); }
+        .slide-img-box { width: 100%; height: 180px; position: relative; background: #eee; }
+        .slide-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        
+        /* VISTA PREVIA IMAGEN MODAL */
+        #previewContainer { margin-top: 15px; text-align: center; display: none; }
+        #imagePreview { max-width: 100%; height: 180px; object-fit: cover; border-radius: 10px; border: 2px dashed #ccc; padding: 5px; }
+        .file-input-wrapper { border: 2px dashed #d1d5db; border-radius: 10px; padding: 10px; text-align: center; background: #f9fafb; transition: 0.3s; }
+        .file-input-wrapper:hover { border-color: var(--cart-orange); background: #fff; }
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+        <h5 class="mt-3 font-weight-bold" style="color: var(--euro-blue);">Procesando...</h5>
+    </div>
+
+    <div class="wrapper">
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-title">Principal</div>
+                <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="pedidos.html"><i class="fas fa-clipboard-list"></i> Pedidos Web</a>
+                <a href="admin-resenas.html"><i class="fas fa-star"></i> Reseñas</a>
+                
+                <div class="menu-title mt-3">Gestión</div>
+                <a href="productos.html"><i class="fas fa-box"></i> Productos</a>
+                <a href="combos.html"><i class="fas fa-layer-group"></i> Combos</a>
+                <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+                <!-- NUEVO ENLACE AL CARRUSEL -->
+                <a href="admin-carrusel.html" class="active"><i class="fas fa-images"></i> Carrusel</a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="text-white-50 mb-1">Sesión iniciada como:</div>
+                <div class="font-weight-bold">Administrador</div>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <!-- NAVBAR -->
+            <header class="top-navbar">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm text-white d-md-none mr-3" id="sidebarToggle"><i class="fas fa-bars fa-lg"></i></button>
+                    <h5 class="m-0 font-weight-bold text-white d-none d-md-block">Gestión del Carrusel</h5>
+                </div>
+                <div>
+                    <div class="dropdown">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg mr-2"></i> Admin
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow border-0 mt-2" style="border-radius: 10px;">
+                            <a href="#" class="dropdown-item"><i class="fas fa-cog mr-2"></i> Configuración</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item text-danger" id="btnLogout"><i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <div>
+                        <h2 class="font-weight-bold mb-1" style="color: var(--euro-blue) !important;">Promociones Principales</h2>
+                        <p class="text-muted m-0">Administra las imágenes y textos del carrusel de inicio.</p>
+                    </div>
+                    <button class="btn shadow-sm" style="background-color: var(--cart-orange); color: white; font-weight: bold; border-radius: 25px; padding: 10px 20px;" data-toggle="modal" data-target="#modalSlide" id="btnNuevoSlide">
+                        <i class="fas fa-plus mr-2"></i> Nuevo Slide
+                    </button>
+                </div>
+                
+                <div class="row" id="contenedor-slides">
+                    <!-- Los slides se inyectan aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA NUEVO/EDITAR SLIDE -->
+    <div class="modal fade" id="modalSlide" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title font-weight-bold" id="modalTitulo" style="color: var(--euro-blue);">Nuevo Slide Promocional</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body px-4">
+                    <form id="formSlide">
+                        <input type="hidden" id="slideId">
+                        
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="small font-weight-bold text-muted">TÍTULO GRANDE</label>
+                                <input type="text" id="slideTitulo" class="form-control bg-light" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="Ej: Los Mejores Combos">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="small font-weight-bold text-muted">TEXTO DEL BOTÓN</label>
+                                <input type="text" id="slideBoton" class="form-control bg-light" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="Ej: Comprar Ahora" value="Comprar Ahora">
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <label class="small font-weight-bold text-muted">DESCRIPCIÓN (Subtítulo)</label>
+                                <textarea id="slideDesc" class="form-control bg-light" rows="2" style="border-radius: 10px; border: 1px solid #e0e0e0;" placeholder="Ej: Ahorra tiempo y dinero con nuestros combos seleccionados."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- IMAGEN -->
+                        <div class="form-group mt-2">
+                            <label class="small font-weight-bold text-muted">FOTO DE FONDO (Recomendado apaisado/horizontal)</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="slideImagen" class="form-control-file" accept="image/*" style="cursor: pointer;">
+                            </div>
+                            <div id="previewContainer">
+                                <img id="imagePreview" src="" alt="Previsualización">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" style="border-radius: 10px;" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn px-4" id="btnGuardar" style="background-color: var(--combo-green); color: white; border-radius: 10px; font-weight: bold;">Guardar Slide</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const BUCKET_NAME = 'imagenes_carrusel'; 
+
+        // GUARDIÁN DE SEGURIDAD
+        async function verificarSesion() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.replace('login.html'); }
+        }
+        verificarSesion();
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // SIDEBAR TOGGLE
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            sidebarToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); });
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // LIMPIAR AL CREAR NUEVO
+            document.getElementById('btnNuevoSlide').addEventListener('click', () => {
+                document.getElementById('formSlide').reset();
+                document.getElementById('slideId').value = '';
+                document.getElementById('slideBoton').value = 'Comprar Ahora'; // Valor por defecto
+                document.getElementById('modalTitulo').innerText = 'Nuevo Slide Promocional';
+                document.getElementById('previewContainer').style.display = 'none';
+                document.getElementById('imagePreview').src = '';
+            });
+
+            // VISTA PREVIA IMAGEN
+            document.getElementById('slideImagen').addEventListener('change', function(e) {
+                const archivo = e.target.files[0];
+                if (archivo) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('imagePreview').src = e.target.result;
+                        document.getElementById('previewContainer').style.display = 'block';
+                    }
+                    reader.readAsDataURL(archivo);
+                } else {
+                    document.getElementById('previewContainer').style.display = 'none';
+                }
+            });
+
+            // GUARDAR SLIDE
+            document.getElementById('btnGuardar').addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const id = document.getElementById('slideId').value;
+                const titulo = document.getElementById('slideTitulo').value.trim();
+                const desc = document.getElementById('slideDesc').value.trim();
+                const boton = document.getElementById('slideBoton').value.trim() || 'Comprar Ahora';
+                const archivo = document.getElementById('slideImagen').files[0];
+
+                if (!titulo) return alert("Escribe un título para el slide.");
+                if (!id && !archivo) return alert("Selecciona una imagen de fondo para el nuevo slide.");
+
+                document.getElementById('loader').style.display = 'flex';
+                let imageUrl = null;
+
+                try {
+                    // SUBIR IMAGEN AL BUCKET
+                    if (archivo) {
+                        const fileExt = archivo.name.split('.').pop();
+                        const fileName = `${Date.now()}_slide.${fileExt}`;
+                        
+                        const { error: upError } = await supabaseClient.storage
+                            .from(BUCKET_NAME)
+                            .upload(fileName, archivo);
+
+                        if (upError) throw new Error("Fallo al subir la imagen: " + upError.message);
+
+                        const { data: urlData } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
+                        imageUrl = urlData.publicUrl;
+                    }
+
+                    const datosSlide = {
+                        titulo: titulo,
+                        descripcion: desc,
+                        texto_boton: boton
+                    };
+
+                    if (imageUrl) datosSlide.imagen_url = imageUrl;
+
+                    // GUARDAR O ACTUALIZAR EN BASE DE DATOS
+                    if (id) {
+                        const { error } = await supabaseClient.from('carrusel').update(datosSlide).eq('id', id);
+                        if (error) throw new Error("Error DB: " + error.message);
+                    } else {
+                        const { error } = await supabaseClient.from('carrusel').insert([datosSlide]);
+                        if (error) throw new Error("Error DB: " + error.message);
+                    }
+
+                    $('#modalSlide').modal('hide');
+                    cargarSlides();
+
+                } catch (err) {
+                    console.error("ERROR:", err);
+                    alert(err.message);
+                } finally {
+                    document.getElementById('loader').style.display = 'none';
+                }
+            });
+
+            // CARGAR Y MOSTRAR SLIDES
+            window.cargarSlides = async function() {
+                const contenedor = document.getElementById('contenedor-slides');
+                contenedor.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border text-primary"></div></div>';
+
+                const { data, error } = await supabaseClient.from('carrusel').select('*').order('created_at', { ascending: true });
+                
+                if (error) {
+                    contenedor.innerHTML = '<div class="text-danger text-center w-100 p-4">Error al conectar con la base de datos. Asegúrate de haber creado la tabla "carrusel".</div>';
+                    return;
+                }
+                
+                contenedor.innerHTML = '';
+                if (data.length === 0) {
+                    contenedor.innerHTML = `<div class="col-12 text-center py-5"><i class="fas fa-images" style="font-size: 50px; color: #ddd; margin-bottom: 15px;"></i><h4 class="text-muted">No hay promociones.</h4><p>El carrusel de inicio mostrará una imagen por defecto.</p></div>`;
+                    return;
+                }
+
+                data.forEach((slide, index) => {
+                    const imageUrl = slide.imagen_url || 'https://via.placeholder.com/600x300?text=Sin+Imagen';
+                    
+                    // Escapar comillas para la función JS
+                    const titSafe = slide.titulo ? slide.titulo.replace(/'/g, "\\'") : '';
+                    const descSafe = slide.descripcion ? slide.descripcion.replace(/'/g, "\\'") : '';
+                    const btnSafe = slide.texto_boton ? slide.texto_boton.replace(/'/g, "\\'") : '';
+
+                    contenedor.innerHTML += `
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="slide-card">
+                                <div class="slide-img-box">
+                                    <span class="badge badge-primary position-absolute" style="top: 10px; left: 10px; z-index: 2;">Slide ${index + 1}</span>
+                                    <img src="${imageUrl}" alt="img">
+                                </div>
+                                <div class="p-3 flex-grow-1 d-flex flex-column">
+                                    <h5 class="font-weight-bold m-0" style="color: var(--euro-blue);">${slide.titulo}</h5>
+                                    <p class="text-muted small mt-2 mb-2 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${slide.descripcion}</p>
+                                    <div class="bg-light p-2 text-center rounded small font-weight-bold text-primary mb-3">
+                                        Botón: "${slide.texto_boton}"
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-auto">
+                                        <button class="btn btn-sm btn-light text-primary shadow-sm border flex-grow-1 mr-2" onclick="prepararEditar(${slide.id}, '${titSafe}', '${descSafe}', '${btnSafe}', '${imageUrl}')" title="Editar">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-light text-danger shadow-sm border" onclick="eliminarSlide(${slide.id})" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            // ELIMINAR SLIDE
+            window.eliminarSlide = async function(id) {
+                if (confirm("¿Seguro que deseas eliminar este slide del carrusel?")) {
+                    document.getElementById('loader').style.display = 'flex';
+                    const { error } = await supabaseClient.from('carrusel').delete().eq('id', id);
+                    document.getElementById('loader').style.display = 'none';
+                    if(error) alert("Error: " + error.message);
+                    else cargarSlides();
+                }
+            }
+
+            // PREPARAR FORMULARIO PARA EDICIÓN
+            window.prepararEditar = function(id, titulo, desc, boton, urlActual) {
+                document.getElementById('formSlide').reset();
+                
+                document.getElementById('slideId').value = id;
+                document.getElementById('slideTitulo').value = titulo;
+                document.getElementById('slideDesc').value = desc;
+                document.getElementById('slideBoton').value = boton;
+                
+                document.getElementById('modalTitulo').innerText = 'Editar Slide';
+                
+                if(urlActual && urlActual !== 'null') {
+                    document.getElementById('imagePreview').src = urlActual;
+                    document.getElementById('previewContainer').style.display = 'block';
+                } else {
+                    document.getElementById('previewContainer').style.display = 'none';
+                }
+                
+                $('#modalSlide').modal('show');
+            }
+
+            // Arrancar
+            cargarSlides();
+        });
+
+        // CERRAR SESIÓN
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.replace('login.html');
+        });
+    </script>
+</body>
+</html>

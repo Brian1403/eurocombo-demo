@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Gestión de Reseñas - EuroCombo Admin</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/logo-euro2.png" rel="icon" type="image/png">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; --light-bg: #F8F9FA; }
+        body { background-color: var(--light-bg); font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        .wrapper { display: flex; width: 100%; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 250px; background-color: var(--euro-blue); color: white; display: flex; flex-direction: column; transition: all 0.3s; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar-menu { padding-top: 20px; flex: 1; }
+        .menu-title { color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; font-weight: 700; }
+        .sidebar a { padding: 12px 20px; font-size: 1rem; color: rgba(255, 255, 255, 0.8); display: block; text-decoration: none; transition: 0.3s; border-left: 4px solid transparent; }
+        .sidebar a:hover { color: white; background-color: rgba(255, 255, 255, 0.05); }
+        .sidebar a.active { color: white; background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--cart-orange); font-weight: 500; }
+        .sidebar a i { width: 25px; }
+        .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
+        
+        /* NAVBAR */
+        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        @media (max-width: 768px) { 
+            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
+        }
+
+        /* TARJETA DE RESEÑA */
+        .resena-card-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; padding: 20px; height: 100%; display: flex; flex-direction: column;}
+        .resena-card-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-top: 4px solid var(--euro-blue); }
+        
+        /* ESTADO OPACADO SI NO ES VISIBLE */
+        .resena-card-admin.no-visible { opacity: 0.6; filter: grayscale(80%); border-top: 4px solid #999; }
+        .resena-card-admin.no-visible:hover { opacity: 0.9; filter: grayscale(0%); border-top: 4px solid var(--cart-orange); }
+
+        .estado-badge { font-size: 0.75rem; padding: 5px 10px; border-radius: 20px; font-weight: bold; letter-spacing: 0.5px;}
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+        <h5 class="mt-3 font-weight-bold" style="color: var(--euro-blue);">Procesando...</h5>
+    </div>
+
+    <div class="wrapper">
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-title">Principal</div>
+                <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="pedidos.html"><i class="fas fa-clipboard-list"></i> Pedidos Web</a>
+                <!-- NUEVO ENLACE AL PANEL DE RESEÑAS -->
+                <a href="admin-resenas.html" class="active"><i class="fas fa-star"></i> Reseñas</a>
+                
+                <div class="menu-title mt-3">Gestión</div>
+                <a href="productos.html"><i class="fas fa-box"></i> Productos</a>
+                <a href="combos.html"><i class="fas fa-layer-group"></i> Combos</a>
+                <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+                <a href="admin-carrusel.html"><i class="fas fa-images"></i> Carrusel</a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="text-white-50 mb-1">Sesión iniciada como:</div>
+                <div class="font-weight-bold">Administrador</div>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <!-- NAVBAR -->
+            <header class="top-navbar">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm text-white d-md-none mr-3" id="sidebarToggle"><i class="fas fa-bars fa-lg"></i></button>
+                    <h5 class="m-0 font-weight-bold text-white d-none d-md-block">Gestión de Reseñas</h5>
+                </div>
+                <div>
+                    <div class="dropdown">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg mr-2"></i> Admin
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow border-0 mt-2" style="border-radius: 10px;">
+                            <a href="#" class="dropdown-item"><i class="fas fa-cog mr-2"></i> Configuración</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item text-danger" id="btnLogout"><i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <div>
+                        <h2 class="font-weight-bold mb-1" style="color: var(--euro-blue) !important;">Opiniones de Clientes</h2>
+                        <p class="text-muted m-0">Modera las reseñas que se muestran en tu página pública.</p>
+                    </div>
+                </div>
+                
+                <div class="row" id="contenedor-resenas">
+                    <!-- Las reseñas se inyectan aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // GUARDIÁN DE SEGURIDAD
+        async function verificarSesion() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.replace('login.html'); }
+        }
+        verificarSesion();
+
+        let fechaUltimaVisita = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            sidebarToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); });
+
+            // 1. LEER LA FECHA DE LA ÚLTIMA VISITA
+            fechaUltimaVisita = localStorage.getItem('ultimoVistoResenas') || '2000-01-01T00:00:00.000Z';
+            
+            // 2. ACTUALIZAR LA FECHA AHORA PARA REINICIAR EL CONTADOR DEL DASHBOARD
+            localStorage.setItem('ultimoVistoResenas', new Date().toISOString());
+
+            cargarResenas();
+        });
+
+        // CARGAR RESEÑAS
+        window.cargarResenas = async function() {
+            const contenedor = document.getElementById('contenedor-resenas');
+            contenedor.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border text-primary"></div><p>Cargando reseñas...</p></div>';
+
+            const { data, error } = await supabaseClient.from('resenas').select('*').order('created_at', { ascending: false });
+
+            if (error) {
+                contenedor.innerHTML = '<div class="text-danger text-center w-100 p-4">Error cargando las reseñas.</div>';
+                return;
+            }
+
+            contenedor.innerHTML = '';
+            if (data.length === 0) {
+                contenedor.innerHTML = `<div class="col-12 text-center py-5"><i class="fas fa-comment-slash" style="font-size: 50px; color: #ddd; margin-bottom: 15px;"></i><h5 class="text-muted">No hay reseñas registradas aún.</h5></div>`;
+                return;
+            }
+
+            data.forEach(r => {
+                // Formatear Fecha
+                const fecha = new Date(r.created_at);
+                const fechaFormateada = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                // Formatear Estrellas
+                let estrellasHtml = '';
+                for(let i=0; i<5; i++) {
+                    if(i < r.estrellas) estrellasHtml += '<i class="fas fa-star"></i>';
+                    else estrellasHtml += '<i class="far fa-star"></i>';
+                }
+
+                // Lógica Etiqueta "NUEVO"
+                let etiquetaNuevaHTML = '';
+                if (r.created_at > fechaUltimaVisita) {
+                    etiquetaNuevaHTML = '<span class="badge estado-badge bg-danger text-white shadow-sm">NUEVO</span>';
+                }
+
+                // Lógica Botón Ocultar/Mostrar
+                let claseVisible = r.visible ? "" : "no-visible";
+                let btnVisibleHTML = r.visible
+                    ? `<button class="btn btn-sm btn-light text-dark shadow-sm border" onclick="toggleVisible(${r.id}, false)" title="Ocultar en página web"><i class="fas fa-eye"></i> Ocultar</button>`
+                    : `<button class="btn btn-sm btn-secondary text-white shadow-sm" onclick="toggleVisible(${r.id}, true)" title="Mostrar en página web"><i class="fas fa-eye-slash"></i> Mostrar</button>`;
+
+                contenedor.innerHTML += `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="resena-card-admin ${claseVisible}">
+                            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                                <span class="text-warning" style="font-size: 1.1rem;">${estrellasHtml}</span>
+                                ${etiquetaNuevaHTML}
+                            </div>
+                            
+                            <p class="font-italic text-dark flex-grow-1" style="font-size: 0.95rem;">"${r.opinion}"</p>
+                            
+                            <div class="mt-3 pt-3 border-top">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="font-weight-bold m-0 text-primary"><i class="fas fa-user mr-2"></i>${r.nombre}</h6>
+                                    <small class="text-muted">${fechaFormateada}</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    ${btnVisibleHTML}
+                                    <button class="btn btn-sm btn-light text-danger shadow-sm border" onclick="eliminarResena(${r.id})" title="Eliminar definitivamente">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // OCULTAR O MOSTRAR RESEÑA
+        window.toggleVisible = async function(id, estadoNuevo) {
+            document.getElementById('loader').style.display = 'flex';
+            await supabaseClient.from('resenas').update({ visible: estadoNuevo }).eq('id', id);
+            document.getElementById('loader').style.display = 'none';
+            cargarResenas();
+        }
+
+        // ELIMINAR RESEÑA
+        window.eliminarResena = async function(id) {
+            if(confirm("¿Seguro que deseas eliminar esta reseña de forma permanente?")) {
+                document.getElementById('loader').style.display = 'flex';
+                await supabaseClient.from('resenas').delete().eq('id', id);
+                document.getElementById('loader').style.display = 'none';
+                cargarResenas();
+            }
+        }
+
+        // CERRAR SESIÓN
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.replace('login.html');
+        });
+    </script>
+</body>
+</html>

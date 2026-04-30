@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -139,7 +140,7 @@
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.html" class="nav-item nav-link">Inicio</a>
                             <a href="shop.html" class="nav-item nav-link active">Tienda</a>
-                            <a href="detail.html" class="nav-item nav-link">Promociones</a>
+                            
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Carrito <i class="fa fa-angle-down mt-1"></i></a>
                                 <div class="dropdown-menu bg-light rounded border-0 m-0 shadow">
@@ -147,6 +148,7 @@
                                     <a href="checkout.html" class="dropdown-item">Ir a Pagar</a>
                                 </div>
                             </div>
+                            <a href="resenas.html" class="nav-item nav-link">Reseñas</a>
                             <a href="contact.html" class="nav-item nav-link">Contacto</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
@@ -667,14 +669,41 @@
             $('#modalIngredientes').modal('show');
             try {
                 const { data: comboData } = await supabaseClient.from('combos').select('productos_ids').eq('id', comboId).single();
-                const { data: productos } = await supabaseClient.from('productos').select('id, nombre');
+                
+                // --- CAMBIO: Ahora pedimos también formato y marca ---
+                const { data: productos } = await supabaseClient.from('productos').select('id, nombre, formato, marca');
+                
                 lista.innerHTML = '';
-                comboData.productos_ids.forEach(item => {
-                    const prodId = item.id || item; const qty = item.cantidad || 1;
+                const items = comboData.productos_ids || [];
+                
+                if(items.length === 0) {
+                    lista.innerHTML = '<li class="list-group-item text-center text-muted border-0">Este combo no tiene productos asignados.</li>';
+                    return;
+                }
+
+                items.forEach(item => {
+                    const prodId = item.id || item; 
+                    const qty = item.cantidad || 1;
                     const prodInfo = productos.find(p => p.id === prodId);
-                    if(prodInfo) lista.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center px-2 border-bottom"><span class="text-dark"><i class="fas fa-check text-success mr-2"></i>${prodInfo.nombre}</span><span class="badge badge-primary badge-pill text-white shadow-sm px-2 py-1">${qty}x</span></li>`;
+                    
+                    if(prodInfo) {
+                        let f = prodInfo.formato || '';
+                        let m = prodInfo.marca ? ` | ${prodInfo.marca}` : '';
+                        let txtDetalle = (f || m) ? `<small class="d-block text-muted mt-1" style="font-size: 0.75rem;"><i class="fas fa-tag text-black-50 mr-1"></i>${f}${m}</small>` : '';
+
+                        lista.innerHTML += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-2 border-bottom">
+                                <div class="text-dark" style="max-width: 85%;">
+                                    <i class="fas fa-check text-success mr-2"></i><span class="font-weight-semi-bold">${prodInfo.nombre}</span>
+                                    ${txtDetalle}
+                                </div>
+                                <span class="badge badge-primary badge-pill text-blanco-puro shadow-sm px-2 py-1">${qty}x</span>
+                            </li>`;
+                    }
                 });
-            } catch(e) { }
+            } catch(e) {
+                lista.innerHTML = `<li class="list-group-item text-center text-danger border-0">Error cargando ingredientes.</li>`;
+            }
         }
 
         // NUEVA FUNCIÓN AGREGAR AL CARRITO LOCALSTORAGE (Homologada con index.html)
