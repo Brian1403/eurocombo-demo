@@ -28,7 +28,7 @@
         .sidebar a i { width: 25px; }
         .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
         
-        /* NAVBAR CORREGIDO (STICKY) */
+        /* NAVBAR FIXO (STICKY) */
         .top-navbar { 
             background-color: var(--euro-blue); 
             padding: 15px 30px; 
@@ -36,7 +36,7 @@
             justify-content: space-between; 
             align-items: center; 
             color: white; 
-            position: sticky; /* Fijo arriba */
+            position: sticky; 
             top: 0; 
             z-index: 1040; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -157,7 +157,6 @@
     <!-- MODAL PARA NUEVO/EDITAR SLIDE -->
     <div class="modal fade" id="modalSlide" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <!-- ... MISMO CONTENIDO DEL MODAL QUE YA TENÍAS ... -->
             <div class="modal-content" style="border-radius: 15px;">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title font-weight-bold" id="modalTitulo" style="color: var(--euro-blue);">Nuevo Slide Promocional</h5>
@@ -214,7 +213,10 @@
         const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const BUCKET_NAME = 'imagenes_carrusel'; 
-        let sortableInstancia = null; // Guardará la instancia del Drag&Drop
+        let sortableInstancia = null; 
+        
+        // Variable Global para almacenar los datos (Evita errores de comillas al Editar)
+        window.slidesDataGlobal = [];
 
         async function verificarSesion() {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -292,8 +294,7 @@
                         const { error } = await supabaseClient.from('carrusel').update(datosSlide).eq('id', id);
                         if (error) throw new Error("Error DB: " + error.message);
                     } else {
-                        // Al crear uno nuevo, le ponemos orden 999 para que vaya al final. 
-                        // Luego se reordenará solo cuando muevas algo.
+                        // Al crear uno nuevo, le ponemos orden 999
                         datosSlide.orden = 999; 
                         const { error } = await supabaseClient.from('carrusel').insert([datosSlide]);
                         if (error) throw new Error("Error DB: " + error.message);
@@ -309,18 +310,20 @@
                 }
             });
 
-            // CARGAR Y MOSTRAR SLIDES (Modificado para ordenar por la columna 'orden')
+            // CARGAR Y MOSTRAR SLIDES
             window.cargarSlides = async function() {
                 const contenedor = document.getElementById('contenedor-slides');
                 contenedor.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border text-primary"></div></div>';
 
-                // IMPORTANTE: Lee por la columna 'orden'
                 const { data, error } = await supabaseClient.from('carrusel').select('*').order('orden', { ascending: true });
                 
                 if (error) {
                     contenedor.innerHTML = '<div class="text-danger text-center w-100 p-4">Error. ¿Creaste la columna "orden" en tu tabla "carrusel"?</div>';
                     return;
                 }
+
+                // Guardamos los datos globalmente para usarlos al editar
+                window.slidesDataGlobal = data;
                 
                 contenedor.innerHTML = '';
                 if (data.length === 0) {
@@ -330,9 +333,6 @@
 
                 data.forEach((slide, index) => {
                     const imageUrl = slide.imagen_url || 'https://via.placeholder.com/600x300?text=Sin+Imagen';
-                    const titSafe = slide.titulo ? slide.titulo.replace(/'/g, "\\'") : '';
-                    const descSafe = slide.descripcion ? slide.descripcion.replace(/'/g, "\\'") : '';
-                    const btnSafe = slide.texto_boton ? slide.texto_boton.replace(/'/g, "\\'") : '';
 
                     contenedor.innerHTML += `
                         <div class="col-lg-4 col-md-6 mb-4 slide-card-wrapper" data-id="${slide.id}">
@@ -348,13 +348,14 @@
                                     <img src="${imageUrl}" alt="img">
                                 </div>
                                 <div class="p-3 flex-grow-1 d-flex flex-column">
-                                    <h5 class="font-weight-bold m-0" style="color: var(--euro-blue);">${slide.titulo}</h5>
-                                    <p class="text-muted small mt-2 mb-2 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${slide.descripcion}</p>
+                                    <h5 class="font-weight-bold m-0" style="color: var(--euro-blue);">${slide.titulo || ''}</h5>
+                                    <p class="text-muted small mt-2 mb-2 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${slide.descripcion || ''}</p>
                                     <div class="bg-light p-2 text-center rounded small font-weight-bold text-primary mb-3">
-                                        Botón: "${slide.texto_boton}"
+                                        Botón: "${slide.texto_boton || ''}"
                                     </div>
                                     <div class="d-flex justify-content-between mt-auto">
-                                        <button class="btn btn-sm btn-light text-primary shadow-sm border flex-grow-1 mr-2" onclick="prepararEditar(${slide.id}, '${titSafe}', '${descSafe}', '${btnSafe}', '${imageUrl}')" title="Editar">
+                                        <!-- AQUÍ EL ARREGLO: Solo pasamos el ID de forma limpia -->
+                                        <button class="btn btn-sm btn-light text-primary shadow-sm border flex-grow-1 mr-2" onclick="prepararEditar(${slide.id})" title="Editar">
                                             <i class="fas fa-edit"></i> Editar
                                         </button>
                                         <button class="btn btn-sm btn-light text-danger shadow-sm border" onclick="eliminarSlide(${slide.id})" title="Eliminar">
@@ -373,40 +374,31 @@
             function inicializarSortable() {
                 const contenedor = document.getElementById('contenedor-slides');
                 
-                // Si ya había una instancia, la destruimos para evitar duplicados
                 if(sortableInstancia) sortableInstancia.destroy();
 
                 sortableInstancia = Sortable.create(contenedor, {
                     animation: 150,
-                    handle: '.drag-handle', // Solo se mueve si agarras el icono
-                    ghostClass: 'sortable-ghost', // Clase CSS mientras se arrastra
+                    handle: '.drag-handle', 
+                    ghostClass: 'sortable-ghost', 
                     onEnd: async function () {
-                        // 1. Cuando sueltas, recogemos el nuevo orden visual
                         const elementos = contenedor.querySelectorAll('.slide-card-wrapper');
                         const actualizaciones = [];
 
                         elementos.forEach((elemento, index) => {
-                            // Actualizar el número visual (Badge)
                             elemento.querySelector('.slide-number').innerText = `Slide ${index + 1}`;
-                            
-                            // Guardar en array el id y su nueva posición (orden)
                             actualizaciones.push({
                                 id: parseInt(elemento.getAttribute('data-id')),
                                 orden: index
                             });
                         });
 
-                        // 2. Enviar actualización a Supabase
                         document.getElementById('loader').style.display = 'flex';
-                        
-                        // Upsert actualiza múltiples filas de un golpe usando su ID
                         const { error } = await supabaseClient.from('carrusel').upsert(actualizaciones);
-                        
                         document.getElementById('loader').style.display = 'none';
 
                         if(error) {
                             alert("Error al guardar el nuevo orden: " + error.message);
-                            cargarSlides(); // Volver a cargar si hubo error
+                            cargarSlides(); 
                         }
                     }
                 });
@@ -423,24 +415,33 @@
                 }
             }
 
-            // PREPARAR EDICIÓN
-            window.prepararEditar = function(id, titulo, desc, boton, urlActual) {
+            // PREPARAR EDICIÓN (Busca los datos de forma segura por ID)
+            window.prepararEditar = function(id) {
+                const slide = window.slidesDataGlobal.find(s => s.id === id);
+                
+                if (!slide) {
+                    alert("Error: No se encontraron los datos de este slide.");
+                    return;
+                }
+
                 document.getElementById('formSlide').reset();
-                document.getElementById('slideId').value = id;
-                document.getElementById('slideTitulo').value = titulo;
-                document.getElementById('slideDesc').value = desc;
-                document.getElementById('slideBoton').value = boton;
+                document.getElementById('slideId').value = slide.id;
+                document.getElementById('slideTitulo').value = slide.titulo || '';
+                document.getElementById('slideDesc').value = slide.descripcion || '';
+                document.getElementById('slideBoton').value = slide.texto_boton || '';
                 document.getElementById('modalTitulo').innerText = 'Editar Slide';
                 
-                if(urlActual && urlActual !== 'null') {
-                    document.getElementById('imagePreview').src = urlActual;
+                if(slide.imagen_url && slide.imagen_url !== 'null') {
+                    document.getElementById('imagePreview').src = slide.imagen_url;
                     document.getElementById('previewContainer').style.display = 'block';
                 } else {
                     document.getElementById('previewContainer').style.display = 'none';
                 }
+                
                 $('#modalSlide').modal('show');
             }
 
+            // Arrancar todo al cargar
             cargarSlides();
         });
 
