@@ -35,23 +35,48 @@
         .sidebar a i { width: 25px; }
         .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
         
-        /* NAVBAR */
-        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        /* NAVBAR (STICKY) */
+        .top-navbar { 
+            background-color: var(--euro-blue); 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: white; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1040; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         
         /* MÓVIL */
         @media (max-width: 768px) { 
-            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar { position: absolute; left: -250px; z-index: 1050; height: 100%; } 
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
         }
         
         /* TARJETA DE PRODUCTO */
-        .prod-item-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; display: flex; align-items: stretch; overflow: hidden; padding: 15px; position: relative;}
+        .prod-item-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee; transition: all 0.3s ease; display: flex; align-items: stretch; overflow: hidden; padding: 15px; position: relative;}
         .prod-item-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-left: 4px solid var(--combo-green); }
         
-        /* ESTADO OPACADO SI NO ES VISIBLE */
-        .prod-item-admin.no-visible { opacity: 0.6; filter: grayscale(50%); border-left: 4px solid #999; }
-        .prod-item-admin.no-visible:hover { opacity: 0.9; filter: grayscale(0%); border-left: 4px solid var(--cart-orange); }
+        /* ESTADO APAGADO (NO VISIBLE) */
+        .prod-item-admin.no-visible { 
+            background-color: #fafafa; 
+            border-left: 4px solid #adb5bd; 
+            box-shadow: none; 
+        }
+        /* Solo la imagen se pone gris en modo oculto */
+        .prod-item-admin.no-visible .prod-img-box img { 
+            filter: grayscale(100%); 
+            opacity: 0.6; 
+        }
+        /* El texto cambia a gris oscuro para indicar inactividad */
+        .prod-item-admin.no-visible .prod-info * { 
+            color: #6c757d !important; 
+        }
+
+        .prod-item-admin.no-visible:hover { border-left: 4px solid var(--cart-orange); background-color: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         .prod-img-box { width: 100px; height: 100px; flex-shrink: 0; background: #eee; border-radius: 10px; overflow: hidden; position: relative;}
         .prod-img-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -62,6 +87,11 @@
         
         /* ETIQUETA OFERTA FLOTANTE */
         .badge-oferta { position: absolute; top: 15px; left: 15px; background: var(--cart-orange); color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 8px; border-radius: 5px; z-index: 2;}
+
+        /* BOTÓN NARANJA PERSONALIZADO */
+        .btn-naranja { background-color: var(--cart-orange); color: white !important; border: 1px solid var(--cart-orange); }
+        .btn-naranja:hover { background-color: #d84315; color: white !important; }
+        .btn-naranja i { color: white !important; }
 
         /* MISCELÁNEOS */
         #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
@@ -83,7 +113,10 @@
         <!-- SIDEBAR -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+                <h4 class="m-0 font-weight-bold d-flex align-items-center justify-content-center">
+                    <img src="img/logo-euro2.png" alt="EuroCombo Logo" style="height: 35px; width: auto; margin-right: 10px;">
+                    <span class="text-white">Euro</span><span style="color: #28a745; text-shadow: 0px 0px 2px rgba(255,255,255,0.2);">Combo</span>
+                </h4>
             </div>
             
             <div class="sidebar-menu">
@@ -132,7 +165,7 @@
                         <h2 class="font-weight-bold mb-1" style="color: var(--euro-blue) !important;">Productos</h2>
                         <p class="text-muted m-0">Administra el inventario y ofertas de tu tienda.</p>
                     </div>
-                    <button class="btn shadow-sm" style="background-color: var(--cart-orange); color: white; font-weight: bold; border-radius: 25px; padding: 10px 20px;" data-toggle="modal" data-target="#modalProducto" id="btnNuevoProducto">
+                    <button class="btn shadow-sm btn-naranja" style="font-weight: bold; border-radius: 25px; padding: 10px 20px;" data-toggle="modal" data-target="#modalProducto" id="btnNuevoProducto">
                         <i class="fas fa-plus mr-2"></i> Nuevo Producto
                     </button>
                 </div>
@@ -248,19 +281,17 @@
         const BUCKET_NAME = 'imagenes_productos'; 
 
         // -----------------------------------------------------------------
-        // GUARDIÁN DE SEGURIDAD: COMPROBAR SI ESTÁ LOGUEADO
+        // GUARDIÁN DE SEGURIDAD
         // -----------------------------------------------------------------
         async function verificarSesion() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) {
-                // Si no hay sesión válida, lo patea al index.html
                 window.location.replace('login.html'); 
             }
         }
         verificarSesion();
         // -----------------------------------------------------------------
 
-        // Diccionario para almacenar los nombres de las categorías
         let mapaCategorias = {}; 
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -319,7 +350,6 @@
                 let imageUrl = null;
 
                 try {
-                    // SUBIR IMAGEN
                     if (archivo) {
                         const fileExt = archivo.name.split('.').pop();
                         const fileName = `${Date.now()}_prod.${fileExt}`;
@@ -339,12 +369,10 @@
 
                     if (imageUrl) datosProducto.imagen_url = imageUrl;
 
-                    // GUARDAR DB
                     if (id) {
                         const { error } = await supabaseClient.from('productos').update(datosProducto).eq('id', id);
                         if (error) throw new Error(error.message);
                     } else {
-                        // Al crear, visible = true y en_oferta = false se asume por defecto en DB, pero lo forzamos por si acaso
                         datosProducto.visible = true;
                         datosProducto.en_oferta = false;
                         const { error } = await supabaseClient.from('productos').insert([datosProducto]);
@@ -378,7 +406,7 @@
 
                 select.innerHTML = '<option value="">-- Selecciona una categoría --</option>';
                 data.forEach(cat => {
-                    mapaCategorias[cat.id] = cat.nombre; // Guardamos en el diccionario
+                    mapaCategorias[cat.id] = cat.nombre; 
                     select.innerHTML += `<option value="${cat.id}">${cat.nombre}</option>`;
                 });
             }
@@ -405,29 +433,27 @@
                     const imageUrl = prod.imagen_url || 'https://via.placeholder.com/100';
                     const catName = mapaCategorias[prod.categoria_id] || 'Sin categoría';
                     
-                    // ESCAPAR TEXTOS
                     const nombreSafe = prod.nombre.replace(/'/g, "\\'");
                     const formatoSafe = prod.formato ? prod.formato.replace(/'/g, "\\'") : '';
                     const marcaSafe = prod.marca ? prod.marca.replace(/'/g, "\\'") : '';
                     
-                   // LÓGICA DE PRECIO Y OFERTA
-let precioHTML = `<h5 class="text-success font-weight-bold m-0 mb-1">$${prod.precio.toFixed(2)}</h5>`;
-let btnOfertaHTML = `<button class="btn btn-sm btn-light text-warning shadow-sm" style="border-radius: 8px;" onclick="abrirOferta(${prod.id}, ${prod.precio})" title="Poner en Oferta"><i class="fas fa-tag"></i></button>`;
-let badgeOfertaHTML = ``;
+                    let precioHTML = `<h5 class="text-success font-weight-bold m-0 mb-1">$${prod.precio.toFixed(2)}</h5>`;
+                    let btnOfertaHTML = `<button class="btn btn-sm btn-light text-warning shadow-sm" style="border-radius: 8px;" onclick="abrirOferta(${prod.id}, ${prod.precio})" title="Poner en Oferta"><i class="fas fa-tag"></i></button>`;
+                    let badgeOfertaHTML = ``;
 
-if (prod.en_oferta) {
-    precioHTML = `
-        <h6 class="text-muted m-0" style="font-size: 0.85rem;"><del>$${prod.precio.toFixed(2)}</del></h6>
-        <h5 class="text-danger font-weight-bold m-0 mb-1">$${prod.precio_oferta.toFixed(2)}</h5>`;
-    btnOfertaHTML = `<button class="btn btn-sm btn-danger text-white shadow-sm" style="border-radius: 8px;" onclick="quitarOferta(${prod.id})" title="Quitar Oferta"><i class="fas fa-tag"></i></button>`;
-    badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
-}
+                    if (prod.en_oferta) {
+                        precioHTML = `
+                            <h6 class="text-muted m-0" style="font-size: 0.85rem;"><del>$${prod.precio.toFixed(2)}</del></h6>
+                            <h5 class="text-danger font-weight-bold m-0 mb-1">$${prod.precio_oferta.toFixed(2)}</h5>`;
+                        btnOfertaHTML = `<button class="btn btn-sm btn-danger text-white shadow-sm" style="border-radius: 8px;" onclick="quitarOferta(${prod.id})" title="Quitar Oferta"><i class="fas fa-tag"></i></button>`;
+                        badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
+                    }
 
-// LÓGICA DE VISIBILIDAD
-let claseVisible = prod.visible ? "" : "no-visible";
-let btnVisibleHTML = prod.visible
-    ? `<button class="btn btn-sm btn-light text-dark shadow-sm" style="border-radius: 8px; border: 1px solid #ddd;" onclick="toggleVisible(${prod.id}, false)" title="Ocultar al cliente"><i class="fas fa-eye" style="color: #343a40;"></i></button>`
-    : `<button class="btn btn-sm btn-secondary text-white shadow-sm" style="border-radius: 8px;" onclick="toggleVisible(${prod.id}, true)" title="Mostrar al cliente"><i class="fas fa-eye-slash"></i></button>`;
+                    // LÓGICA DE VISIBILIDAD CON LOS COLORES ACORDADOS
+                    let claseVisible = prod.visible ? "" : "no-visible";
+                    let btnVisibleHTML = prod.visible
+                        ? `<button class="btn btn-sm btn-naranja shadow-sm" style="border-radius: 8px;" onclick="toggleVisible(${prod.id}, false)" title="Ocultar al cliente"><i class="fas fa-eye-slash"></i></button>`
+                        : `<button class="btn btn-sm btn-success text-white shadow-sm" style="border-radius: 8px;" onclick="toggleVisible(${prod.id}, true)" title="Mostrar al cliente"><i class="fas fa-eye"></i></button>`;
 
                     contenedor.innerHTML += `
                         <div class="col-lg-4 col-md-6 mb-4">
@@ -459,9 +485,7 @@ let btnVisibleHTML = prod.visible
                 });
             }
 
-            // 3. FUNCIONES DE INTERACCIÓN DIRECTA EN LA TARJETA
-            
-            // VISIBILIDAD (Ojo)
+            // 3. FUNCIONES DE INTERACCIÓN
             window.toggleVisible = async function(id, estadoNuevo) {
                 document.getElementById('loader').style.display = 'flex';
                 await supabaseClient.from('productos').update({ visible: estadoNuevo }).eq('id', id);
@@ -469,7 +493,6 @@ let btnVisibleHTML = prod.visible
                 cargarProductos();
             }
 
-            // ABRIR MODAL PARA PONER OFERTA (Etiqueta amarilla)
             window.abrirOferta = function(id, precioOriginal) {
                 document.getElementById('ofertaProdId').value = id;
                 document.getElementById('lblPrecioOriginal').innerText = "$" + precioOriginal.toFixed(2);
@@ -477,7 +500,6 @@ let btnVisibleHTML = prod.visible
                 $('#modalOferta').modal('show');
             }
 
-            // GUARDAR OFERTA DESDE EL MODAL PEQUEÑO
             window.guardarOferta = async function() {
                 const id = document.getElementById('ofertaProdId').value;
                 const nuevoPrecio = parseFloat(document.getElementById('inputPrecioOferta').value);
@@ -491,18 +513,15 @@ let btnVisibleHTML = prod.visible
                 cargarProductos();
             }
 
-            // QUITAR OFERTA (Etiqueta roja)
             window.quitarOferta = async function(id) {
                 if(confirm("¿Quitar este producto de oferta y regresar a precio normal?")){
                     document.getElementById('loader').style.display = 'flex';
-                    // Al quitar oferta, ponemos en_oferta falso y borramos el precio de rebaja
                     await supabaseClient.from('productos').update({ en_oferta: false, precio_oferta: null }).eq('id', id);
                     document.getElementById('loader').style.display = 'none';
                     cargarProductos();
                 }
             }
 
-            // ELIMINAR
             window.eliminar = async function(id) {
                 if (confirm("¿Seguro que deseas eliminar este producto permanentemente?")) {
                     document.getElementById('loader').style.display = 'flex';
@@ -512,7 +531,6 @@ let btnVisibleHTML = prod.visible
                 }
             }
 
-            // PREPARAR EDICIÓN GENERAL
             window.prepararEditar = function(id, catId, nombre, precio, formato, marca, urlActual) {
                 document.getElementById('formProducto').reset();
                 
@@ -535,10 +553,9 @@ let btnVisibleHTML = prod.visible
                 $('#modalProducto').modal('show');
             }
 
-            // Arrancar todo secuencialmente
             async function iniciar() {
-                await cargarSelectCategorias(); // Primero cargamos las categorías para que exista el "Mapa" de nombres
-                cargarProductos();              // Luego dibujamos los productos
+                await cargarSelectCategorias(); 
+                cargarProductos();              
             }
             iniciar();
         });
@@ -550,7 +567,6 @@ let btnVisibleHTML = prod.visible
             window.location.replace('login.html');
         });
 
-        // REGISTRO DE SERVICE WORKER PARA PWA (INSTALACIÓN EN MÓVIL)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then((reg) => {

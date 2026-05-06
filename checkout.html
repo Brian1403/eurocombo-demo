@@ -59,6 +59,19 @@
         
         /* EFECTO HOVER EN COMBOS PARA DESPLEGABLE */
         .combo-header:hover { background-color: #f8f9fa; border-radius: 5px; }
+
+        /* ANIMACIÓN DE CARRITO (POR SI SE USA EL BUSCADOR Y SE AGREGA ALGO) */
+        @keyframes bounceCart {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.3); }
+            50% { transform: scale(0.9); }
+            70% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+        .cart-animating i {
+            animation: bounceCart 0.5s ease-in-out;
+            color: #28a745 !important;
+        }
     </style>
 </head>
 
@@ -75,7 +88,7 @@
             <div class="col-lg-4 col-6 text-left position-relative">
                 <form onsubmit="event.preventDefault();">
                     <div class="input-group shadow-sm" style="border-radius: 25px;">
-                        <input type="text" class="form-control border-light searchInput" placeholder="¿Qué se te antoja hoy? Buscar productos..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
+                        <input type="text" class="form-control border-light searchInput" placeholder="¿Qué se te antoja hoy? Buscar productos, marcas..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
                         <div class="input-group-append">
                             <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
                                 <i class="fa fa-search"></i>
@@ -96,8 +109,8 @@
     </div>
     <!-- Topbar End -->
 
-    <!-- Navbar Start -->
-    <div class="container-fluid bg-dark mb-30">
+    <!-- Navbar Start (AHORA STICKY) -->
+    <div class="container-fluid bg-dark mb-30 sticky-top shadow-sm" style="z-index: 1040; top: 0;">
         <div class="row px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
                 <a class="btn d-flex align-items-center justify-content-between bg-primary text-blanco-puro w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
@@ -114,15 +127,18 @@
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                     <a href="index.html" class="text-decoration-none d-lg-none">
-                        <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: 5px;">
+                        <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 80px; width: auto; object-fit: contain;">
                     </a>
 
                     <!-- BOTÓN DE CARRITO MÓVIL Y BOTÓN DE MENÚ -->
                     <div class="d-flex align-items-center d-lg-none">
-                        <a href="cart.html" class="btn px-0 ml-2 mr-3 position-relative">
-                            <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
-                            <span class="badge text-white bg-primary border border-secondary rounded-circle cart-badge" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
-                        </a>
+                        <div class="d-flex flex-column align-items-center ml-2 mr-3 text-decoration-none cart-icon-wrapper">
+                            <a href="cart.html" class="btn px-0 position-relative cart-btn-container pb-0">
+                                <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                                <span class="badge text-white bg-primary border border-secondary rounded-circle cart-badge" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                            </a>
+                            <a href="cart.html" class="cart-total text-success font-weight-bold text-decoration-none mt-1" style="font-size: 0.8rem; line-height: 1;">$0.00</a>
+                        </div>
                         <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                             <span class="navbar-toggler-icon"></span>
                         </button>
@@ -145,10 +161,13 @@
                         </div>
                         
                         <!-- CARRITO ESCRITORIO -->
-                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="cart.html" class="btn px-0 ml-3">
-                                <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle cart-badge" style="padding-bottom: 2px;">0</span>
+                        <div class="navbar-nav ml-auto py-0 d-none d-lg-flex align-items-center">
+                            <a href="cart.html" class="btn px-0 ml-3 d-flex align-items-center cart-icon-wrapper text-decoration-none cart-btn-container">
+                                <div class="position-relative mr-2">
+                                    <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                                    <span class="badge text-white bg-primary border border-light rounded-circle cart-badge" style="position: absolute; top: -8px; right: -12px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                                </div>
+                                <span class="cart-total text-success font-weight-bold ml-2" style="font-size: 1.2rem;">$0.00</span>
                             </a>
                         </div>
                     </div>
@@ -164,7 +183,7 @@
             <div class="col-12 position-relative">
                 <form onsubmit="event.preventDefault();">
                     <div class="input-group shadow-sm" style="border-radius: 25px;">
-                        <input type="text" class="form-control border-light searchInput" placeholder="Buscar productos..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
+                        <input type="text" class="form-control border-light searchInput" placeholder="Buscar productos, marcas..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
                         <div class="input-group-append">
                             <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
                                 <i class="fa fa-search"></i>
@@ -296,6 +315,7 @@
                     <a class="text-light mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
                     <a class="text-light mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Tienda</a>
                     <a class="text-light mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Ver Carrito</a>
+                    <a class="text-light mb-2" href="resenas.html"><i class="fa fa-angle-right mr-2"></i>Reseñas</a>
                     <a class="text-light" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
                 </div>
             </div>
@@ -359,9 +379,15 @@
 
         function actualizarBadgeCarrito() {
             let carrito = obtenerCarrito();
+            
             let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            let totalDinero = carrito.reduce((sum, item) => sum + (item.cantidad * item.precio), 0);
+            
             const badges = document.querySelectorAll('.cart-badge');
             badges.forEach(badge => { badge.innerText = totalItems; });
+
+            const totals = document.querySelectorAll('.cart-total');
+            totals.forEach(t => { t.innerText = '$' + totalDinero.toFixed(2); });
         }
 
         async function renderizarResumenCheckout() {
@@ -573,8 +599,9 @@
         // ==============================================================================
         async function inicializarBuscador() {
             try {
+                // Seleccionamos también formato y marca para la búsqueda
                 const [resProd, resCombos, resCat] = await Promise.all([
-                    supabaseClient.from('productos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, categoria_id').eq('visible', true),
+                    supabaseClient.from('productos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, categoria_id, formato, marca').eq('visible', true),
                     supabaseClient.from('combos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, productos_ids').eq('visible', true),
                     supabaseClient.from('categorias').select('id, nombre')
                 ]);
@@ -600,7 +627,14 @@
                     if(query.length < 2) { resultsBox.style.display = 'none'; return; }
 
                     const catMatchedIds = catalogoBusqueda.categorias.filter(c => c.nombre.toLowerCase().includes(query)).map(c => c.id);
-                    const prodFiltrados = catalogoBusqueda.productos.filter(p => p.nombre.toLowerCase().includes(query) || catMatchedIds.includes(p.categoria_id));
+                    
+                    // Modificado para buscar por marca
+                    const prodFiltrados = catalogoBusqueda.productos.filter(p => {
+                        const matchNombre = p.nombre.toLowerCase().includes(query);
+                        const matchMarca = p.marca && p.marca.toLowerCase().includes(query);
+                        const matchCat = catMatchedIds.includes(p.categoria_id);
+                        return matchNombre || matchMarca || matchCat;
+                    });
                     const prodIdsMatched = prodFiltrados.map(p => p.id);
 
                     const combosFiltrados = catalogoBusqueda.combos.filter(c => {
@@ -636,6 +670,35 @@
             }
 
             let html = '';
+
+            // Productos Primero
+            if(productos.length > 0) {
+                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Productos</div>';
+                productos.forEach(p => {
+                    const imgUrl = p.imagen_url || 'https://via.placeholder.com/50';
+                    const link = `shop.html?cat=${p.categoria_id}&hl=prod_${p.id}`;
+                    const precio = p.en_oferta ? p.precio_oferta : p.precio;
+                    
+                    let detalles = '';
+                    if (p.formato || p.marca) {
+                        let f = p.formato || '';
+                        let m = p.marca ? (f ? ` | ${p.marca}` : p.marca) : '';
+                        detalles = `<small class="d-block text-muted mt-1" style="font-size: 0.75rem; line-height: 1;"><i class="fas fa-tag text-black-50 mr-1"></i>${f}${m}</small>`;
+                    }
+
+                    html += `
+                        <a href="${link}" class="search-result-item">
+                            <img src="${imgUrl}" class="search-img" alt="">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${resaltarTexto(p.nombre, query)}</h6>
+                                ${detalles}
+                                <small class="text-success font-weight-bold d-block mt-1">$${precio.toFixed(2)}</small>
+                            </div>
+                        </a>`;
+                });
+            }
+
+            // Combos Después
             if(combos.length > 0) {
                 html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Combos</div>';
                 combos.forEach(c => {
@@ -646,29 +709,13 @@
                         <a href="${link}" class="search-result-item">
                             <img src="${imgUrl}" class="search-img" alt="">
                             <div class="flex-grow-1">
-                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${resaltarTexto(c.nombre, query)}</h6>
-                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${resaltarTexto(c.nombre, query)} <span class="badge badge-warning ml-1" style="font-size:0.6rem;">COMBO</span></h6>
+                                <small class="text-success font-weight-bold d-block mt-1">$${precio.toFixed(2)}</small>
                             </div>
                         </a>`;
                 });
             }
 
-            if(productos.length > 0) {
-                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Productos</div>';
-                productos.forEach(p => {
-                    const imgUrl = p.imagen_url || 'https://via.placeholder.com/50';
-                    const link = `shop.html?cat=${p.categoria_id}&hl=prod_${p.id}`;
-                    const precio = p.en_oferta ? p.precio_oferta : p.precio;
-                    html += `
-                        <a href="${link}" class="search-result-item">
-                            <img src="${imgUrl}" class="search-img" alt="">
-                            <div class="flex-grow-1">
-                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${resaltarTexto(p.nombre, query)}</h6>
-                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
-                            </div>
-                        </a>`;
-                });
-            }
             resultsBox.innerHTML = html;
             resultsBox.style.display = 'block';
         }

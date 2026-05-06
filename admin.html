@@ -36,11 +36,22 @@
         .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
         
         /* NAVBAR Y CONTENIDO */
-        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .top-navbar { 
+            background-color: var(--euro-blue); 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: white; 
+            position: sticky; /* HACE QUE SE QUEDE ARRIBA */
+            top: 0; 
+            z-index: 1040; /* ASEGURA QUE QUEDE SOBRE EL CONTENIDO */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         
         @media (max-width: 768px) { 
-            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar { position: absolute; left: -250px; z-index: 1050; height: 100%; } 
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
         }
 
@@ -66,7 +77,11 @@
         <!-- SIDEBAR -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+                <!-- LOGO ACTUALIZADO Y COLORES PERSONALIZADOS -->
+                <h4 class="m-0 font-weight-bold d-flex align-items-center justify-content-center">
+                    <img src="img/logo-euro2.png" alt="EuroCombo Logo" style="height: 35px; width: auto; margin-right: 10px;">
+                    <span class="text-white">Euro</span><span style="color: #28a745; text-shadow: 0px 0px 2px rgba(255,255,255,0.2);">Combo</span>
+                </h4>
             </div>
 
             <div class="sidebar-menu">

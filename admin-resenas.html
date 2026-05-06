@@ -28,23 +28,68 @@
         .sidebar a i { width: 25px; }
         .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
         
-        /* NAVBAR */
-        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        /* NAVBAR (STICKY) */
+        .top-navbar { 
+            background-color: var(--euro-blue); 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: white; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1040; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         
         @media (max-width: 768px) { 
-            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar { position: absolute; left: -250px; z-index: 1050; height: 100%; } 
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
         }
 
-        /* TARJETA DE RESEÑA */
-        .resena-card-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; padding: 20px; height: 100%; display: flex; flex-direction: column;}
-        .resena-card-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-top: 4px solid var(--euro-blue); }
+        /* TARJETA DE RESEÑA NORMAL (ACTIVA / MOSTRAR) */
+        .resena-card-admin { 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
+            border: 1px solid #eee; 
+            border-top: 4px solid var(--cart-orange); 
+            transition: all 0.3s ease; 
+            padding: 20px; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column;
+        }
+        .resena-card-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-top-color: var(--euro-blue); }
         
-        /* ESTADO OPACADO SI NO ES VISIBLE */
-        .resena-card-admin.no-visible { opacity: 0.6; filter: grayscale(80%); border-top: 4px solid #999; }
-        .resena-card-admin.no-visible:hover { opacity: 0.9; filter: grayscale(0%); border-top: 4px solid var(--cart-orange); }
+        /* TARJETA DE RESEÑA APAGADA (OCULTA / NO VISIBLE) */
+        .resena-card-admin.no-visible { 
+            background-color: #fafafa; 
+            border-top: 4px solid #adb5bd; /* Borde gris */
+            box-shadow: none; 
+        }
+        
+        /* Cambio de color de texto y nombre cuando está oculto */
+        .resena-card-admin.no-visible .resena-texto,
+        .resena-card-admin.no-visible .nombre-cliente { 
+            color: #6c757d !important; 
+        }
 
+        /* BOTÓN NARANJA PERSONALIZADO */
+        .btn-naranja {
+            background-color: var(--cart-orange);
+            color: white !important;
+            border: 1px solid var(--cart-orange);
+        }
+        .btn-naranja:hover {
+            background-color: #d84315; /* Un tono más oscuro al pasar el ratón */
+            color: white !important;
+        }
+        .btn-naranja i {
+            color: white !important;
+        }
+        
         .estado-badge { font-size: 0.75rem; padding: 5px 10px; border-radius: 20px; font-weight: bold; letter-spacing: 0.5px;}
         #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
     </style>
@@ -60,14 +105,16 @@
         <!-- SIDEBAR -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+                <h4 class="m-0 font-weight-bold d-flex align-items-center justify-content-center">
+                    <img src="img/logo-euro2.png" alt="EuroCombo Logo" style="height: 35px; width: auto; margin-right: 10px;">
+                    <span class="text-white">Euro</span><span style="color: #28a745; text-shadow: 0px 0px 2px rgba(255,255,255,0.2);">Combo</span>
+                </h4>
             </div>
             
             <div class="sidebar-menu">
                 <div class="menu-title">Principal</div>
                 <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="pedidos.html"><i class="fas fa-clipboard-list"></i> Pedidos Web</a>
-                <!-- NUEVO ENLACE AL PANEL DE RESEÑAS -->
                 <a href="admin-resenas.html" class="active"><i class="fas fa-star"></i> Reseñas</a>
                 
                 <div class="menu-title mt-3">Gestión</div>
@@ -141,7 +188,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
-            sidebarToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); });
+            
+            sidebarToggle.addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                sidebar.classList.toggle('active'); 
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
 
             // 1. LEER LA FECHA DE LA ÚLTIMA VISITA
             fechaUltimaVisita = localStorage.getItem('ultimoVistoResenas') || '2000-01-01T00:00:00.000Z';
@@ -188,30 +245,31 @@
                     etiquetaNuevaHTML = '<span class="badge estado-badge bg-danger text-white shadow-sm">NUEVO</span>';
                 }
 
-                // Lógica Botón Ocultar/Mostrar
+                // LÓGICA BOTÓN OCULTAR/MOSTRAR CON BOTÓN NARANJA
                 let claseVisible = r.visible ? "" : "no-visible";
+                
                 let btnVisibleHTML = r.visible
-                    ? `<button class="btn btn-sm btn-light text-dark shadow-sm border" onclick="toggleVisible(${r.id}, false)" title="Ocultar en página web"><i class="fas fa-eye"></i> Ocultar</button>`
-                    : `<button class="btn btn-sm btn-secondary text-white shadow-sm" onclick="toggleVisible(${r.id}, true)" title="Mostrar en página web"><i class="fas fa-eye-slash"></i> Mostrar</button>`;
+                    ? `<button class="btn btn-sm btn-naranja font-weight-bold shadow-sm" onclick="toggleVisible(${r.id}, false)" title="Ocultar en página web"><i class="fas fa-eye-slash mr-1"></i> Ocultar</button>`
+                    : `<button class="btn btn-sm btn-success text-white font-weight-bold shadow-sm" onclick="toggleVisible(${r.id}, true)" title="Mostrar en página web"><i class="fas fa-eye mr-1"></i> Mostrar</button>`;
 
                 contenedor.innerHTML += `
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="resena-card-admin ${claseVisible}">
                             <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                                <span class="text-warning" style="font-size: 1.1rem;">${estrellasHtml}</span>
+                                <span class="text-warning stars-container" style="font-size: 1.1rem;">${estrellasHtml}</span>
                                 ${etiquetaNuevaHTML}
                             </div>
                             
-                            <p class="font-italic text-dark flex-grow-1" style="font-size: 0.95rem;">"${r.opinion}"</p>
+                            <p class="font-italic text-dark flex-grow-1 resena-texto" style="font-size: 0.95rem;">"${r.opinion}"</p>
                             
                             <div class="mt-3 pt-3 border-top">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="font-weight-bold m-0 text-primary"><i class="fas fa-user mr-2"></i>${r.nombre}</h6>
-                                    <small class="text-muted">${fechaFormateada}</small>
+                                    <h6 class="font-weight-bold m-0 nombre-cliente" style="color: var(--cart-orange);"><i class="fas fa-user mr-2"></i>${r.nombre}</h6>
+                                    <small class="text-muted font-weight-bold">${fechaFormateada}</small>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-center bg-white p-2 rounded" style="border: 1px solid #eee;">
                                     ${btnVisibleHTML}
-                                    <button class="btn btn-sm btn-light text-danger shadow-sm border" onclick="eliminarResena(${r.id})" title="Eliminar definitivamente">
+                                    <button class="btn btn-sm btn-outline-danger shadow-sm" onclick="eliminarResena(${r.id})" title="Eliminar definitivamente">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>

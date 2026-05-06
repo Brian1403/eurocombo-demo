@@ -29,11 +29,22 @@
         .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
         
         /* NAVBAR */
-        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .top-navbar { 
+            background-color: var(--euro-blue); 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: white; 
+            position: sticky; /* BARRA FIJA */
+            top: 0; 
+            z-index: 1040; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         
         @media (max-width: 768px) { 
-            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar { position: absolute; left: -250px; z-index: 1050; height: 100%; } 
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
         }
 
@@ -56,7 +67,10 @@
         <!-- SIDEBAR -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+                <h4 class="m-0 font-weight-bold d-flex align-items-center justify-content-center">
+                    <img src="img/logo-euro2.png" alt="EuroCombo Logo" style="height: 35px; width: auto; margin-right: 10px;">
+                    <span class="text-white">Euro</span><span style="color: #28a745; text-shadow: 0px 0px 2px rgba(255,255,255,0.2);">Combo</span>
+                </h4>
             </div>
             
             <div class="sidebar-menu">
@@ -79,7 +93,7 @@
         </nav>
 
         <div class="main-content">
-            <!-- NAVBAR ACTUALIZADO -->
+            <!-- NAVBAR -->
             <header class="top-navbar">
                 <div class="d-flex align-items-center">
                     <button class="btn btn-sm text-white d-md-none mr-3" id="sidebarToggle"><i class="fas fa-bars fa-lg"></i></button>
@@ -119,7 +133,7 @@
 
     <!-- MODAL DETALLES DEL PEDIDO -->
     <div class="modal fade" id="modalPedidoDetalle" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- modal-lg para mayor comodidad -->
             <div class="modal-content" style="border-radius: 15px;">
                 <div class="modal-header bg-light border-0">
                     <h5 class="modal-title font-weight-bold" style="color: var(--euro-blue);"><i class="fas fa-receipt mr-2"></i>Detalle de Compra</h5>
@@ -128,22 +142,30 @@
                 <div class="modal-body">
                     <div class="bg-light p-3 rounded mb-3">
                         <h6 class="font-weight-bold text-dark border-bottom pb-2 mb-2"><i class="fas fa-user mr-2 text-primary"></i>Datos del Cliente</h6>
-                        <p class="mb-1 small"><strong>Nombre:</strong> <span id="mdlNombre"></span></p>
-                        <p class="mb-1 small"><strong>CI:</strong> <span id="mdlCI"></span></p>
-                        <p class="mb-1 small"><strong>Teléfono:</strong> <a href="#" id="mdlTelLink" target="_blank"><span id="mdlTel"></span> <i class="fab fa-whatsapp text-success ml-1"></i></a></p>
-                        <p class="mb-1 small"><strong>Dirección:</strong> <span id="mdlDir"></span></p>
-                        <p class="mb-0 small"><strong>Referencia:</strong> <span id="mdlRef"></span></p>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p class="mb-1 small"><strong>Nombre:</strong> <span id="mdlNombre"></span></p>
+                                <p class="mb-1 small"><strong>CI:</strong> <span id="mdlCI"></span></p>
+                                <p class="mb-1 small"><strong>Teléfono:</strong> <a href="#" id="mdlTelLink" target="_blank"><span id="mdlTel"></span> <i class="fab fa-whatsapp text-success ml-1"></i></a></p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="mb-1 small"><strong>Dirección:</strong> <span id="mdlDir"></span></p>
+                                <p class="mb-0 small"><strong>Referencia:</strong> <span id="mdlRef"></span></p>
+                            </div>
+                        </div>
                     </div>
 
                     <h6 class="font-weight-bold text-dark border-bottom pb-2"><i class="fas fa-shopping-bag mr-2 text-primary"></i>Productos Solicitados</h6>
-                    <ul id="mdlListaProductos" class="list-group list-group-flush mb-3" style="max-height: 200px; overflow-y: auto;">
+                    <ul id="mdlListaProductos" class="list-group list-group-flush mb-3" style="max-height: 350px; overflow-y: auto;">
                         <!-- Se llena con JS -->
                     </ul>
                     
-                    <div class="d-flex justify-content-between align-items-center bg-dark text-white p-3 rounded">
-                        <h6 class="m-0 font-weight-bold">Total a Cobrar:</h6>
-                        <h4 class="m-0 font-weight-bold" style="color: var(--cart-orange);" id="mdlTotal"></h4>
+                    <!-- TOTAL A PAGAR REDISEÑADO -->
+                    <div class="d-flex justify-content-between align-items-center p-3 rounded mt-2 shadow-sm" style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-left: 5px solid var(--combo-green);">
+                        <h5 class="m-0 font-weight-bold" style="color: var(--euro-blue);">Total a Cobrar:</h5>
+                        <h3 class="m-0 font-weight-bold text-success" id="mdlTotal"></h3>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -165,7 +187,6 @@
         }
         verificarSesion();
 
-        // Variable global para guardar la visita anterior
         let fechaUltimaVisita = '';
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -183,10 +204,7 @@
                 }
             });
 
-            // 1. LEER LA FECHA DE LA ÚLTIMA VISITA (Si no existe, ponemos una muy vieja)
             fechaUltimaVisita = localStorage.getItem('ultimoVistoPedidos') || '2000-01-01T00:00:00.000Z';
-            
-            // 2. ACTUALIZAR LA FECHA AHORA (Para que si recargas, ya no salgan como nuevos)
             localStorage.setItem('ultimoVistoPedidos', new Date().toISOString());
 
             cargarPedidos();
@@ -210,16 +228,11 @@
             }
 
             data.forEach(pedido => {
-                // Formatear Fecha
                 const fecha = new Date(pedido.created_at);
                 const fechaFormateada = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                
-                // Convertir los detalles a string seguro para pasarlo al botón
                 const detallesJSON = JSON.stringify(pedido.detalles).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
 
-                // LOGICA DE ETIQUETA "NUEVO"
                 let etiquetaHTML = '';
-                // Comparamos si este pedido se creó DESPUÉS de tu última visita
                 if (pedido.created_at > fechaUltimaVisita) {
                     etiquetaHTML = '<span class="badge estado-badge bg-danger text-white shadow-sm">NUEVO</span>';
                 }
@@ -253,8 +266,8 @@
             });
         }
 
-        // MOSTRAR DETALLES EN EL MODAL
-        window.verDetalles = function(nombre, apellidos, ci, tel, dir, ref, total, detallesRaw) {
+        // MOSTRAR DETALLES Y CONSULTAR BASE DE DATOS PARA FORMATOS Y MARCAS
+        window.verDetalles = async function(nombre, apellidos, ci, tel, dir, ref, total, detallesRaw) {
             document.getElementById('mdlNombre').innerText = `${nombre} ${apellidos}`;
             document.getElementById('mdlCI').innerText = ci;
             document.getElementById('mdlTel').innerText = tel;
@@ -264,25 +277,114 @@
             document.getElementById('mdlTotal').innerText = `$${total.toFixed(2)}`;
 
             const lista = document.getElementById('mdlListaProductos');
-            lista.innerHTML = '';
+            lista.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary spinner-border-sm mb-2"></div><p class="text-muted small">Cargando desglose de productos...</p></div>';
             
+            $('#modalPedidoDetalle').modal('show');
+
             try {
                 const carrito = JSON.parse(detallesRaw);
-                carrito.forEach(item => {
-                    let tipoBadge = item.tipo === 'combo' ? '<span class="badge badge-warning ml-1" style="font-size: 0.6rem;">COMBO</span>' : '';
-                    let totalItem = item.precio * item.cantidad;
-                    lista.innerHTML += `
-                        <li class="list-group-item d-flex justify-content-between px-0">
-                            <div><span class="font-weight-bold text-dark">${item.cantidad}x</span> ${item.nombre} ${tipoBadge}</div>
-                            <span class="font-weight-bold text-success">$${totalItem.toFixed(2)}</span>
-                        </li>
-                    `;
-                });
-            } catch(e) {
-                lista.innerHTML = '<li class="text-danger">Error al leer los productos.</li>';
-            }
+                
+                // Pedir productos y combos a Supabase para cruzar la información actual (Marcas y Formatos)
+                const [resProd, resComb] = await Promise.all([
+                    supabaseClient.from('productos').select('id, nombre, formato, marca'),
+                    supabaseClient.from('combos').select('id, productos_ids')
+                ]);
 
-            $('#modalPedidoDetalle').modal('show');
+                const catProductos = resProd.data || [];
+                const catCombos = resComb.data || [];
+
+                lista.innerHTML = '';
+
+                carrito.forEach((item, index) => {
+                    let totalItem = item.precio * item.cantidad;
+                    
+                    if (item.tipo === 'producto') {
+                        // Buscar detalles extra del producto suelto
+                        const prodDB = catProductos.find(p => p.id === item.id);
+                        let detallesExtraHTML = '';
+                        
+                        if (prodDB) {
+                            let f = prodDB.formato || '';
+                            let m = prodDB.marca ? (f ? ` | ${prodDB.marca}` : prodDB.marca) : '';
+                            if (f || m) {
+                                detallesExtraHTML = `<small class="d-block text-muted mt-1" style="font-size: 0.75rem;"><i class="fas fa-tag text-black-50 mr-1"></i>${f}${m}</small>`;
+                            }
+                        }
+
+                        lista.innerHTML += `
+                            <li class="list-group-item px-2 border-bottom">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <span class="font-weight-bold text-dark mr-1">${item.cantidad}x</span> 
+                                        <span class="font-weight-semi-bold">${item.nombre}</span>
+                                        ${detallesExtraHTML}
+                                    </div>
+                                    <span class="font-weight-bold text-success">$${totalItem.toFixed(2)}</span>
+                                </div>
+                            </li>
+                        `;
+                    } 
+                    else if (item.tipo === 'combo') {
+                        // Es un combo, armar el menú desplegable (Accordion)
+                        const comboDB = catCombos.find(c => c.id === item.id);
+                        let subProductosHTML = '';
+
+                        if (comboDB && comboDB.productos_ids && comboDB.productos_ids.length > 0) {
+                            comboDB.productos_ids.forEach(prod => {
+                                const pId = prod.id || prod; 
+                                const pQty = prod.cantidad || 1;
+                                const subProdDB = catProductos.find(p => p.id === pId);
+                                
+                                if (subProdDB) {
+                                    let f = subProdDB.formato || '';
+                                    let m = subProdDB.marca ? ` | ${subProdDB.marca}` : '';
+                                    let infoExtra = (f || m) ? `<small class="text-muted ml-1" style="font-size: 0.7rem;">(${f}${m})</small>` : '';
+                                    
+                                    subProductosHTML += `
+                                        <li class="mb-1 pb-1 border-bottom" style="font-size: 0.85rem; border-color: rgba(0,0,0,0.05) !important;">
+                                            <i class="fas fa-level-up-alt fa-rotate-90 text-primary mr-1"></i> 
+                                            <strong>${pQty}x</strong> ${subProdDB.nombre} ${infoExtra}
+                                        </li>
+                                    `;
+                                }
+                            });
+                        } else {
+                            subProductosHTML = '<li class="text-muted small">Este combo no tiene productos asignados.</li>';
+                        }
+
+                        const collapseId = `desplegableCombo_${index}`;
+                        
+                        lista.innerHTML += `
+                            <li class="list-group-item px-2 border-bottom pb-3">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <div>
+                                        <span class="font-weight-bold text-dark mr-1">${item.cantidad}x</span> 
+                                        <span class="font-weight-semi-bold">${item.nombre}</span> 
+                                        <span class="badge badge-warning ml-1" style="font-size: 0.6rem;">COMBO</span>
+                                    </div>
+                                    <span class="font-weight-bold text-success">$${totalItem.toFixed(2)}</span>
+                                </div>
+                                
+                                <a class="text-primary font-weight-bold" data-toggle="collapse" href="#${collapseId}" style="font-size: 0.8rem; text-decoration: none;">
+                                    <i class="fas fa-box-open mr-1"></i> Ver contenido del combo <i class="fas fa-angle-down ml-1"></i>
+                                </a>
+                                
+                                <div class="collapse mt-2 w-100" id="${collapseId}">
+                                    <div class="bg-light p-2 rounded border border-light">
+                                        <ul class="list-unstyled mb-0 pl-1">
+                                            ${subProductosHTML}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        `;
+                    }
+                });
+
+            } catch(e) {
+                lista.innerHTML = '<li class="list-group-item text-danger border-0">Error al decodificar los productos del pedido.</li>';
+                console.error(e);
+            }
         }
 
         // ELIMINAR 1 PEDIDO
@@ -301,7 +403,6 @@
                 let codigo = prompt("Escribe 'BORRAR' para confirmar:");
                 if(codigo === 'BORRAR') {
                     document.getElementById('loader').style.display = 'flex';
-                    // Truco en Supabase para borrar todo (neq id a 0)
                     await supabaseClient.from('pedidos').delete().neq('id', 0);
                     document.getElementById('loader').style.display = 'none';
                     cargarPedidos();

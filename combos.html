@@ -28,20 +28,44 @@
         .sidebar a i { width: 25px; }
         .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
         
-        /* NAVBAR */
-        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        /* NAVBAR (STICKY) */
+        .top-navbar { 
+            background-color: var(--euro-blue); 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: white; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1040; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         
         @media (max-width: 768px) { 
-            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar { position: absolute; left: -250px; z-index: 1050; height: 100%; } 
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
         }
         
-        /* TARJETA COMBO */
-        .combo-item-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; display: flex; align-items: stretch; overflow: hidden; padding: 15px; position: relative;}
+        /* TARJETA COMBO NORMAL */
+        .combo-item-admin { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee; transition: all 0.3s ease; display: flex; align-items: stretch; overflow: hidden; padding: 15px; position: relative;}
         .combo-item-admin:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-left: 4px solid var(--euro-blue); }
-        .combo-item-admin.no-visible { opacity: 0.6; filter: grayscale(50%); border-left: 4px solid #999; }
-        .combo-item-admin.no-visible:hover { opacity: 0.9; filter: grayscale(0%); border-left: 4px solid var(--cart-orange); }
+        
+        /* ESTADO APAGADO (NO VISIBLE) */
+        .combo-item-admin.no-visible { 
+            background-color: #fafafa; 
+            border-left: 4px solid #adb5bd; 
+            box-shadow: none; 
+        }
+        .combo-item-admin.no-visible .combo-img-box img { 
+            filter: grayscale(100%); 
+            opacity: 0.6; 
+        }
+        .combo-item-admin.no-visible .combo-info * { 
+            color: #6c757d !important; 
+        }
+        .combo-item-admin.no-visible:hover { border-left: 4px solid var(--cart-orange); background-color: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         .combo-img-box { width: 100px; height: 100px; flex-shrink: 0; background: #eee; border-radius: 10px; overflow: hidden; position: relative;}
         .combo-img-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -49,6 +73,11 @@
         .combo-actions { padding-left: 15px; display: flex; flex-direction: column; gap: 6px; border-left: 1px solid #eee; justify-content: center;}
         
         .badge-oferta { position: absolute; top: 15px; left: 15px; background: var(--cart-orange); color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 8px; border-radius: 5px; z-index: 2;}
+
+        /* BOTÓN NARANJA PERSONALIZADO */
+        .btn-naranja { background-color: var(--cart-orange); color: white !important; border: 1px solid var(--cart-orange); }
+        .btn-naranja:hover { background-color: #d84315; color: white !important; }
+        .btn-naranja i { color: white !important; }
 
         /* CHECKBOX Y CANTIDAD */
         .lista-productos-check { max-height: 220px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; background: #fdfdfd; }
@@ -77,9 +106,14 @@
     </div>
 
     <div class="wrapper">
+        <!-- SIDEBAR -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+                <!-- LOGO ACTUALIZADO Y COLORES PERSONALIZADOS -->
+                <h4 class="m-0 font-weight-bold d-flex align-items-center justify-content-center">
+                    <img src="img/logo-euro2.png" alt="EuroCombo Logo" style="height: 35px; width: auto; margin-right: 10px;">
+                    <span class="text-white">Euro</span><span style="color: #28a745; text-shadow: 0px 0px 2px rgba(255,255,255,0.2);">Combo</span>
+                </h4>
             </div>
             
             <div class="sidebar-menu">
@@ -127,7 +161,7 @@
                         <h2 class="font-weight-bold mb-1" style="color: var(--euro-blue) !important;">Combos Familiares</h2>
                         <p class="text-muted m-0">Agrupa productos y crea paquetes atractivos.</p>
                     </div>
-                    <button class="btn shadow-sm" style="background-color: var(--cart-orange); color: white; font-weight: bold; border-radius: 25px; padding: 10px 20px;" data-toggle="modal" data-target="#modalCombo" id="btnNuevoCombo">
+                    <button class="btn shadow-sm btn-naranja" style="font-weight: bold; border-radius: 25px; padding: 10px 20px;" data-toggle="modal" data-target="#modalCombo" id="btnNuevoCombo">
                         <i class="fas fa-plus mr-2"></i> Nuevo Combo
                     </button>
                 </div>
@@ -229,7 +263,7 @@
                     </div>
                     <div class="p-4">
                         <h6 class="font-weight-bold text-muted mb-3 small border-bottom pb-2">PRODUCTOS INCLUIDOS:</h6>
-                        <ul id="detallesListaProductos" class="list-unstyled m-0" style="max-height: 200px; overflow-y: auto;">
+                        <ul id="detallesListaProductos" class="list-unstyled m-0" style="max-height: 250px; overflow-y: auto;">
                             <!-- Llenado por JS -->
                         </ul>
                     </div>
@@ -286,7 +320,6 @@
                 document.getElementById('previewContainer').style.display = 'none';
                 document.getElementById('imagePreview').src = '';
                 
-                // Limpiar checkboxes y esconder/resetear cantidades
                 document.querySelectorAll('.check-producto').forEach(chk => chk.checked = false);
                 document.querySelectorAll('.qty-box').forEach(box => box.style.display = 'none');
                 document.querySelectorAll('.input-qty').forEach(inp => inp.value = 1);
@@ -307,10 +340,11 @@
                 }
             });
 
-            // 1. CARGAR LISTA DE PRODUCTOS CON CAMPO DE CANTIDAD
+            // 1. CARGAR LISTA DE PRODUCTOS (CON MARCA Y FORMATO)
             async function cargarListaProductosParaCheck() {
                 const contenedor = document.getElementById('contenedorCheckboxes');
-                const { data, error } = await supabaseClient.from('productos').select('id, nombre, precio').order('nombre');
+                // Se agregó formato y marca a la petición
+                const { data, error } = await supabaseClient.from('productos').select('id, nombre, precio, formato, marca').order('nombre');
                 
                 if (error || !data) {
                     contenedor.innerHTML = '<div class="text-danger small p-2">Error cargando productos.</div>';
@@ -326,12 +360,15 @@
                 }
 
                 data.forEach(prod => {
-                    // Diseño que incluye Checkbox + Campo de cantidad oculto por defecto
+                    let f = prod.formato || '';
+                    let m = prod.marca ? (f ? ` | ${prod.marca}` : prod.marca) : '';
+                    let detailsHTML = (f || m) ? `<span class="text-muted ml-1" style="font-size: 0.75rem;">(${f}${m})</span>` : '';
+
                     contenedor.innerHTML += `
                         <div class="check-item">
                             <div class="check-item-left">
                                 <input type="checkbox" id="chk_prod_${prod.id}" class="check-producto" value="${prod.id}" onchange="toggleCantidad(${prod.id})">
-                                <label for="chk_prod_${prod.id}">${prod.nombre} <span class="text-success small ml-1">($${prod.precio.toFixed(2)})</span></label>
+                                <label for="chk_prod_${prod.id}">${prod.nombre} ${detailsHTML} <span class="text-success small ml-1">($${prod.precio.toFixed(2)})</span></label>
                             </div>
                             <div class="qty-box" id="box_qty_${prod.id}">
                                 <label class="small text-muted mb-0 mr-1">Cant:</label>
@@ -342,7 +379,7 @@
                 });
             }
 
-            // FUNCIÓN GLOBAL PARA MOSTRAR/OCULTAR CAJITA DE CANTIDAD AL MARCAR EL CHECKBOX
+            // FUNCIÓN MUESTRA CAJA DE CANTIDAD
             window.toggleCantidad = function(id) {
                 const checkBox = document.getElementById(`chk_prod_${id}`);
                 const qtyBox = document.getElementById(`box_qty_${id}`);
@@ -350,7 +387,7 @@
                     qtyBox.style.display = 'flex';
                 } else {
                     qtyBox.style.display = 'none';
-                    document.getElementById(`input_qty_${id}`).value = 1; // Resetear
+                    document.getElementById(`input_qty_${id}`).value = 1; 
                 }
             }
 
@@ -363,10 +400,7 @@
                 const precio = document.getElementById('comboPrecio').value;
                 const archivo = document.getElementById('comboImagen').files[0];
 
-                // Extraer productos y cantidades
                 const checkboxesMarcados = document.querySelectorAll('.check-producto:checked');
-                
-                // CREAMOS UN ARRAY DE OBJETOS: [{id: 1, cantidad: 2}, {id: 3, cantidad: 1}]
                 const productosConCantidades = Array.from(checkboxesMarcados).map(chk => {
                     const prodId = parseInt(chk.value);
                     const prodQty = parseInt(document.getElementById(`input_qty_${prodId}`).value) || 1;
@@ -393,7 +427,7 @@
                     const datosCombo = {
                         nombre: nombre,
                         precio: parseFloat(precio),
-                        productos_ids: productosConCantidades // Guardamos la nueva estructura JSON
+                        productos_ids: productosConCantidades
                     };
 
                     if (imageUrl) datosCombo.imagen_url = imageUrl;
@@ -439,8 +473,6 @@
                 data.forEach(combo => {
                     const imageUrl = combo.imagen_url || 'https://via.placeholder.com/100';
                     const nombreSafe = combo.nombre.replace(/'/g, "\\'");
-                    
-                    // Pasar la data como string
                     const dataString = JSON.stringify(combo.productos_ids || []);
                     
                     let precioHTML = `<h5 class="text-success font-weight-bold m-0 mb-1">$${combo.precio.toFixed(2)}</h5>`;
@@ -455,10 +487,11 @@
                         badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
                     }
 
+                    // LÓGICA DE VISIBILIDAD (BOTÓN NARANJA/VERDE)
                     let claseVisible = combo.visible ? "" : "no-visible";
                     let btnVisibleHTML = combo.visible
-                        ? `<button class="btn btn-sm btn-light text-dark shadow-sm" style="border-radius: 8px; border: 1px solid #ddd;" onclick="toggleVisible(${combo.id}, false)"><i class="fas fa-eye" style="color: #343a40;"></i></button>`
-                        : `<button class="btn btn-sm btn-secondary text-white shadow-sm" style="border-radius: 8px;" onclick="toggleVisible(${combo.id}, true)"><i class="fas fa-eye-slash"></i></button>`;
+                        ? `<button class="btn btn-sm btn-naranja shadow-sm" style="border-radius: 8px;" onclick="toggleVisible(${combo.id}, false)"><i class="fas fa-eye-slash"></i></button>`
+                        : `<button class="btn btn-sm btn-success text-white shadow-sm" style="border-radius: 8px;" onclick="toggleVisible(${combo.id}, true)"><i class="fas fa-eye"></i></button>`;
 
                     contenedor.innerHTML += `
                         <div class="col-lg-4 col-md-6 mb-4">
@@ -468,8 +501,9 @@
                                 <div class="combo-info">
                                     <h6 class="font-weight-bold m-0" style="font-size: 1.1rem; line-height: 1.1;">${combo.nombre}</h6>
                                     <div class="mt-2">${precioHTML}</div>
-                                    <button class="btn btn-sm btn-outline-primary mt-2 shadow-none" style="border-radius: 20px; font-size: 0.75rem; font-weight: bold;" onclick='verDetalles("${nombreSafe}", ${combo.precio}, ${combo.en_oferta}, ${combo.precio_oferta || 0}, "${imageUrl}", ${dataString})'>
-                                        <i class="fas fa-search-plus mr-1"></i> Ver Detalles
+                                    <!-- BOTÓN DE VER DETALLES AHORA ES NARANJA -->
+                                    <button class="btn btn-sm btn-naranja mt-2 shadow-sm font-weight-bold" style="border-radius: 20px; font-size: 0.75rem;" onclick='verDetalles("${nombreSafe}", ${combo.precio}, ${combo.en_oferta}, ${combo.precio_oferta || 0}, "${imageUrl}", ${dataString})'>
+                                        <i class="fas fa-search-plus mr-1 text-white"></i> Ver Detalles
                                     </button>
                                 </div>
                                 <div class="combo-actions">
@@ -483,7 +517,7 @@
                 });
             }
 
-            // ABRIR MODAL DETALLES CON CANTIDADES
+            // ABRIR MODAL DETALLES (CON FORMATO Y MARCA)
             window.verDetalles = function(nombre, precioBase, enOferta, precioOferta, imgUrl, arrayData) {
                 document.getElementById('detallesImg').src = imgUrl;
                 document.getElementById('detallesNombre').innerText = nombre;
@@ -498,28 +532,34 @@
                 listaUL.innerHTML = '';
                 
                 arrayData.forEach(item => {
-                    // Soporte para formato nuevo [{id:1, cantidad:2}] y viejo [1, 2]
                     const prodId = item.id || item; 
                     const qty = item.cantidad || 1;
                     
                     const prodInfo = catalogoProductos.find(p => p.id === prodId);
                     if(prodInfo) {
+                        let f = prodInfo.formato || '';
+                        let m = prodInfo.marca ? (f ? ` | ${prodInfo.marca}` : prodInfo.marca) : '';
+                        let textExtra = (f || m) ? `<br><small class="text-muted" style="font-size: 0.8rem;"><i class="fas fa-tag text-black-50 mr-1"></i>${f}${m}</small>` : '';
+
                         listaUL.innerHTML += `
-                        <li class="mb-3 d-flex align-items-center">
+                        <li class="mb-3 d-flex align-items-center border-bottom pb-2">
                             <span class="badge badge-pill shadow-sm mr-3" style="background-color: var(--euro-blue); color: white; font-size: 0.9rem; padding: 7px 12px; font-weight: bold; min-width: 45px; text-align: center;">
                                 ${qty}x
                             </span> 
-                            <span style="font-size: 1rem; font-weight: 500; color: #444;">${prodInfo.nombre}</span>
+                            <div>
+                                <span style="font-size: 1rem; font-weight: 500; color: #444;">${prodInfo.nombre}</span>
+                                ${textExtra}
+                            </div>
                         </li>`;
                     } else {
-                        listaUL.innerHTML += `<li class="mb-3"><i class="fas fa-question-circle text-warning mr-2"></i> Producto no encontrado (ID: ${prodId})</li>`;
+                        listaUL.innerHTML += `<li class="mb-3 border-bottom pb-2"><i class="fas fa-question-circle text-warning mr-2"></i> Producto eliminado (ID: ${prodId})</li>`;
                     }
                 });
 
                 $('#modalDetalles').modal('show');
             }
 
-            // VISIBILIDAD, OFERTAS Y ELIMINAR (Igual que antes)
+            // VISIBILIDAD, OFERTAS Y ELIMINAR
             window.toggleVisible = async function(id, estado) {
                 document.getElementById('loader').style.display = 'flex';
                 await supabaseClient.from('combos').update({ visible: estado }).eq('id', id);
@@ -567,12 +607,10 @@
                 document.getElementById('comboPrecio').value = precio;
                 document.getElementById('modalTitulo').innerText = 'Editar Combo';
                 
-                // Primero ocultamos y limpiamos todos los checkboxes y cantidades
                 document.querySelectorAll('.check-producto').forEach(chk => chk.checked = false);
                 document.querySelectorAll('.qty-box').forEach(box => box.style.display = 'none');
                 document.querySelectorAll('.input-qty').forEach(inp => inp.value = 1);
                 
-                // Luego recorremos lo que está guardado en DB y lo mostramos
                 arrayData.forEach(item => {
                     const prodId = item.id || item; 
                     const qty = item.cantidad || 1;
@@ -583,8 +621,8 @@
                     
                     if (checkHTML) {
                         checkHTML.checked = true;
-                        qtyBox.style.display = 'flex'; // Mostramos la caja
-                        qtyInput.value = qty;          // Ponemos la cantidad guardada
+                        qtyBox.style.display = 'flex';
+                        qtyInput.value = qty;         
                     }
                 });
                 

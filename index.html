@@ -34,6 +34,8 @@
     <link rel="apple-touch-icon" href="img/logo-euro2.png">
 
     <style>
+        :root { --euro-blue: #0A2E5B; --combo-green: #176B28; --cart-orange: #E64A19; }
+
         /* SOLUCIÓN DEFINITIVA PARA BOTONES BLANCOS */
         body .btn.btn-primary, 
         body .btn.btn-primary:hover, 
@@ -69,6 +71,23 @@
         .search-result-item:last-child { border-bottom: none; }
         .search-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; margin-right: 15px; }
 
+        /* ANIMACIÓN PARA AGREGAR AL CARRITO */
+        @keyframes bounceCart {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.3); }
+            50% { transform: scale(0.9); }
+            70% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+        .cart-animating i {
+            animation: bounceCart 0.5s ease-in-out;
+            color: #28a745 !important;
+        }
+
+        /* ESTILOS TARJETAS RESEÑAS */
+        .resena-card { background-color: #ffffff; border-radius: 15px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease; height: 200px; display: flex; flex-direction: column; justify-content: space-between; }
+        .resena-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-bottom: 4px solid var(--cart-orange); transform: translateY(-3px); }
+
         /* RESPONSIVE - PRODUCTOS EN MÓVIL (2 POR FILA) */
         @media (max-width: 575.98px) {
             .producto-img-container { height: 120px; }
@@ -83,7 +102,7 @@
             .badge-oferta { font-size: 0.6rem; padding: 2px 6px; top: 5px; left: 5px; }
         }
 
-        /* CAPAS DE DESVANECIMIENTO (FADE) ORIGINALES INTACTAS */
+        /* CAPAS DE DESVANECIMIENTO (FADE) */
         .contenedor-faded { position: relative; overflow: hidden; display: none; margin-top: -15px; }
         #faded-categorias { max-height: 120px; }
         #faded-productos { max-height: 250px; }
@@ -94,7 +113,6 @@
 <body>
     <!-- Topbar Start -->
     <div class="container-fluid">
-        <!-- HEADER SOLO PARA COMPUTADORAS -->
         <div class="row align-items-center bg-light py-2 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
                 <a href="index.html" class="text-decoration-none d-flex align-items-center">
@@ -102,7 +120,6 @@
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left position-relative">
-                <!-- BUSCADOR ESCRITORIO EN TIEMPO REAL -->
                 <form onsubmit="event.preventDefault();">
                     <div class="input-group shadow-sm" style="border-radius: 25px;">
                         <input type="text" class="form-control border-light searchInput" placeholder="¿Qué se te antoja hoy? Buscar productos..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
@@ -113,7 +130,6 @@
                         </div>
                     </div>
                 </form>
-                <!-- CAJA DE RESULTADOS ESCRITORIO -->
                 <div class="searchResults dropdown-menu w-100 shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050; max-height: 400px; overflow-y: auto; border-radius: 15px; margin-top: 5px;"></div>
             </div>
             <div class="col-lg-4 col-6 text-right">
@@ -126,8 +142,8 @@
     </div>
     <!-- Topbar End -->
 
-    <!-- Navbar Start -->
-    <div class="container-fluid bg-dark mb-30">
+    <!-- Navbar Start (STICKY) -->
+    <div class="container-fluid bg-dark mb-30 sticky-top shadow-sm" style="z-index: 1040; top: 0;">
         <div class="row px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
                 <a class="btn d-flex align-items-center justify-content-between bg-primary text-blanco-puro w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
@@ -144,15 +160,18 @@
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                     <a href="index.html" class="text-decoration-none d-lg-none">
-                        <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 100px; width: auto; object-fit: contain; margin-top: 5px;">
+                        <img src="img/logo-euro-movil.png" alt="EuroCombo Logo" style="height: 80px; width: auto; object-fit: contain;">
                     </a>
 
                     <!-- BOTÓN DE CARRITO MÓVIL Y BOTÓN DE MENÚ -->
                     <div class="d-flex align-items-center d-lg-none">
-                        <a href="cart.html" class="btn px-0 ml-2 mr-3 position-relative">
-                            <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
-                            <span class="badge text-white bg-primary border border-secondary rounded-circle cart-badge" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
-                        </a>
+                        <div class="d-flex flex-column align-items-center ml-2 mr-3 text-decoration-none cart-icon-wrapper">
+                            <a href="cart.html" class="btn px-0 position-relative cart-btn-container pb-0">
+                                <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                                <span class="badge text-white bg-primary border border-secondary rounded-circle cart-badge" style="position: absolute; top: -5px; right: -10px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                            </a>
+                            <a href="cart.html" class="cart-total text-success font-weight-bold text-decoration-none mt-1" style="font-size: 0.8rem; line-height: 1;">$0.00</a>
+                        </div>
                         <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                             <span class="navbar-toggler-icon"></span>
                         </button>
@@ -170,16 +189,18 @@
                                     <a href="checkout.html" class="dropdown-item">Ir a Pagar</a>
                                 </div>
                             </div>
-                            <!-- ENLACE DE RESEÑAS -->
                             <a href="resenas.html" class="nav-item nav-link">Reseñas</a>
                             <a href="contact.html" class="nav-item nav-link">Contacto</a>
                         </div>
                         
                         <!-- CARRITO ESCRITORIO -->
-                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="cart.html" class="btn px-0 ml-3">
-                                <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle cart-badge" style="padding-bottom: 2px;">0</span>
+                        <div class="navbar-nav ml-auto py-0 d-none d-lg-flex align-items-center">
+                            <a href="cart.html" class="btn px-0 ml-3 d-flex align-items-center cart-icon-wrapper text-decoration-none cart-btn-container">
+                                <div class="position-relative mr-2">
+                                    <i class="fas fa-shopping-cart text-primary" style="font-size: 1.5rem;"></i>
+                                    <span class="badge text-white bg-primary border border-light rounded-circle cart-badge" style="position: absolute; top: -8px; right: -12px; padding: 4px 6px; font-size: 0.75rem;">0</span>
+                                </div>
+                                <span class="cart-total text-success font-weight-bold ml-2" style="font-size: 1.2rem;">$0.00</span>
                             </a>
                         </div>
                     </div>
@@ -195,7 +216,7 @@
             <div class="col-12 position-relative">
                 <form onsubmit="event.preventDefault();">
                     <div class="input-group shadow-sm" style="border-radius: 25px;">
-                        <input type="text" class="form-control border-light searchInput" placeholder="Buscar productos o categorías..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
+                        <input type="text" class="form-control border-light searchInput" placeholder="Buscar productos, marcas..." style="border-radius: 25px 0 0 25px !important;" autocomplete="off">
                         <div class="input-group-append">
                             <span class="input-group-text border-light text-primary bg-white" style="border-radius: 0 25px 25px 0 !important;">
                                 <i class="fa fa-search"></i>
@@ -203,9 +224,7 @@
                         </div>
                     </div>
                 </form>
-                <!-- CAJA DE RESULTADOS MÓVIL -->
-                <div class="searchResults dropdown-menu shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 15px; width: calc(100% - 30px); z-index: 1050; max-height: 300px; overflow-y: auto; border-radius: 15px; margin-top: 5px;">
-                </div>
+                <div class="searchResults dropdown-menu shadow-lg border-0" style="display: none; position: absolute; top: 100%; left: 15px; width: calc(100% - 30px); z-index: 1050; max-height: 300px; overflow-y: auto; border-radius: 15px; margin-top: 5px;"></div>
             </div>
         </div>
     </div>
@@ -214,16 +233,13 @@
     <!-- Carousel y Cajas Start -->
     <div class="container-fluid mb-3">
         <div class="row px-xl-5">
-            <!-- Carrusel Principal (AHORA ES DINÁMICO) -->
+            <!-- Carrusel Principal -->
             <div class="col-lg-8">
                 <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0 shadow-sm" data-ride="carousel" style="border-radius: 15px; overflow: hidden;">
                     
-                    <ol class="carousel-indicators" id="carrusel-indicadores">
-                        <!-- Se llena con JS -->
-                    </ol>
+                    <ol class="carousel-indicators" id="carrusel-indicadores"></ol>
                     
                     <div class="carousel-inner" id="carrusel-items">
-                        <!-- Loader mientras carga de Supabase -->
                         <div class="text-center py-5 mt-5">
                             <div class="spinner-border text-primary"></div>
                             <p class="text-muted mt-2">Cargando promociones...</p>
@@ -233,7 +249,7 @@
                 </div>
             </div>
             
-            <!-- CAJAS DE OFERTAS RESTAURADAS a la derecha -->
+            <!-- CAJAS DE OFERTAS -->
             <div class="col-lg-4">
                 <div class="product-offer mb-30 shadow-sm" style="height: 200px; border-radius: 15px; overflow: hidden;">
                     <img class="img-fluid" src="img/offer-1.jpg" alt="">
@@ -343,7 +359,6 @@
     <div class="container-fluid pt-5 pb-5">
         <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark"><span class="bg-secondary pr-3">Nuestros Combos Especiales</span></h2>
         <div class="row px-xl-5">
-            <!-- Wrapper para inyección dinámica -->
             <div class="col-12" id="combo-wrapper">
                 <div class="text-center py-5 w-100" id="cargando-combos">
                     <div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando combos...</p>
@@ -351,6 +366,27 @@
             </div>
         </div>
     </div>
+
+    <!-- SECCIÓN 4: RESEÑAS -->
+    <div class="container-fluid pt-4 pb-5">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4 text-dark"><span class="bg-secondary pr-3">Lo que dicen nuestros clientes</span></h2>
+        
+        <div class="row px-xl-5 mb-4">
+            <div class="col-12">
+                <div id="carrusel-resenas" class="owl-carousel related-carousel">
+                    <!-- Las reseñas se inyectan aquí con JS -->
+                    <div class="text-center py-5 w-100"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando opiniones...</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row px-xl-5 justify-content-center">
+            <a href="resenas.html" class="btn btn-primary text-blanco-puro py-2 px-5 shadow-sm font-weight-bold" style="border-radius: 25px; font-size: 1.1rem;">
+                Déjanos tu opinión <i class="fas fa-comment-dots ml-2 text-blanco-puro"></i>
+            </a>
+        </div>
+    </div>
+    <!-- FIN SECCIÓN RESEÑAS -->
 
     <!-- MODAL INGREDIENTES COMBO -->
     <div class="modal fade" id="modalIngredientes" tabindex="-1">
@@ -367,7 +403,6 @@
                         <h5 id="modalComboNombre" class="font-weight-bold text-dark"></h5>
                     </div>
                     <ul id="listaIngredientesCombo" class="list-group list-group-flush" style="max-height: 250px; overflow-y: auto;">
-                        <!-- Los ingredientes se cargan por JS -->
                     </ul>
                 </div>
                 <div class="modal-footer border-0">
@@ -400,15 +435,14 @@
                     <a class="text-light mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
                     <a class="text-light mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Tienda</a>
                     <a class="text-light mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Ver Carrito</a>
+                    <a class="text-light mb-2" href="resenas.html"><i class="fa fa-angle-right mr-2"></i>Reseñas</a>
                     <a class="text-light" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
                 </div>
             </div>
         </div>
         <div class="row border-top mx-xl-5 py-4 mt-3" style="border-color: rgba(256, 256, 256, .1) !important;">
             <div class="col-md-12 text-center text-light">
-                <p class="mb-0">
-                    &copy; <a class="text-primary font-weight-bold text-decoration-none" href="index.html">EuroCombo</a>. Todos los derechos reservados.
-                </p>
+                <p class="mb-0">&copy; <a class="text-primary font-weight-bold text-decoration-none" href="index.html">EuroCombo</a>. Todos los derechos reservados.</p>
             </div>
         </div>
     </div>
@@ -429,7 +463,6 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
 
-    <!-- SCRIPT DINÁMICO RESTAURADO CON BUSCADOR, CARRITO Y NUEVO CARRUSEL PRINCIPAL -->
     <script>
         const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
@@ -438,30 +471,31 @@
         let catalogoBusqueda = { productos: [], combos: [], categorias: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
-            cargarCarruselHero(); // NUEVA FUNCION
+            cargarCarruselHero(); 
             inicializarBuscador(); 
             cargarCategoriasCliente();
             cargarProductosRecientes();
             cargarCombosCarrusel();
+            cargarResenas(); // <-- AGREGADO
             actualizarBadgeCarrito();
         });
 
         // ==============================================================================
-        // NUEVO: CARGAR CARRUSEL PRINCIPAL (HERO) DESDE SUPABASE
+        // 1. CARGAR CARRUSEL PRINCIPAL (CON NUEVO ORDEN)
         // ==============================================================================
         async function cargarCarruselHero() {
             const indicadores = document.getElementById('carrusel-indicadores');
             const items = document.getElementById('carrusel-items');
 
             try {
+                // AHORA RESPETA EL DRAG & DROP (ORDER BY ORDEN)
                 const { data: slides, error } = await supabaseClient
                     .from('carrusel')
                     .select('*')
-                    .order('created_at', { ascending: true });
+                    .order('orden', { ascending: true });
 
                 if (error) throw error;
 
-                // Si la tabla está vacía, mostramos uno por defecto para que no quede en blanco
                 if (!slides || slides.length === 0) {
                     indicadores.innerHTML = '<li data-target="#header-carousel" data-slide-to="0" class="active"></li>';
                     items.innerHTML = `
@@ -484,9 +518,7 @@
 
                 slides.forEach((slide, index) => {
                     const activeClass = index === 0 ? 'active' : '';
-                    
                     indHTML += `<li data-target="#header-carousel" data-slide-to="${index}" class="${activeClass}"></li>`;
-                    
                     itemsHTML += `
                         <div class="carousel-item position-relative ${activeClass}" style="height: 430px;">
                             <img class="position-absolute w-100 h-100" src="${slide.imagen_url}" style="object-fit: cover;">
@@ -503,24 +535,20 @@
 
                 indicadores.innerHTML = indHTML;
                 items.innerHTML = itemsHTML;
-
-                // Reiniciamos el componente de Bootstrap para que funcione correctamente la rotación
                 $('#header-carousel').carousel();
 
             } catch (err) {
-                console.error("Error al cargar el carrusel principal:", err);
                 items.innerHTML = '<div class="text-center py-5 mt-5 text-danger">Error al cargar las promociones.</div>';
             }
         }
 
-
         // ==============================================================================
-        // 0. BUSCADOR EN TIEMPO REAL CON REDIRECCIÓN EXACTA
+        // 2. BUSCADOR EN TIEMPO REAL
         // ==============================================================================
         async function inicializarBuscador() {
             try {
                 const [resProd, resCombos, resCat] = await Promise.all([
-                    supabaseClient.from('productos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, categoria_id').eq('visible', true),
+                    supabaseClient.from('productos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, categoria_id, formato, marca').eq('visible', true),
                     supabaseClient.from('combos').select('id, nombre, imagen_url, precio, precio_oferta, en_oferta, productos_ids').eq('visible', true),
                     supabaseClient.from('categorias').select('id, nombre')
                 ]);
@@ -537,37 +565,27 @@
 
         function configurarEventosBuscador() {
             const inputs = document.querySelectorAll('.searchInput'); 
-            
             inputs.forEach(input => {
                 input.addEventListener('input', (e) => {
                     const query = e.target.value.toLowerCase().trim();
                     const container = input.closest('.position-relative');
                     const resultsBox = container.querySelector('.searchResults');
                     
-                    if(query.length < 2) {
-                        resultsBox.style.display = 'none';
-                        return;
-                    }
+                    if(query.length < 2) { resultsBox.style.display = 'none'; return; }
 
-                    const catMatchedIds = catalogoBusqueda.categorias
-                        .filter(c => c.nombre.toLowerCase().includes(query))
-                        .map(c => c.id);
-
+                    const catMatchedIds = catalogoBusqueda.categorias.filter(c => c.nombre.toLowerCase().includes(query)).map(c => c.id);
                     const prodFiltrados = catalogoBusqueda.productos.filter(p => {
-                        return p.nombre.toLowerCase().includes(query) || catMatchedIds.includes(p.categoria_id);
+                        const matchNombre = p.nombre.toLowerCase().includes(query);
+                        const matchMarca = p.marca && p.marca.toLowerCase().includes(query);
+                        const matchCat = catMatchedIds.includes(p.categoria_id);
+                        return matchNombre || matchMarca || matchCat;
                     });
                     const prodIdsMatched = prodFiltrados.map(p => p.id);
 
                     const combosFiltrados = catalogoBusqueda.combos.filter(c => {
                         if(c.nombre.toLowerCase().includes(query)) return true;
                         if(query.includes('combo')) return true; 
-                        
-                        if(c.productos_ids) {
-                            return c.productos_ids.some(item => {
-                                const pId = item.id || item; 
-                                return prodIdsMatched.includes(pId); 
-                            });
-                        }
+                        if(c.productos_ids) return c.productos_ids.some(item => prodIdsMatched.includes(item.id || item));
                         return false;
                     });
 
@@ -578,22 +596,18 @@
             document.addEventListener('click', (e) => {
                 inputs.forEach(input => {
                     const resultsBox = input.closest('.position-relative').querySelector('.searchResults');
-                    if(!input.contains(e.target) && !resultsBox.contains(e.target)) {
-                        resultsBox.style.display = 'none';
-                    }
+                    if(!input.contains(e.target) && !resultsBox.contains(e.target)) resultsBox.style.display = 'none';
                 });
             });
         }
 
         function resaltarTexto(texto, query) {
             if(!query) return texto;
-            const regex = new RegExp(`(${query})`, 'gi');
-            return texto.replace(regex, '<span class="text-primary font-weight-bold">$1</span>');
+            return texto.replace(new RegExp(`(${query})`, 'gi'), '<span class="text-primary font-weight-bold">$1</span>');
         }
 
         function dibujarResultadosBuscador(productos, combos, query, resultsBox) {
             resultsBox.innerHTML = '';
-
             if(productos.length === 0 && combos.length === 0) {
                 resultsBox.innerHTML = '<div class="p-3 text-center text-muted">No se encontraron resultados para esta búsqueda.</div>';
                 resultsBox.style.display = 'block';
@@ -601,44 +615,46 @@
             }
 
             let html = '';
+            if(productos.length > 0) {
+                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Productos Sugeridos</div>';
+                productos.forEach(p => {
+                    const imgUrl = p.imagen_url || 'https://via.placeholder.com/50';
+                    const link = `shop.html?cat=${p.categoria_id}&hl=prod_${p.id}`;
+                    const precio = p.en_oferta ? p.precio_oferta : p.precio;
+                    
+                    let detalles = '';
+                    if (p.formato || p.marca) {
+                        let f = p.formato || '';
+                        let m = p.marca ? (f ? ` | ${p.marca}` : p.marca) : '';
+                        detalles = `<small class="d-block text-muted mt-1" style="font-size: 0.75rem; line-height: 1;"><i class="fas fa-tag text-black-50 mr-1"></i>${f}${m}</small>`;
+                    }
+
+                    html += `
+                        <a href="${link}" class="search-result-item">
+                            <img src="${imgUrl}" class="search-img" alt="">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${resaltarTexto(p.nombre, query)}</h6>
+                                ${detalles}
+                                <small class="text-success font-weight-bold d-block mt-1">$${precio.toFixed(2)}</small>
+                            </div>
+                        </a>`;
+                });
+            }
 
             if(combos.length > 0) {
                 html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Combos Sugeridos</div>';
                 combos.forEach(c => {
-                    const imgUrl = c.imagen_url || 'https://via.placeholder.com/50?text=Combo';
-                    const nombreResaltado = resaltarTexto(c.nombre, query);
+                    const imgUrl = c.imagen_url || 'https://via.placeholder.com/50';
                     const link = `shop.html?cat=combo&hl=combo_${c.id}`;
                     const precio = c.en_oferta ? c.precio_oferta : c.precio;
-                    
                     html += `
                         <a href="${link}" class="search-result-item">
                             <img src="${imgUrl}" class="search-img" alt="">
                             <div class="flex-grow-1">
-                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${nombreResaltado} <span class="badge badge-warning ml-1" style="font-size:0.6rem;">COMBO</span></h6>
-                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
+                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${resaltarTexto(c.nombre, query)} <span class="badge badge-warning ml-1" style="font-size:0.6rem;">COMBO</span></h6>
+                                <small class="text-success font-weight-bold d-block mt-1">$${precio.toFixed(2)}</small>
                             </div>
-                        </a>
-                    `;
-                });
-            }
-
-            if(productos.length > 0) {
-                html += '<div class="px-3 py-2 bg-light font-weight-bold text-dark" style="font-size: 0.85rem;">Productos Sugeridos</div>';
-                productos.forEach(p => {
-                    const imgUrl = p.imagen_url || 'https://via.placeholder.com/50?text=Producto';
-                    const nombreResaltado = resaltarTexto(p.nombre, query);
-                    const link = `shop.html?cat=${p.categoria_id}&hl=prod_${p.id}`;
-                    const precio = p.en_oferta ? p.precio_oferta : p.precio;
-                    
-                    html += `
-                        <a href="${link}" class="search-result-item">
-                            <img src="${imgUrl}" class="search-img" alt="">
-                            <div class="flex-grow-1">
-                                <h6 class="m-0 text-dark" style="font-size: 0.95rem;">${nombreResaltado}</h6>
-                                <small class="text-success font-weight-bold">$${precio.toFixed(2)}</small>
-                            </div>
-                        </a>
-                    `;
+                        </a>`;
                 });
             }
 
@@ -647,13 +663,11 @@
         }
 
         // ==============================================================================
-        // 1. LÓGICA DE CATEGORÍAS 
+        // 3. CATEGORÍAS, PRODUCTOS Y COMBOS
         // ==============================================================================
         function generarTarjetaCategoria(cat, conteoProductos) {
-            const imgUrl = cat.imagen_url || 'https://via.placeholder.com/100?text=EuroCombo';
+            const imgUrl = cat.imagen_url || 'https://via.placeholder.com/100';
             const cantidad = conteoProductos[cat.id] || 0; 
-            const textoProductos = cantidad === 1 ? '1 Producto' : `${cantidad} Productos`;
-
             return `
                 <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                     <a class="text-decoration-none" href="shop.html?cat=${cat.id}">
@@ -663,59 +677,42 @@
                             </div>
                             <div class="flex-fill pl-3 pr-2 py-2">
                                 <h6 class="font-weight-bold text-dark m-0" style="font-size: 1.05rem; line-height: 1.2;">${cat.nombre}</h6>
-                                <small class="text-muted mt-1 d-block">${textoProductos}</small>
+                                <small class="text-muted mt-1 d-block">${cantidad === 1 ? '1 Producto' : cantidad + ' Productos'}</small>
                             </div>
                         </div>
                     </a>
-                </div>
-            `;
+                </div>`;
         }
 
         async function cargarCategoriasCliente() {
-            const containerPrinc = document.getElementById('categorias-principales');
-            const containerSecun = document.getElementById('categorias-secundarias');
-            const bloqueFade = document.getElementById('faded-categorias');
-            const btnEstatico = document.getElementById('boton-estatico-cat');
-            const cargando = document.getElementById('cargando-cat');
-
             try {
-                const { data: categorias, error: catError } = await supabaseClient.from('categorias').select('*').order('nombre', { ascending: true });
-                if (catError) throw catError;
-
-                const { data: productos, error: prodError } = await supabaseClient.from('productos').select('categoria_id').eq('visible', true);
-                if (prodError) throw prodError;
+                const { data: categorias } = await supabaseClient.from('categorias').select('*').order('nombre', { ascending: true });
+                const { data: productos } = await supabaseClient.from('productos').select('categoria_id').eq('visible', true);
 
                 const conteoProductos = {};
                 productos.forEach(prod => { conteoProductos[prod.categoria_id] = (conteoProductos[prod.categoria_id] || 0) + 1; });
 
-                if(cargando) cargando.remove();
+                document.getElementById('cargando-cat').remove();
 
                 if (categorias.length === 0) {
-                    containerPrinc.innerHTML = '<div class="col-12 text-center text-muted py-4"><p>Próximamente nuevas secciones.</p></div>';
+                    document.getElementById('categorias-principales').innerHTML = '<div class="col-12 text-center text-muted py-4"><p>Próximamente nuevas secciones.</p></div>';
                     return;
                 }
 
-                const principales = categorias.slice(0, 8);
-                containerPrinc.innerHTML = principales.map(cat => generarTarjetaCategoria(cat, conteoProductos)).join('');
+                document.getElementById('categorias-principales').innerHTML = categorias.slice(0, 8).map(cat => generarTarjetaCategoria(cat, conteoProductos)).join('');
 
                 if (categorias.length > 8) {
-                    const secundarias = categorias.slice(8, 12); 
-                    containerSecun.innerHTML = secundarias.map(cat => generarTarjetaCategoria(cat, conteoProductos)).join('');
-                    bloqueFade.style.display = 'block'; 
+                    document.getElementById('categorias-secundarias').innerHTML = categorias.slice(8, 12).map(cat => generarTarjetaCategoria(cat, conteoProductos)).join('');
+                    document.getElementById('faded-categorias').style.display = 'block'; 
                 } else {
-                    btnEstatico.style.display = 'flex'; 
+                    document.getElementById('boton-estatico-cat').style.display = 'flex'; 
                 }
-            } catch (err) {
-                console.error("Error categorías:", err);
-            }
+            } catch (err) { console.error("Error categorías:", err); }
         }
 
-        // ==============================================================================
-        // 2. LÓGICA DE ÚLTIMOS PRODUCTOS 
-        // ==============================================================================
         function generarTarjetaProducto(prod) {
-            const imgUrl = prod.imagen_url || 'https://via.placeholder.com/200?text=Sin+Foto';
-            const linkProducto = `shop.html?cat=${prod.categoria_id}&hl=prod_${prod.id}`;
+            const imgUrl = prod.imagen_url || 'https://via.placeholder.com/200';
+            const link = `shop.html?cat=${prod.categoria_id}&hl=prod_${prod.id}`;
             const formatoTexto = prod.formato ? `<i class="fas fa-box text-black-50 mr-1"></i> ${prod.formato}` : '';
             const marcaTexto = prod.marca ? `<span class="mx-1">|</span> <i class="fas fa-tag text-black-50 mr-1"></i> ${prod.marca}` : '';
             
@@ -726,84 +723,52 @@
             if (prod.en_oferta && prod.precio_oferta) {
                 precioFinal = prod.precio_oferta;
                 badgeOfertaHTML = `<div class="badge-oferta">OFERTA</div>`;
-                precioHTML = `
-                    <h5 class="text-danger font-weight-bold m-0">$${prod.precio_oferta.toFixed(2)}</h5>
-                    <h6 class="text-muted ml-2 m-0"><del>$${prod.precio.toFixed(2)}</del></h6>
-                `;
+                precioHTML = `<h5 class="text-danger font-weight-bold m-0">$${prod.precio_oferta.toFixed(2)}</h5><h6 class="text-muted ml-2 m-0"><del>$${prod.precio.toFixed(2)}</del></h6>`;
             }
 
             return `
                 <div class="col-lg-3 col-md-4 col-sm-6 col-6 pb-1 mb-3">
                     <div class="producto-card-cliente">
-                        <a href="${linkProducto}" class="text-decoration-none">
-                            <div class="producto-img-container">
-                                ${badgeOfertaHTML}
-                                <img src="${imgUrl}" alt="${prod.nombre}">
-                            </div>
+                        <a href="${link}" class="text-decoration-none">
+                            <div class="producto-img-container">${badgeOfertaHTML}<img src="${imgUrl}" alt="${prod.nombre}"></div>
                         </a>
                         <div class="text-center py-3 px-3 d-flex flex-column flex-grow-1">
-                            <a class="h6 text-decoration-none text-dark font-weight-bold mb-1" style="font-size: 1.1rem; line-height: 1.2;" href="${linkProducto}">
-                                ${prod.nombre}
-                            </a>
+                            <a class="h6 text-decoration-none text-dark font-weight-bold mb-1" style="font-size: 1.1rem; line-height: 1.2;" href="${link}">${prod.nombre}</a>
                             <div class="small text-muted mb-2">${formatoTexto} ${marcaTexto}</div>
-                            
-                            <div class="d-flex align-items-center justify-content-center mt-auto mb-3">
-                                ${precioHTML}
-                            </div>
+                            <div class="d-flex align-items-center justify-content-center mt-auto mb-3">${precioHTML}</div>
                             <button class="btn btn-primary text-blanco-puro btn-block font-weight-bold shadow-sm" onclick="agregarAlCarritoLocal(${prod.id}, '${prod.nombre.replace(/'/g, "\\'")}', ${precioFinal}, '${imgUrl}', 'producto')">
                                 <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
                             </button>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
         async function cargarProductosRecientes() {
-            const containerPrinc = document.getElementById('productos-principales');
-            const containerSecun = document.getElementById('productos-secundarios');
-            const bloqueFade = document.getElementById('faded-productos');
-            const btnEstatico = document.getElementById('boton-estatico-prod');
-            const cargando = document.getElementById('cargando-prod');
-
             try {
-                const { data: productos, error } = await supabaseClient
-                    .from('productos').select('*').eq('visible', true).order('created_at', { ascending: false }).limit(16);
-
-                if (error) throw error;
-                if(cargando) cargando.remove();
+                const { data: productos } = await supabaseClient.from('productos').select('*').eq('visible', true).order('created_at', { ascending: false }).limit(16);
+                document.getElementById('cargando-prod').remove();
 
                 if (productos.length === 0) {
-                    containerPrinc.innerHTML = '<div class="col-12 text-center text-muted py-4"><p>Aún no hay productos en la tienda.</p></div>';
+                    document.getElementById('productos-principales').innerHTML = '<div class="col-12 text-center text-muted py-4"><p>Aún no hay productos en la tienda.</p></div>';
                     return;
                 }
 
-                const principales = productos.slice(0, 12);
-                containerPrinc.innerHTML = principales.map(p => generarTarjetaProducto(p)).join('');
+                document.getElementById('productos-principales').innerHTML = productos.slice(0, 12).map(p => generarTarjetaProducto(p)).join('');
 
                 if (productos.length > 12) {
-                    const secundarias = productos.slice(12, 16); 
-                    containerSecun.innerHTML = secundarias.map(p => generarTarjetaProducto(p)).join('');
-                    bloqueFade.style.display = 'block'; 
+                    document.getElementById('productos-secundarios').innerHTML = productos.slice(12, 16).map(p => generarTarjetaProducto(p)).join('');
+                    document.getElementById('faded-productos').style.display = 'block'; 
                 } else {
-                    btnEstatico.style.display = 'flex'; 
+                    document.getElementById('boton-estatico-prod').style.display = 'flex'; 
                 }
-            } catch (err) {
-                console.error("Error productos:", err);
-            }
+            } catch (err) { console.error("Error productos:", err); }
         }
 
-        // ==============================================================================
-        // 3. LÓGICA DEL CARRUSEL DE COMBOS
-        // ==============================================================================
         async function cargarCombosCarrusel() {
             const wrapper = $('#combo-wrapper');
-
             try {
-                const { data: combos, error } = await supabaseClient
-                    .from('combos').select('*').eq('visible', true).order('created_at', { ascending: false });
-
-                if (error) throw error;
+                const { data: combos } = await supabaseClient.from('combos').select('*').eq('visible', true).order('created_at', { ascending: false });
 
                 if (combos.length === 0) {
                     wrapper.html('<div class="text-center text-muted w-100 py-4"><p>No hay combos disponibles.</p></div>');
@@ -811,9 +776,8 @@
                 }
 
                 let html = '<div class="owl-carousel related-carousel" id="carrusel-combos-dinamico">';
-                
                 combos.forEach(combo => {
-                    const imgUrl = combo.imagen_url || 'https://via.placeholder.com/300?text=Combo';
+                    const imgUrl = combo.imagen_url || 'https://via.placeholder.com/300';
                     let precioFinal = combo.precio;
                     let precioHTML = `<h5 class="text-success font-weight-bold m-0">$${combo.precio.toFixed(2)}</h5>`;
                     let badgeOfertaHTML = ``;
@@ -827,16 +791,11 @@
                     html += `
                         <div class="product-item bg-white mb-4 mx-2 shadow-sm" style="border-radius: 15px; border: 1px solid #eee; overflow: hidden;">
                             <div class="product-img position-relative overflow-hidden" style="height: 220px;">
-                                ${badgeOfertaHTML}
-                                <img class="img-fluid w-100 h-100" src="${imgUrl}" alt="${combo.nombre}" style="object-fit: cover;">
+                                ${badgeOfertaHTML}<img class="img-fluid w-100 h-100" src="${imgUrl}" alt="${combo.nombre}" style="object-fit: cover;">
                             </div>
                             <div class="text-center py-4 px-3">
-                                <a class="h6 text-decoration-none text-dark font-weight-bold" href="shop.html?cat=combo&hl=combo_${combo.id}" style="font-size: 1.1rem; line-height: 1.2;">
-                                    ${combo.nombre}
-                                </a>
-                                <div class="d-flex align-items-center justify-content-center mt-2 mb-3">
-                                    ${precioHTML}
-                                </div>
+                                <a class="h6 text-decoration-none text-dark font-weight-bold" href="shop.html?cat=combo&hl=combo_${combo.id}" style="font-size: 1.1rem; line-height: 1.2;">${combo.nombre}</a>
+                                <div class="d-flex align-items-center justify-content-center mt-2 mb-3">${precioHTML}</div>
                                 <button class="btn btn-outline-dark btn-sm btn-block mb-2 shadow-sm font-weight-bold" style="border-radius: 20px;" onclick="verIngredientesCombo(${combo.id}, '${combo.nombre.replace(/'/g, "\\'")}')">
                                     <i class="fas fa-list mr-1"></i> Ver ingredientes
                                 </button>
@@ -844,68 +803,112 @@
                                     <i class="fa fa-shopping-cart text-blanco-puro mr-2"></i>Agregar
                                 </button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
                 
                 html += '</div>';
-
                 wrapper.html(html);
 
                 $('#carrusel-combos-dinamico').owlCarousel({
-                    loop: true,           
+                    loop: true, margin: 15, nav: true, navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'], dots: false, autoplay: true, autoplayTimeout: 3000, autoplayHoverPause: true, 
+                    responsive: { 0: { items: 1 }, 576: { items: 2 }, 768: { items: 3 }, 992: { items: 4 } }
+                });
+
+            } catch (err) { console.error("Error combos:", err); }
+        }
+
+        // ==============================================================================
+        // 4. NUEVA FUNCIÓN: CARGAR RESEÑAS EN EL INDEX
+        // ==============================================================================
+        async function cargarResenas() {
+            const wrapper = $('#carrusel-resenas');
+            
+            try {
+                const { data: resenas, error } = await supabaseClient
+                    .from('resenas')
+                    .select('*')
+                    .eq('visible', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (resenas.length === 0) {
+                    wrapper.html('<div class="text-center text-muted w-100 py-5 bg-white shadow-sm" style="border-radius: 15px;"><i class="fas fa-comment-slash fa-2x mb-3 text-black-50"></i><p class="m-0">Aún no hay opiniones. ¡Sé el primero en contarnos tu experiencia!</p></div>');
+                    return;
+                }
+
+                if (wrapper.hasClass('owl-loaded')) {
+                    wrapper.trigger('destroy.owl.carousel');
+                    wrapper.removeClass('owl-loaded');
+                    wrapper.empty();
+                }
+
+                let html = '';
+                resenas.forEach(r => {
+                    let estrellasHtml = '';
+                    for(let i=0; i<5; i++) {
+                        if(i < r.estrellas) estrellasHtml += '<i class="fas fa-star text-warning"></i>';
+                        else estrellasHtml += '<i class="far fa-star text-warning"></i>';
+                    }
+                    const fecha = new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                    html += `
+                        <div class="resena-card p-4 mx-2 mt-2 mb-2">
+                            <div>
+                                <div class="mb-2" style="font-size: 0.9rem;">${estrellasHtml}</div>
+                                <p class="m-0 text-dark" style="font-size: 0.95rem; font-style: italic; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">"${r.opinion}"</p>
+                            </div>
+                            <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                                <h6 class="font-weight-bold m-0 text-primary"><i class="fas fa-user-circle mr-2"></i>${r.nombre}</h6>
+                                <small class="text-muted">${fecha}</small>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                wrapper.html(html);
+
+                wrapper.owlCarousel({
+                    loop: resenas.length > 3,           
                     margin: 15,           
-                    nav: true,            
-                    navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'], 
-                    dots: false,
+                    nav: false,            
+                    dots: true,
                     autoplay: true,       
-                    autoplayTimeout: 3000,
+                    autoplayTimeout: 5000,
                     autoplayHoverPause: true, 
                     responsive: {
                         0: { items: 1 },
-                        576: { items: 2 },
-                        768: { items: 3 },
-                        992: { items: 4 }
+                        768: { items: 2 },
+                        992: { items: 3 }
                     }
                 });
 
             } catch (err) {
-                console.error("Error combos:", err);
+                console.error("Error al cargar reseñas:", err);
+                wrapper.html('<div class="text-center text-danger w-100 py-4">Error al cargar las reseñas.</div>');
             }
         }
 
         // ==============================================================================
-        // 4. LÓGICA DEL CARRITO (LOCALSTORAGE) Y MODAL INGREDIENTES
+        // 5. CARRITO Y MODAL
         // ==============================================================================
-        
         window.agregarAlCarritoLocal = function(id, nombre, precio, imagen_url, tipo) {
             const btn = event.currentTarget;
             const originalText = btn.innerHTML;
-            
-            // Obtener carrito actual
             let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
-            
-            // Buscar si el producto ya existe
             let productoExistente = carrito.find(item => item.id === id && item.tipo === tipo);
 
-            if (productoExistente) {
-                productoExistente.cantidad += 1; 
-            } else {
-                carrito.push({
-                    id: id,
-                    nombre: nombre,
-                    precio: parseFloat(precio),
-                    imagen_url: imagen_url,
-                    tipo: tipo, 
-                    cantidad: 1
-                });
-            }
+            if (productoExistente) productoExistente.cantidad += 1; 
+            else carrito.push({ id: id, nombre: nombre, precio: parseFloat(precio), imagen_url: imagen_url, tipo: tipo, cantidad: 1 });
 
-            // Guardar y actualizar
             localStorage.setItem('euroCarrito', JSON.stringify(carrito));
             actualizarBadgeCarrito();
 
-            // Animación del botón
+            document.querySelectorAll('.cart-btn-container').forEach(container => {
+                container.classList.add('cart-animating');
+                setTimeout(() => container.classList.remove('cart-animating'), 500);
+            });
+
             btn.innerHTML = '<i class="fas fa-check text-blanco-puro mr-2"></i>¡Agregado!';
             btn.classList.replace('btn-primary', 'bg-success');
             btn.classList.add('border-success', 'text-blanco-puro');
@@ -919,41 +922,29 @@
         function actualizarBadgeCarrito() {
             let carrito = JSON.parse(localStorage.getItem('euroCarrito')) || [];
             let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            let totalDinero = carrito.reduce((sum, item) => sum + (item.cantidad * item.precio), 0);
             
-            // Actualiza todos los iconos de carrito que tengan la clase 'cart-badge'
-            const badges = document.querySelectorAll('.cart-badge');
-            badges.forEach(badge => { badge.innerText = totalItems; });
+            document.querySelectorAll('.cart-badge').forEach(badge => { badge.innerText = totalItems; });
+            document.querySelectorAll('.cart-total').forEach(t => { t.innerText = '$' + totalDinero.toFixed(2); });
         }
 
-        // ------------------ MODAL INGREDIENTES MODIFICADO CON FORMATO Y MARCA ------------------
         window.verIngredientesCombo = async function(comboId, comboNombre) {
             $('#carrusel-combos-dinamico').trigger('stop.owl.autoplay');
-            
             document.getElementById('modalComboNombre').innerText = comboNombre;
             const lista = document.getElementById('listaIngredientesCombo');
             lista.innerHTML = '<li class="list-group-item text-center border-0"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando productos...</p></li>';
             $('#modalIngredientes').modal('show');
 
             try {
-                const { data: comboData, error: comboErr } = await supabaseClient
-                    .from('combos').select('productos_ids').eq('id', comboId).single();
-                
-                if (comboErr || !comboData.productos_ids) throw new Error("No se pudieron cargar los ingredientes.");
-
-                // Seleccionamos también formato y marca
-                const { data: productos, error: prodErr } = await supabaseClient
-                    .from('productos').select('id, nombre, formato, marca');
-
-                if (prodErr) throw new Error("Error cargando el catálogo.");
+                const { data: comboData } = await supabaseClient.from('combos').select('productos_ids').eq('id', comboId).single();
+                const { data: productos } = await supabaseClient.from('productos').select('id, nombre, formato, marca');
 
                 lista.innerHTML = '';
-                const items = comboData.productos_ids;
-                
-                if(items.length === 0) {
+                if(comboData.productos_ids.length === 0) {
                     lista.innerHTML = '<li class="list-group-item text-center text-muted border-0">Este combo no tiene productos asignados.</li>';
                 }
 
-                items.forEach(item => {
+                comboData.productos_ids.forEach(item => {
                     const prodId = item.id || item; 
                     const qty = item.cantidad || 1;
                     const prodInfo = productos.find(p => p.id === prodId);
@@ -966,17 +957,14 @@
                         lista.innerHTML += `
                             <li class="list-group-item d-flex justify-content-between align-items-center px-2 border-bottom">
                                 <div class="text-dark" style="max-width: 85%;">
-                                    <i class="fas fa-check text-success mr-2"></i><span class="font-weight-semi-bold">${prodInfo.nombre}</span>
-                                    ${txtDetalle}
+                                    <i class="fas fa-check text-success mr-2"></i><span class="font-weight-semi-bold">${prodInfo.nombre}</span>${txtDetalle}
                                 </div>
                                 <span class="badge badge-primary badge-pill text-blanco-puro shadow-sm px-2 py-1">${qty}x</span>
-                            </li>
-                        `;
+                            </li>`;
                     }
                 });
-
             } catch(e) {
-                lista.innerHTML = `<li class="list-group-item text-center text-danger border-0">${e.message}</li>`;
+                lista.innerHTML = `<li class="list-group-item text-center text-danger border-0">Error cargando ingredientes.</li>`;
             }
         }
 
@@ -985,5 +973,4 @@
         });
     </script>
 </body>
-
 </html>

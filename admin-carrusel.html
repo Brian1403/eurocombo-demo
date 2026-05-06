@@ -28,21 +28,48 @@
         .sidebar a i { width: 25px; }
         .sidebar-footer { padding: 15px 20px; background-color: rgba(0, 0, 0, 0.2); font-size: 0.85rem; }
         
-        /* NAVBAR */
-        .top-navbar { background-color: var(--euro-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        /* NAVBAR CORREGIDO (STICKY) */
+        .top-navbar { 
+            background-color: var(--euro-blue); 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: white; 
+            position: sticky; /* Fijo arriba */
+            top: 0; 
+            z-index: 1040; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         
         @media (max-width: 768px) { 
-            .sidebar { position: absolute; left: -250px; z-index: 1000; height: 100%; } 
+            .sidebar { position: absolute; left: -250px; z-index: 1050; height: 100%; } 
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); } 
         }
 
         /* TARJETA DE SLIDE */
         .slide-card { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; transition: all 0.3s ease; overflow: hidden; display: flex; flex-direction: column; height: 100%;}
-        .slide-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-top: 4px solid var(--cart-orange); }
+        .slide-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-top: 4px solid var(--cart-orange); }
         .slide-img-box { width: 100%; height: 180px; position: relative; background: #eee; }
         .slide-img-box img { width: 100%; height: 100%; object-fit: cover; }
         
+        /* ESTILOS DRAG & DROP */
+        .drag-handle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: grab;
+            z-index: 5;
+            transition: 0.2s;
+        }
+        .drag-handle:active { cursor: grabbing; background: var(--cart-orange); }
+        .sortable-ghost { opacity: 0.4; transform: scale(0.95); border: 2px dashed var(--euro-blue); }
+
         #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         
         /* VISTA PREVIA IMAGEN MODAL */
@@ -63,7 +90,10 @@
         <!-- SIDEBAR -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h4 class="text-white m-0 font-weight-bold"><i class="fas fa-shopping-basket mr-2" style="color: var(--cart-orange);"></i>EuroCombo</h4>
+                <h4 class="m-0 font-weight-bold d-flex align-items-center justify-content-center">
+                    <img src="img/logo-euro2.png" alt="Logo" style="height: 35px; width: auto; margin-right: 10px;">
+                    <span class="text-white">Euro</span><span style="color: #28a745; text-shadow: 0px 0px 2px rgba(255,255,255,0.2);">Combo</span>
+                </h4>
             </div>
             
             <div class="sidebar-menu">
@@ -76,7 +106,6 @@
                 <a href="productos.html"><i class="fas fa-box"></i> Productos</a>
                 <a href="combos.html"><i class="fas fa-layer-group"></i> Combos</a>
                 <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
-                <!-- NUEVO ENLACE AL CARRUSEL -->
                 <a href="admin-carrusel.html" class="active"><i class="fas fa-images"></i> Carrusel</a>
             </div>
 
@@ -111,7 +140,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                     <div>
                         <h2 class="font-weight-bold mb-1" style="color: var(--euro-blue) !important;">Promociones Principales</h2>
-                        <p class="text-muted m-0">Administra las imágenes y textos del carrusel de inicio.</p>
+                        <p class="text-muted m-0">Arrastra desde el icono gris (<i class="fas fa-arrows-alt"></i>) para cambiar el orden.</p>
                     </div>
                     <button class="btn shadow-sm" style="background-color: var(--cart-orange); color: white; font-weight: bold; border-radius: 25px; padding: 10px 20px;" data-toggle="modal" data-target="#modalSlide" id="btnNuevoSlide">
                         <i class="fas fa-plus mr-2"></i> Nuevo Slide
@@ -128,6 +157,7 @@
     <!-- MODAL PARA NUEVO/EDITAR SLIDE -->
     <div class="modal fade" id="modalSlide" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
+            <!-- ... MISMO CONTENIDO DEL MODAL QUE YA TENÍAS ... -->
             <div class="modal-content" style="border-radius: 15px;">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title font-weight-bold" id="modalTitulo" style="color: var(--euro-blue);">Nuevo Slide Promocional</h5>
@@ -176,14 +206,16 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- LIBRERÍA DRAG AND DROP (SOPORTE PARA MÓVILES) -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <script>
         const SUPABASE_URL = 'https://tdpfbkwcszcmthjodapb.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_8HQtrg95k-Slwnwo-S1LqQ_H5iu1N-X'; 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const BUCKET_NAME = 'imagenes_carrusel'; 
+        let sortableInstancia = null; // Guardará la instancia del Drag&Drop
 
-        // GUARDIÁN DE SEGURIDAD
         async function verificarSesion() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) { window.location.replace('login.html'); }
@@ -206,7 +238,7 @@
             document.getElementById('btnNuevoSlide').addEventListener('click', () => {
                 document.getElementById('formSlide').reset();
                 document.getElementById('slideId').value = '';
-                document.getElementById('slideBoton').value = 'Comprar Ahora'; // Valor por defecto
+                document.getElementById('slideBoton').value = 'Comprar Ahora';
                 document.getElementById('modalTitulo').innerText = 'Nuevo Slide Promocional';
                 document.getElementById('previewContainer').style.display = 'none';
                 document.getElementById('imagePreview').src = '';
@@ -244,34 +276,25 @@
                 let imageUrl = null;
 
                 try {
-                    // SUBIR IMAGEN AL BUCKET
                     if (archivo) {
                         const fileExt = archivo.name.split('.').pop();
                         const fileName = `${Date.now()}_slide.${fileExt}`;
-                        
-                        const { error: upError } = await supabaseClient.storage
-                            .from(BUCKET_NAME)
-                            .upload(fileName, archivo);
-
-                        if (upError) throw new Error("Fallo al subir la imagen: " + upError.message);
-
+                        const { error: upError } = await supabaseClient.storage.from(BUCKET_NAME).upload(fileName, archivo);
+                        if (upError) throw new Error("Fallo al subir: " + upError.message);
                         const { data: urlData } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
                         imageUrl = urlData.publicUrl;
                     }
 
-                    const datosSlide = {
-                        titulo: titulo,
-                        descripcion: desc,
-                        texto_boton: boton
-                    };
-
+                    const datosSlide = { titulo: titulo, descripcion: desc, texto_boton: boton };
                     if (imageUrl) datosSlide.imagen_url = imageUrl;
 
-                    // GUARDAR O ACTUALIZAR EN BASE DE DATOS
                     if (id) {
                         const { error } = await supabaseClient.from('carrusel').update(datosSlide).eq('id', id);
                         if (error) throw new Error("Error DB: " + error.message);
                     } else {
+                        // Al crear uno nuevo, le ponemos orden 999 para que vaya al final. 
+                        // Luego se reordenará solo cuando muevas algo.
+                        datosSlide.orden = 999; 
                         const { error } = await supabaseClient.from('carrusel').insert([datosSlide]);
                         if (error) throw new Error("Error DB: " + error.message);
                     }
@@ -280,44 +303,48 @@
                     cargarSlides();
 
                 } catch (err) {
-                    console.error("ERROR:", err);
                     alert(err.message);
                 } finally {
                     document.getElementById('loader').style.display = 'none';
                 }
             });
 
-            // CARGAR Y MOSTRAR SLIDES
+            // CARGAR Y MOSTRAR SLIDES (Modificado para ordenar por la columna 'orden')
             window.cargarSlides = async function() {
                 const contenedor = document.getElementById('contenedor-slides');
                 contenedor.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border text-primary"></div></div>';
 
-                const { data, error } = await supabaseClient.from('carrusel').select('*').order('created_at', { ascending: true });
+                // IMPORTANTE: Lee por la columna 'orden'
+                const { data, error } = await supabaseClient.from('carrusel').select('*').order('orden', { ascending: true });
                 
                 if (error) {
-                    contenedor.innerHTML = '<div class="text-danger text-center w-100 p-4">Error al conectar con la base de datos. Asegúrate de haber creado la tabla "carrusel".</div>';
+                    contenedor.innerHTML = '<div class="text-danger text-center w-100 p-4">Error. ¿Creaste la columna "orden" en tu tabla "carrusel"?</div>';
                     return;
                 }
                 
                 contenedor.innerHTML = '';
                 if (data.length === 0) {
-                    contenedor.innerHTML = `<div class="col-12 text-center py-5"><i class="fas fa-images" style="font-size: 50px; color: #ddd; margin-bottom: 15px;"></i><h4 class="text-muted">No hay promociones.</h4><p>El carrusel de inicio mostrará una imagen por defecto.</p></div>`;
+                    contenedor.innerHTML = `<div class="col-12 text-center py-5"><i class="fas fa-images" style="font-size: 50px; color: #ddd; margin-bottom: 15px;"></i><h4 class="text-muted">No hay promociones.</h4></div>`;
                     return;
                 }
 
                 data.forEach((slide, index) => {
                     const imageUrl = slide.imagen_url || 'https://via.placeholder.com/600x300?text=Sin+Imagen';
-                    
-                    // Escapar comillas para la función JS
                     const titSafe = slide.titulo ? slide.titulo.replace(/'/g, "\\'") : '';
                     const descSafe = slide.descripcion ? slide.descripcion.replace(/'/g, "\\'") : '';
                     const btnSafe = slide.texto_boton ? slide.texto_boton.replace(/'/g, "\\'") : '';
 
                     contenedor.innerHTML += `
-                        <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="col-lg-4 col-md-6 mb-4 slide-card-wrapper" data-id="${slide.id}">
                             <div class="slide-card">
                                 <div class="slide-img-box">
-                                    <span class="badge badge-primary position-absolute" style="top: 10px; left: 10px; z-index: 2;">Slide ${index + 1}</span>
+                                    <span class="badge badge-primary position-absolute slide-number" style="top: 10px; left: 10px; z-index: 2;">Slide ${index + 1}</span>
+                                    
+                                    <!-- MANIJA PARA ARRASTRAR -->
+                                    <div class="drag-handle" title="Arrastrar para reordenar">
+                                        <i class="fas fa-arrows-alt"></i>
+                                    </div>
+                                    
                                     <img src="${imageUrl}" alt="img">
                                 </div>
                                 <div class="p-3 flex-grow-1 d-flex flex-column">
@@ -338,28 +365,71 @@
                             </div>
                         </div>`;
                 });
+
+                // INICIALIZAR DRAG AND DROP
+                inicializarSortable();
+            }
+
+            function inicializarSortable() {
+                const contenedor = document.getElementById('contenedor-slides');
+                
+                // Si ya había una instancia, la destruimos para evitar duplicados
+                if(sortableInstancia) sortableInstancia.destroy();
+
+                sortableInstancia = Sortable.create(contenedor, {
+                    animation: 150,
+                    handle: '.drag-handle', // Solo se mueve si agarras el icono
+                    ghostClass: 'sortable-ghost', // Clase CSS mientras se arrastra
+                    onEnd: async function () {
+                        // 1. Cuando sueltas, recogemos el nuevo orden visual
+                        const elementos = contenedor.querySelectorAll('.slide-card-wrapper');
+                        const actualizaciones = [];
+
+                        elementos.forEach((elemento, index) => {
+                            // Actualizar el número visual (Badge)
+                            elemento.querySelector('.slide-number').innerText = `Slide ${index + 1}`;
+                            
+                            // Guardar en array el id y su nueva posición (orden)
+                            actualizaciones.push({
+                                id: parseInt(elemento.getAttribute('data-id')),
+                                orden: index
+                            });
+                        });
+
+                        // 2. Enviar actualización a Supabase
+                        document.getElementById('loader').style.display = 'flex';
+                        
+                        // Upsert actualiza múltiples filas de un golpe usando su ID
+                        const { error } = await supabaseClient.from('carrusel').upsert(actualizaciones);
+                        
+                        document.getElementById('loader').style.display = 'none';
+
+                        if(error) {
+                            alert("Error al guardar el nuevo orden: " + error.message);
+                            cargarSlides(); // Volver a cargar si hubo error
+                        }
+                    }
+                });
             }
 
             // ELIMINAR SLIDE
             window.eliminarSlide = async function(id) {
-                if (confirm("¿Seguro que deseas eliminar este slide del carrusel?")) {
+                if (confirm("¿Seguro que deseas eliminar este slide?")) {
                     document.getElementById('loader').style.display = 'flex';
                     const { error } = await supabaseClient.from('carrusel').delete().eq('id', id);
-                    document.getElementById('loader').style.display = 'none';
                     if(error) alert("Error: " + error.message);
                     else cargarSlides();
+                    document.getElementById('loader').style.display = 'none';
                 }
             }
 
-            // PREPARAR FORMULARIO PARA EDICIÓN
+            // PREPARAR EDICIÓN
             window.prepararEditar = function(id, titulo, desc, boton, urlActual) {
                 document.getElementById('formSlide').reset();
-                
                 document.getElementById('slideId').value = id;
                 document.getElementById('slideTitulo').value = titulo;
                 document.getElementById('slideDesc').value = desc;
                 document.getElementById('slideBoton').value = boton;
-                
                 document.getElementById('modalTitulo').innerText = 'Editar Slide';
                 
                 if(urlActual && urlActual !== 'null') {
@@ -368,11 +438,9 @@
                 } else {
                     document.getElementById('previewContainer').style.display = 'none';
                 }
-                
                 $('#modalSlide').modal('show');
             }
 
-            // Arrancar
             cargarSlides();
         });
 
