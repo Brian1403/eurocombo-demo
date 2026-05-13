@@ -312,9 +312,9 @@
             actualizarTextoPeriodo(fechaReinicio);
 
             try {
-                // Hacemos 3 peticiones al mismo tiempo: Pedidos, Productos y Combos
+                // Hacemos 3 peticiones al mismo tiempo: Pedidos, Productos y Combos (Se quita cliente_ci)
                 const [resPedidos, resProductos, resCombos] = await Promise.all([
-                    supabaseClient.from('pedidos').select('cliente_nombre, cliente_apellidos, cliente_ci, cliente_telefono, detalles, created_at'),
+                    supabaseClient.from('pedidos').select('cliente_nombre, cliente_apellidos, cliente_telefono, detalles, created_at'),
                     supabaseClient.from('productos').select('id, nombre, formato, marca'),
                     supabaseClient.from('combos').select('id, nombre, productos_ids')
                 ]);
@@ -333,13 +333,15 @@
                 let productosMap = {};
                 let combosMap = {};
 
+                // AGRUPAR DATOS
                 pedidos.forEach(p => {
-                    const ci = p.cliente_ci;
-                    if (ci) {
-                        if (!clientesMap[ci]) {
-                            clientesMap[ci] = { nombre: `${p.cliente_nombre} ${p.cliente_apellidos}`, ci: ci, telefono: p.cliente_telefono, compras: 0 };
+                    // Ahora se agrupa usando el número de teléfono como identificador
+                    const tel = p.cliente_telefono;
+                    if (tel) {
+                        if (!clientesMap[tel]) {
+                            clientesMap[tel] = { nombre: `${p.cliente_nombre} ${p.cliente_apellidos}`, telefono: tel, compras: 0 };
                         }
-                        clientesMap[ci].compras += 1;
+                        clientesMap[tel].compras += 1;
                     }
 
                     let detalles = [];
@@ -391,12 +393,13 @@
                 let badgeClass = pos === 1 ? 'rank-1' : pos === 2 ? 'rank-2' : pos === 3 ? 'rank-3' : 'rank-other';
                 let icon = pos <= 3 ? '<i class="fas fa-medal"></i>' : pos;
 
+                // Modificado para mostrar solo el botón de WhatsApp con el número
                 container.innerHTML += `
                     <div class="rank-item">
                         <div class="rank-pos ${badgeClass}">${icon}</div>
                         <div class="rank-info">
                             <p class="rank-name">${c.nombre}</p>
-                            <p class="rank-meta">CI: ${c.ci} <span class="mx-1">|</span> <a href="https://wa.me/${c.telefono.replace(/\D/g,'')}" target="_blank" class="text-success text-decoration-none font-weight-bold"><i class="fab fa-whatsapp"></i> ${c.telefono}</a></p>
+                            <p class="rank-meta"><a href="https://wa.me/${c.telefono.replace(/\D/g,'')}" target="_blank" class="text-success text-decoration-none font-weight-bold"><i class="fab fa-whatsapp"></i> ${c.telefono}</a></p>
                         </div>
                         <div class="rank-qty">${c.compras} <small style="color:#e64a19; font-weight:normal; font-size: 0.75rem;">Pedidos</small></div>
                     </div>

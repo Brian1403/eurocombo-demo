@@ -242,11 +242,8 @@
                                 <label class="font-weight-bold text-dark">Apellidos <span class="text-danger">*</span></label>
                                 <input class="form-control bg-light border-0 py-4" type="text" id="c-apellidos" placeholder="Ej. Pérez" required style="border-radius: 10px;">
                             </div>
-                            <div class="col-md-6 form-group mb-4">
-                                <label class="font-weight-bold text-dark">Cédula de Identidad (CI) <span class="text-danger">*</span></label>
-                                <input class="form-control bg-light border-0 py-4" type="text" id="c-ci" placeholder="Ej. 12345678" required style="border-radius: 10px;">
-                            </div>
-                            <div class="col-md-6 form-group mb-4">
+                            <!-- AHORA EL TELÉFONO OCUPA EL ANCHO COMPLETO (col-md-12) -->
+                            <div class="col-md-12 form-group mb-4">
                                 <label class="font-weight-bold text-dark">Teléfono Móvil <span class="text-danger">*</span></label>
                                 <input class="form-control bg-light border-0 py-4" type="tel" id="c-telefono" placeholder="Ej. 123 456 7890" required style="border-radius: 10px;">
                             </div>
@@ -353,7 +350,6 @@
         const E_WAVE  = '👋';
         const E_CLIP  = '📋';
         const E_USER  = '👤';
-        const E_ID    = '🆔';
         const E_PHONE = '📞';
         const E_PIN   = '📍';
         const E_MEMO  = '📝';
@@ -500,25 +496,22 @@
         async function enviarPedidoWhatsApp() {
             const inputNombre = document.getElementById('c-nombre');
             const inputApellidos = document.getElementById('c-apellidos');
-            const inputCI = document.getElementById('c-ci');
             const inputTelefono = document.getElementById('c-telefono');
             const inputDireccion = document.getElementById('c-direccion');
             const inputReferencia = document.getElementById('c-referencia');
 
             const nombre = inputNombre.value.trim();
             const apellidos = inputApellidos.value.trim();
-            const ci = inputCI.value.trim();
             const telefono = inputTelefono.value.trim();
             const direccion = inputDireccion.value.trim();
             const referencia = inputReferencia.value.trim() || 'Sin referencia';
 
-            const inputs = [inputNombre, inputApellidos, inputCI, inputTelefono, inputDireccion];
+            const inputs = [inputNombre, inputApellidos, inputTelefono, inputDireccion];
             inputs.forEach(input => input.classList.remove('is-invalid'));
 
             let hayErrores = false;
             if(!nombre) { inputNombre.classList.add('is-invalid'); hayErrores = true; }
             if(!apellidos) { inputApellidos.classList.add('is-invalid'); hayErrores = true; }
-            if(!ci) { inputCI.classList.add('is-invalid'); hayErrores = true; }
             if(!telefono) { inputTelefono.classList.add('is-invalid'); hayErrores = true; }
             if(!direccion) { inputDireccion.classList.add('is-invalid'); hayErrores = true; }
 
@@ -539,7 +532,6 @@
             const nuevoPedido = {
                 cliente_nombre: nombre,
                 cliente_apellidos: apellidos,
-                cliente_ci: ci,
                 cliente_telefono: telefono,
                 cliente_direccion: direccion,
                 cliente_referencia: referencia,
@@ -558,7 +550,6 @@
                 let mensaje = `*¡Hola EuroCombo!* ${E_WAVE}\nQuiero confirmar el siguiente pedido:\n\n`;
                 mensaje += `${E_CLIP} *DATOS DE ENTREGA*\n`;
                 mensaje += `${E_USER} Nombre: ${nombre} ${apellidos}\n`;
-                mensaje += `${E_ID} CI: ${ci}\n`;
                 mensaje += `${E_PHONE} Teléfono: ${telefono}\n`;
                 mensaje += `${E_PIN} Dirección: ${direccion}\n`;
                 mensaje += `${E_MEMO} Referencia: ${referencia}\n\n`;
