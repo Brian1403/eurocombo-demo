@@ -525,6 +525,7 @@
             const originalBtnText = btnSubmit.innerHTML;
             btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span> Procesando pedido...';
             btnSubmit.style.pointerEvents = 'none';
+            btnSubmit.disabled = true;
 
             // 1. GUARDAR EN BASE DE DATOS SUPABASE
             const carritoActual = obtenerCarrito();
@@ -563,25 +564,21 @@
                 const numeroWhatsApp = "5218662125516";
                 const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
                 
-                window.open(urlWhatsApp, '_blank');
-
                 // VACIAR CARRITO
                 localStorage.removeItem('euroCarrito');
                 actualizarBadgeCarrito();
-                
-                btnSubmit.innerHTML = '¡Pedido Enviado! <i class="fas fa-check ml-2 text-white"></i>';
-                btnSubmit.classList.replace('btn-whatsapp', 'bg-success');
 
-                // Volver al inicio después de 2 segundos
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
+                btnSubmit.innerHTML = 'Abriendo WhatsApp... <i class="fab fa-whatsapp ml-2 text-white"></i>';
+
+                // Redirigir directamente a WhatsApp en la misma pestaña (evita bloqueos de iPhone/Facebook)
+                window.location.href = urlWhatsApp;
 
             } catch(e) {
                 console.error("Error al guardar el pedido:", e);
                 alert("Hubo un error de conexión al registrar tu pedido. Por favor, intenta nuevamente.");
                 btnSubmit.innerHTML = originalBtnText;
                 btnSubmit.style.pointerEvents = 'auto';
+                btnSubmit.disabled = false;
             }
         }
 
